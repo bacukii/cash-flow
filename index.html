@@ -1295,7 +1295,7 @@
     const ownerSuffix = friendSlug ? `-friend-${friendSlug}` : '';
     const key = `${provider}${bucketSuffix}${ownerSuffix}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
     const label = `${MONTHS_ID[tMonth]} ${tYear}`;
-    const dueDay = provider === 'SPayLater' ? 22 : 1;
+    const dueDay = 1;
     return { key, label, dueDay, baseOffset };
   }
 
