@@ -106,6 +106,7 @@
     .btn:active { transform: scale(0.97); }
     .btn-primary { background: var(--primary); color: #022c22; }
     .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-info { background: rgba(56, 189, 248, 0.16); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.38); }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.35); }
     .btn-ghost-muted {
       background: transparent;
@@ -119,14 +120,14 @@
     .section-title {
       font-size: 0.76rem; font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 8px;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between; align-items: center; gap: 6px;
     }
 
     /* Filter Chips */
-    .chip-group { display: flex; gap: 5px; }
+    .chip-group { display: flex; gap: 5px; flex-wrap: wrap; }
     .chip {
       background: var(--surface); border: 1px solid var(--border); color: var(--muted);
-      font-size: 0.69rem; font-weight: 700; padding: 3px 8px; border-radius: 99px; cursor: pointer;
+      font-size: 0.69rem; font-weight: 700; padding: 4px 8px; border-radius: 99px; cursor: pointer;
     }
     .chip.active { background: rgba(16, 185, 129, 0.16); border-color: var(--primary); color: var(--primary); }
 
@@ -144,6 +145,16 @@
     .acc-tag { font-size: 0.62rem; color: var(--muted); background: var(--bg); padding: 2px 6px; border-radius: 5px; }
     .acc-bal { font-size: 0.98rem; font-weight: 800; }
 
+    /* Credit Limits Bar */
+    .limit-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 11px; padding: 9px 11px; cursor: pointer;
+    }
+    .limit-bar-bg {
+      height: 5px; background: var(--bg); border-radius: 99px; overflow: hidden; margin-top: 5px;
+    }
+    .limit-bar-fill { height: 100%; background: var(--info); border-radius: 99px; }
+
     .card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 13px; margin-bottom: 10px;
@@ -157,6 +168,11 @@
     .pill-info { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
     .pill-pl { background: rgba(249, 115, 22, 0.16); color: #fdba74; }
 
+    .tx-summary-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface-2); border-radius: 10px; padding: 8px 11px;
+      font-size: 0.75rem; margin-bottom: 8px;
+    }
     .tx-item {
       display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
       padding: 11px 0; border-bottom: 1px solid var(--border);
@@ -211,20 +227,12 @@
 
     .form-group { margin-bottom: 12px; }
     label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
-    input, select {
+    input, select, textarea {
       width: 100%; background: var(--bg); border: 1px solid var(--border);
-      color: var(--text); padding: 11px 12px; border-radius: 10px; font-size: 0.93rem;
+      color: var(--text); padding: 10px 12px; border-radius: 10px; font-size: 0.92rem;
+      font-family: inherit;
     }
-    input:focus, select:focus { outline: none; border-color: var(--primary); }
-    .checkbox-row {
-      display: flex; align-items: center; gap: 9px;
-      background: var(--bg); border: 1px solid var(--border);
-      padding: 10px 11px; border-radius: 10px;
-      font-size: 0.78rem; color: var(--text); cursor: pointer;
-    }
-    .checkbox-row input[type="checkbox"] {
-      width: 17px; height: 17px; accent-color: var(--primary); flex-shrink: 0;
-    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
     .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .toggle-row-3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 7px; }
     .toggle-opt {
@@ -248,10 +256,10 @@
       border: 1px solid rgba(56, 189, 248, 0.32);
       color: #bae6fd;
       padding: 9px 11px; border-radius: 10px;
-      font-size: 0.75rem; margin-top: 10px;
+      font-size: 0.75rem; margin-top: 8px;
     }
 
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
     .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px; }
     .stat-box small { color: var(--muted); font-size: 0.71rem; display: block; }
     .stat-box strong { font-size: 0.96rem; margin-top: 3px; display: block; }
@@ -292,7 +300,7 @@
             <strong id="monthlyBillTotal">Rp 0</strong>
           </div>
           <div>
-            <span>Piutang Teman Aktif</span>
+            <span>Sisa Piutang Teman</span>
             <strong id="monthlyFriendReceivable" style="color:#6ee7b7">Rp 0</strong>
           </div>
         </div>
@@ -305,7 +313,7 @@
           <button class="reconcile-btn" onclick="openReconcileModal()">✎ Cocokkan Fisik</button>
         </div>
         <div class="cash-bal" id="cashWalletBal">Rp 0</div>
-        <div class="cash-meta" id="cashLastChecked">Tip tunai otomatis masuk ke sini • Belum pernah dicocokkan</div>
+        <div class="cash-meta" id="cashLastChecked">Tip tunai otomatis masuk ke sini • Ketuk Cocokkan jika selisih</div>
         <div class="quick-grid">
           <button class="btn btn-primary" onclick="openTipModal()">⚡ + Uang Tip</button>
           <button class="btn btn-secondary" onclick="openTxModal()">💸 Catat Transaksi</button>
@@ -327,22 +335,47 @@
       <div class="section-title"><span>Jatuh Tempo Terdekat</span></div>
       <div id="upcomingLoanBox"></div>
 
-      <!-- RIWAYAT TRANSAKSI -->
+      <!-- RIWAYAT MUTASI DENGAN FILTER WAKTU & AKUN -->
       <div class="section-title">
-        <span>Mutasi Terakhir</span>
+        <span>Mutasi Transaksi</span>
+        <span id="txFilteredCount" style="font-size:0.69rem;">0 data</span>
+      </div>
+
+      <div class="card" style="padding:10px 12px;margin-bottom:8px;">
+        <div class="chip-group" style="margin-bottom:8px;">
+          <button class="chip active" id="timeFilterAll" onclick="setTxTimeMode('all')">Semua Waktu</button>
+          <button class="chip" id="timeFilterToday" onclick="setTxTimeMode('today')">Hari Ini</button>
+          <button class="chip" id="timeFilterDate" onclick="setTxTimeMode('date')">Per Tanggal</button>
+          <button class="chip" id="timeFilterMonth" onclick="setTxTimeMode('month')">Per Bulan</button>
+        </div>
+        <div id="txDatePickerWrap" style="display:none;margin-bottom:8px;">
+          <input type="date" id="txFilterDateVal" onchange="renderDashboard()" style="padding:7px 10px;font-size:0.82rem;" />
+        </div>
+        <div id="txMonthPickerWrap" style="display:none;margin-bottom:8px;">
+          <input type="month" id="txFilterMonthVal" onchange="renderDashboard()" style="padding:7px 10px;font-size:0.82rem;" />
+        </div>
         <div class="chip-group">
-          <button class="chip active" id="filterTxAll" onclick="setTxFilter('all')">Semua</button>
-          <button class="chip" id="filterTxCash" onclick="setTxFilter('cash')">💵 Tunai Saja</button>
+          <button class="chip active" id="filterTxAll" onclick="setTxAccountFilter('all')">Semua Akun</button>
+          <button class="chip" id="filterTxCash" onclick="setTxAccountFilter('cash')">💵 Tunai</button>
+          <button class="chip" id="filterTxBank" onclick="setTxAccountFilter('bank')">🏦 Bank</button>
+          <button class="chip" id="filterTxEwallet" onclick="setTxAccountFilter('ewallet')">📱 E-Wallet</button>
+          <button class="chip" id="filterTxPaylater" onclick="setTxAccountFilter('paylater')">💳 PayLater</button>
         </div>
       </div>
+
+      <div class="tx-summary-bar" id="txSummaryBar">
+        <span>Masuk: <strong class="plus" id="txSumIn">Rp 0</strong></span>
+        <span>Keluar: <strong class="minus" id="txSumOut">Rp 0</strong></span>
+      </div>
+
       <div class="card" id="recentTxList" style="padding: 4px 13px;"></div>
     </section>
 
-    <!-- TAB 2: CICILAN & PAYLATER -->
+    <!-- TAB 2: CICILAN, PAYLATER & LIMIT KREDIT -->
     <section id="view-loans" class="view">
       <div class="row-between" style="margin-bottom: 10px;">
         <div>
-          <h2 style="font-size:1.05rem;">Cicilan & PayLater</h2>
+          <h2 style="font-size:1.05rem;">Cicilan & Limit Kredit</h2>
           <p style="font-size:0.75rem;color:var(--muted);">SPayLater, GoPayLater, SPinjam & SeaBank Pinjam</p>
         </div>
         <button class="btn btn-primary btn-sm" onclick="openNewLoanModal()">+ Kontrak</button>
@@ -359,38 +392,90 @@
         </div>
       </div>
 
+      <!-- PELACAK LIMIT KREDIT -->
+      <div class="section-title" style="margin-top:8px;">
+        <span>Sisa Limit Kredit</span>
+        <span style="font-size:0.68rem;font-weight:500;">Ketuk untuk atur limit</span>
+      </div>
+      <div class="accounts-grid" id="creditLimitsGrid" style="margin-bottom:14px;"></div>
+
+      <div class="section-title"><span>Daftar Tagihan & Pinjaman</span></div>
       <div id="loansContainer"></div>
     </section>
 
-    <!-- TAB 3: REKAP KURIR & DATA -->
+    <!-- TAB 3: REKAP KURIR & EXPORT JOPLIN / JSON -->
     <section id="view-rekap" class="view">
-      <h2 style="font-size:1.05rem;margin-bottom:10px;">Rekap Arus Kas Kurir</h2>
-      <div class="stat-grid">
-        <div class="stat-box">
-          <small>Total Tip (Tunai Dompet)</small>
-          <strong class="plus" id="statTipCash">Rp 0</strong>
-        </div>
-        <div class="stat-box">
-          <small>Total Tip (Transfer Bank)</small>
-          <strong class="plus" id="statTipBank">Rp 0</strong>
-        </div>
-        <div class="stat-box">
-          <small>Gaji / Insentif Kurir</small>
-          <strong class="plus" id="statSalary">Rp 0</strong>
-        </div>
-        <div class="stat-box">
-          <small>Operasional (Bensin/Makan)</small>
-          <strong class="minus" id="statOps">Rp 0</strong>
+      <div class="row-between" style="margin-bottom:10px;">
+        <h2 style="font-size:1.05rem;">Rekap Arus Kas</h2>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input type="month" id="rekapMonthInput" onchange="renderRekap()" style="padding:5px 8px;font-size:0.78rem;width:auto;" />
+          <button class="chip" id="rekapAllTimeBtn" onclick="toggleRekapAllTime()">Semua</button>
         </div>
       </div>
 
+      <!-- 2 INDIKATOR UTAMA REKAP KURIR -->
+      <div class="card" style="border-color:rgba(16,185,129,0.35);">
+        <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+          <div class="row-between">
+            <span style="font-size:0.76rem;color:var(--muted);font-weight:600;">1. Performa Uang Jalan (Tip − Operasional)</span>
+            <span class="pill" id="rekapRoadBadge">Surplus</span>
+          </div>
+          <div style="font-size:1.3rem;font-weight:800;margin-top:3px;" id="rekapRoadNet">Rp 0</div>
+          <div style="font-size:0.71rem;color:var(--muted);margin-top:2px;" id="rekapRoadDesc">
+            Menunjukkan apakah biaya bensin & makan jalan tertutup oleh uang tip.
+          </div>
+        </div>
+        <div>
+          <div class="row-between">
+            <span style="font-size:0.76rem;color:var(--muted);font-weight:600;">2. Sisa Bersih Hasil Kerja</span>
+            <span class="pill pill-info">Acuan Cicilan</span>
+          </div>
+          <div style="font-size:1.3rem;font-weight:800;margin-top:3px;" id="rekapWorkNet">Rp 0</div>
+          <div style="font-size:0.71rem;color:var(--muted);margin-top:2px;">
+            (Gaji Bulanan + Uang Tip + Pemasukan Lain) − (Biaya Jalan + Pengeluaran Pribadi)
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <small>Uang Tip (Tunai + Bank)</small>
+          <strong class="plus" id="statTipTotal">Rp 0</strong>
+        </div>
+        <div class="stat-box">
+          <small>Gaji Bulanan & Lainnya</small>
+          <strong class="plus" id="statSalary">Rp 0</strong>
+        </div>
+        <div class="stat-box">
+          <small>Biaya Jalan (Bensin/Makan)</small>
+          <strong class="minus" id="statOps">Rp 0</strong>
+        </div>
+        <div class="stat-box">
+          <small>Pengeluaran Pribadi/PayLater</small>
+          <strong class="minus" id="statPersonalExp">Rp 0</strong>
+        </div>
+      </div>
+
+      <!-- EXPORT UNTUK PERTIMBANGAN BELANJA (JOPLIN MARKDOWN) -->
       <div class="card">
-        <div class="row-between" style="margin-bottom:8px;">
-          <strong style="font-size:0.9rem;">Cadangan & Penyimpanan Lokal</strong>
+        <div class="row-between" style="margin-bottom:6px;">
+          <strong style="font-size:0.9rem;">📝 Laporan Pertimbangan Belanja (Joplin)</strong>
+          <span class="pill pill-info">Markdown</span>
+        </div>
+        <p style="font-size:0.76rem;color:var(--muted);margin-bottom:10px;">
+          Salin ringkasan posisi uang aktif, sisa kewajiban cicilan, piutang teman, dan sisa limit kredit ke <b>Joplin</b> sebagai acuan sebelum membeli barang.
+        </p>
+        <button class="btn btn-info btn-block btn-sm" onclick="exportJoplinMarkdown()">📋 Salin Ringkasan Markdown (Joplin)</button>
+      </div>
+
+      <!-- BACKUP & RESTORE JSON -->
+      <div class="card">
+        <div class="row-between" style="margin-bottom:6px;">
+          <strong style="font-size:0.9rem;">💾 Backup & Restore Offline</strong>
           <span class="pill pill-ok" id="persistBadge">IndexedDB</span>
         </div>
-        <p style="font-size:0.77rem;color:var(--muted);margin-bottom:12px;">
-          Seluruh data tersimpan 100% offline di HP kamu dengan ID unik (UUID). Export JSON secara rutin agar data aman.
+        <p style="font-size:0.76rem;color:var(--muted);margin-bottom:10px;">
+          Unduh file JSON setiap minggu agar data lokal tetap aman.
         </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
           <button class="btn btn-primary btn-sm" onclick="exportJSON()">⬇ Export JSON</button>
@@ -423,7 +508,7 @@
     </button>
   </nav>
 
-  <!-- MODAL 1: QUICK-ADD TIP (3 PILIHAN: DOMPET TUNAI, SEABANK, BCA) -->
+  <!-- MODAL 1: QUICK-ADD TIP -->
   <div class="modal-backdrop" id="tipModal" onclick="closeModalOnBackdrop(event, 'tipModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -457,7 +542,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: CATAT TRANSAKSI (KELOMPOK A QRIS/TRANSFER & KELOMPOK B PAYLATER CUT-OFF) -->
+  <!-- MODAL 2: CATAT TRANSAKSI (KELOMPOK A QRIS/TRANSFER & KELOMPOK B PAYLATER + 2 LIMIT GOPAYLATER) -->
   <div class="modal-backdrop" id="txModal" onclick="closeModalOnBackdrop(event, 'txModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -495,8 +580,15 @@
         </div>
       </div>
 
-      <!-- Sub-opsi Kelompok B: PayLater (SPayLater / GoPayLater) -->
+      <!-- Sub-opsi Kelompok B: PayLater -->
       <div id="paylaterOptionsBox" style="display:none;">
+        <div class="form-group" id="gopaylaterBucketBox" style="display:none;">
+          <label>Potong Limit GoPayLater yang Mana?</label>
+          <div class="toggle-row">
+            <div class="toggle-opt active-info" id="gplBucketQris" onclick="selectGplBucket('QRIS')">📱 Limit QRIS (Minimarket)</div>
+            <div class="toggle-opt" id="gplBucketUtama" onclick="selectGplBucket('Utama')">🛒 Limit Utama</div>
+          </div>
+        </div>
         <div class="form-group">
           <label>Tenor PayLater</label>
           <select id="paylaterTenor" onchange="updatePaylaterPreview()">
@@ -505,9 +597,7 @@
             <option value="6">Cicilan 6 Bulan</option>
           </select>
         </div>
-        <div class="info-banner" id="paylaterCyclePreview">
-          Info siklus tagihan akan muncul di sini.
-        </div>
+        <div class="info-banner" id="paylaterCyclePreview"></div>
       </div>
 
       <div class="form-group">
@@ -531,7 +621,7 @@
         <button class="btn btn-secondary btn-sm" onclick="closeModal('reconcileModal')">Tutup</button>
       </div>
       <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
-        Hitung uang tunai yang ada di dompetmu sekarang. Jika ada selisih karena lupa mencatat pengeluaran/pemasukan, aplikasi akan menyesuaikan otomatis.
+        Hitung uang tunai yang ada di dompetmu sekarang. Selisih akan disesuaikan otomatis agar catatan aplikasi sama dengan isi dompet asli.
       </p>
       <div class="stat-box" style="margin-bottom:12px;">
         <small>Saldo Dompet Tunai di Aplikasi</small>
@@ -574,7 +664,30 @@
     </div>
   </div>
 
-  <!-- MODAL 5: TAMBAH KONTRAK CICILAN (BARU MAUPUN SUDAH BERJALAN) -->
+  <!-- MODAL 5: ATUR LIMIT KREDIT -->
+  <div class="modal-backdrop" id="limitModal" onclick="closeModalOnBackdrop(event, 'limitModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong id="limitModalTitle">Atur Limit Kredit</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('limitModal')">Tutup</button>
+      </div>
+      <p style="font-size:0.77rem;color:var(--muted);margin-bottom:12px;">
+        Saat tagihan dibayar di tab Cicilan, sisa limit akan otomatis bertambah kembali maksimal sebesar Limit Permanen.
+      </p>
+      <div class="form-group">
+        <label>Limit Permanen / Maksimal (Rp)</label>
+        <input type="number" id="editLimitMax" inputmode="numeric" placeholder="3000000" />
+      </div>
+      <div class="form-group">
+        <label>Sisa Limit Tersedia Saat Ini (Rp)</label>
+        <input type="number" id="editLimitRem" inputmode="numeric" placeholder="500000" />
+      </div>
+      <button class="btn btn-primary btn-block" onclick="saveCreditLimit()">Simpan Pengaturan Limit</button>
+    </div>
+  </div>
+
+  <!-- MODAL 6: TAMBAH KONTRAK CICILAN (BARU & BERJALAN + SPLIT TEMAN TERPISAH) -->
   <div class="modal-backdrop" id="loanModal" onclick="closeModalOnBackdrop(event, 'loanModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -593,41 +706,26 @@
       </div>
       <div class="form-group">
         <label>Judul / Keperluan</label>
-        <input type="text" id="loanTitle" placeholder="Contoh: Pinjaman Okt / Belanja Bulanan" />
-      </div>
-      <div class="form-group">
-        <label>Cicilan Porsi Pribadi per Bulan (Rp)</label>
-        <input type="number" id="loanPersonalMonthly" inputmode="numeric" placeholder="350000" />
-      </div>
-      <div id="friendLoanSection">
-        <div class="form-group">
-          <label>Nama Teman (Kosongkan jika 100% pribadi)</label>
-          <input type="text" id="loanFriendName" placeholder="Contoh: Andi" oninput="updateLoanModalPreview()" />
-        </div>
-        <div class="form-group">
-          <label>Cicilan Porsi Teman per Bulan (Rp)</label>
-          <input type="number" id="loanFriendMonthly" inputmode="numeric" placeholder="400000" oninput="updateLoanModalPreview()" />
-        </div>
-        <div class="form-group" id="initialFriendPaidBox" style="display:none;">
-          <label class="checkbox-row">
-            <input type="checkbox" id="loanInitialFriendPaid" />
-            <span>Porsi teman untuk tagihan aktif pertama sudah diterima sebelumnya (tidak menambah saldo sekarang)</span>
-          </label>
-        </div>
+        <input type="text" id="loanTitle" placeholder="Contoh: Pinjaman 3jt (Split Adi)" />
       </div>
 
+      <!-- Bagian Kewajiban ke Aplikasi/Bank -->
+      <div class="form-group">
+        <label>Cicilan Total ke Aplikasi per Bulan (Rp)</label>
+        <input type="number" id="loanTotalMonthly" inputmode="numeric" placeholder="311511" oninput="updateLoanModalPreview()" />
+      </div>
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
-          <label>Total Tenor (Bulan)</label>
-          <input type="number" id="loanTenor" inputmode="numeric" value="6" min="1" max="36" oninput="updateLoanModalPreview()" />
+          <label>Total Tenor Bank (Bln)</label>
+          <input type="number" id="loanTenor" inputmode="numeric" value="12" min="1" max="36" oninput="updateLoanModalPreview()" />
         </div>
         <div class="form-group" style="margin:0;">
-          <label>Sudah Terbayar (Bulan)</label>
+          <label>Sudah Dibayar ke Bank (Bln)</label>
           <input type="number" id="loanPaidCount" inputmode="numeric" value="0" min="0" max="35" oninput="updateLoanModalPreview()" />
         </div>
       </div>
 
-      <div class="stat-grid" style="margin-bottom:4px;">
+      <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
           <label>Bulan Tagihan Aktif Berikutnya</label>
           <input type="month" id="loanNextBillMonth" onchange="updateLoanModalPreview()" />
@@ -638,28 +736,94 @@
         </div>
       </div>
 
-      <div class="info-banner-blue" id="loanSetupPreview">
-        Simulasi jadwal cicilan akan muncul di sini.
+      <!-- Bagian Porsi Teman (Terpisah dari Jadwal Bank) -->
+      <div id="friendLoanSection" style="padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
+        <strong style="font-size:0.82rem;color:#7dd3fc;display:block;margin-bottom:8px;">Porsi Talangan Teman (Opsional)</strong>
+        <div class="stat-grid" style="margin-bottom:8px;">
+          <div class="form-group" style="margin:0;">
+            <label>Nama Teman</label>
+            <input type="text" id="loanFriendName" placeholder="Contoh: Adi" oninput="updateLoanModalPreview()" />
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Cicilan Teman / Bln (Rp)</label>
+            <input type="number" id="loanFriendMonthly" inputmode="numeric" placeholder="105000" oninput="updateLoanModalPreview()" />
+          </div>
+        </div>
+        <div class="stat-grid" style="margin-bottom:4px;">
+          <div class="form-group" style="margin:0;">
+            <label>Total Tenor Teman (Bln)</label>
+            <input type="number" id="loanFriendTenor" inputmode="numeric" value="12" min="1" max="36" oninput="updateLoanModalPreview()" />
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Sudah Dibayar Teman (Bln)</label>
+            <input type="number" id="loanFriendPaidCount" inputmode="numeric" value="0" min="0" max="36" oninput="updateLoanModalPreview()" />
+          </div>
+        </div>
       </div>
 
+      <div class="info-banner-blue" id="loanSetupPreview"></div>
       <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="createLoanContract()">Simpan Kontrak Cicilan</button>
     </div>
   </div>
 
-  <!-- MODAL 6: KONFIRMASI PEMBAYARAN TAGIHAN / TERIMA SETORAN TEMAN -->
-  <div class="modal-backdrop" id="payActionModal" onclick="closeModalOnBackdrop(event, 'payActionModal')">
+  <!-- MODAL 7: TERIMA SETORAN TEMAN (NOMINAL FLEKSIBEL) -->
+  <div class="modal-backdrop" id="friendPayModal" onclick="closeModalOnBackdrop(event, 'friendPayModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
       <div class="row-between" style="margin-bottom:10px;">
-        <strong id="payActionTitle">Konfirmasi Pembayaran</strong>
-        <button class="btn btn-secondary btn-sm" onclick="closeModal('payActionModal')">Tutup</button>
+        <strong id="friendPayTitle">Terima Setoran Teman</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('friendPayModal')">Tutup</button>
       </div>
-      <p id="payActionDesc" style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;"></p>
+      <p id="friendPayDesc" style="font-size:0.8rem;color:var(--muted);margin-bottom:10px;"></p>
       <div class="form-group">
-        <label id="payActionWalletLabel">Pilih Rekening / Dompet</label>
-        <select id="payActionWallet"></select>
+        <label>Nominal yang Dikasih Teman (Rp)</label>
+        <input type="number" id="friendPayAmount" inputmode="numeric" />
       </div>
-      <button class="btn btn-primary btn-block" id="payActionConfirmBtn">Konfirmasi</button>
+      <div class="form-group">
+        <label>Uangnya Masuk ke Dompet / Rekening Mana?</label>
+        <select id="friendPayWallet"></select>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="submitFriendPayment()">Simpan Setoran Teman</button>
+    </div>
+  </div>
+
+  <!-- MODAL 8: BAYAR TAGIHAN KE APLIKASI / BANK (OTOMATIS NAIKKAN LIMIT) -->
+  <div class="modal-backdrop" id="payBillModal" onclick="closeModalOnBackdrop(event, 'payBillModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong id="payBillTitle">Bayar Tagihan</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('payBillModal')">Tutup</button>
+      </div>
+      <p id="payBillDesc" style="font-size:0.8rem;color:var(--muted);margin-bottom:12px;"></p>
+      <div class="form-group">
+        <label>Bayar Menggunakan Saldo Akun Mana?</label>
+        <select id="payBillWallet"></select>
+      </div>
+      <div class="form-group" id="payBillGplBucketBox" style="display:none;">
+        <label>Pulihkan Limit GoPayLater yang Mana?</label>
+        <select id="payBillGplBucket">
+          <option value="QRIS">GoPayLater • Limit QRIS</option>
+          <option value="Utama">GoPayLater • Limit Utama</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-block" id="payBillConfirmBtn">Konfirmasi Bayar & Pulihkan Limit</button>
+    </div>
+  </div>
+
+  <!-- MODAL 9: FALLBACK COPY MARKDOWN JOPLIN -->
+  <div class="modal-backdrop" id="joplinModal" onclick="closeModalOnBackdrop(event, 'joplinModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:8px;">
+        <strong>📝 Ringkasan Markdown (Joplin)</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('joplinModal')">Tutup</button>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-bottom:8px;">
+        Teks siap tempel ke catatan <b>Joplin</b> kamu:
+      </p>
+      <textarea id="joplinMarkdownText" rows="11" readonly style="font-size:0.76rem;line-height:1.45;"></textarea>
+      <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="copyJoplinTextarea()">Salin Ulang Teks</button>
     </div>
   </div>
 
@@ -687,9 +851,9 @@
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
 
-  // --- 2. INDEXEDDB ENGINE (CashFlowDB) ---
+  // --- 2. INDEXEDDB ENGINE (CashFlowDB v2) ---
   const DB_NAME = 'CashFlowDB';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   let db = null;
 
   function openDB() {
@@ -700,6 +864,7 @@
         if (!database.objectStoreNames.contains('wallets')) database.createObjectStore('wallets', { keyPath: 'id' });
         if (!database.objectStoreNames.contains('transactions')) database.createObjectStore('transactions', { keyPath: 'id' });
         if (!database.objectStoreNames.contains('loans')) database.createObjectStore('loans', { keyPath: 'id' });
+        if (!database.objectStoreNames.contains('limits')) database.createObjectStore('limits', { keyPath: 'id' });
       };
       req.onsuccess = (e) => { db = e.target.result; resolve(db); };
       req.onerror = (e) => reject(e.target.error);
@@ -742,7 +907,7 @@
     });
   }
 
-  // --- 3. DEFAULT 7 AKUN & HELPERS ---
+  // --- 3. DEFAULT AKUN, LIMIT & HELPERS ---
   const DEFAULT_WALLETS = [
     { id: 'wallet-cash', name: 'Dompet Tunai', group: 'cash', icon: '💵', tag: 'Fisik', balance: 0, lastChecked: null },
     { id: 'wallet-seabank', name: 'SeaBank', group: 'bank', icon: '🏦', tag: 'QRIS Utama', balance: 0 },
@@ -753,15 +918,29 @@
     { id: 'wallet-ovo', name: 'OVO', group: 'ewallet', icon: '💜', tag: 'E-Wallet', balance: 0 }
   ];
 
-  const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const DEFAULT_LIMITS = [
+    { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam (Permanen)', maxLimit: 0, remainingLimit: 0 },
+    { id: 'limit-seabank', provider: 'SeaBank Pinjam', bucket: null, label: 'SeaBank Pinjam', maxLimit: 0, remainingLimit: 0 },
+    { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', maxLimit: 0, remainingLimit: 0 },
+    { id: 'limit-gopaylater-qris', provider: 'GoPayLater', bucket: 'QRIS', label: 'GoPayLater • QRIS', maxLimit: 0, remainingLimit: 0 },
+    { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', maxLimit: 0, remainingLimit: 0 }
+  ];
 
-  let state = { wallets: [], transactions: [], loans: [] };
+  const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const ROAD_OPS_CATS = ['Makan & Minum Jalan', 'Bensin & Servis', 'Operasional Kurir'];
+
+  let state = { wallets: [], transactions: [], loans: [], limits: [] };
   let activeTipWallet = 'wallet-cash';
   let activeTxType = 'expense';
   let activePaymentChannel = 'QRIS';
+  let activeGplBucket = 'QRIS';
   let accountFilter = 'all';
-  let txFilter = 'all';
+  let txTimeMode = 'all';
+  let txAccountFilter = 'all';
+  let rekapAllTime = false;
   let selectedWalletId = null;
+  let selectedLimitId = null;
+  let activeFriendLoanId = null;
 
   const formatRp = (num) => 'Rp ' + Math.round(Number(num) || 0).toLocaleString('id-ID');
   const esc = (str) => String(str || '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
@@ -769,15 +948,17 @@
 
   function getLocalTodayStr() {
     const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
   function getLocalCurrentMonthStr() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function toLocalDatePart(isoStr) {
+    const d = new Date(isoStr);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
   function showToast(msg) {
@@ -788,55 +969,89 @@
     window._toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2400);
   }
 
-  async function ensureDefaultWallets() {
-    const existing = await idbAll('wallets');
-    const existingMap = new Map(existing.map((w) => [w.id, w]));
+  async function ensureDefaults() {
+    const existingWallets = await idbAll('wallets');
+    const wMap = new Map(existingWallets.map((w) => [w.id, w]));
     for (const def of DEFAULT_WALLETS) {
-      if (!existingMap.has(def.id)) {
+      if (!wMap.has(def.id)) {
         await idbPut('wallets', def);
       } else {
-        const cur = existingMap.get(def.id);
+        const cur = wMap.get(def.id);
         if (!cur.group || !cur.icon) {
           await idbPut('wallets', { ...def, ...cur, group: def.group, icon: def.icon, tag: def.tag });
         }
+      }
+    }
+
+    const existingLimits = await idbAll('limits');
+    const lMap = new Map(existingLimits.map((l) => [l.id, l]));
+    for (const defL of DEFAULT_LIMITS) {
+      if (!lMap.has(defL.id)) {
+        await idbPut('limits', defL);
       }
     }
   }
 
   async function refreshAll() {
     const rawWallets = await idbAll('wallets');
-    const orderMap = new Map(DEFAULT_WALLETS.map((w, idx) => [w.id, idx]));
-    state.wallets = rawWallets.sort((a, b) => (orderMap.get(a.id) ?? 99) - (orderMap.get(b.id) ?? 99));
+    const wOrder = new Map(DEFAULT_WALLETS.map((w, i) => [w.id, i]));
+    state.wallets = rawWallets.sort((a, b) => (wOrder.get(a.id) ?? 99) - (wOrder.get(b.id) ?? 99));
+
+    const rawLimits = await idbAll('limits');
+    const lOrder = new Map(DEFAULT_LIMITS.map((l, i) => [l.id, i]));
+    state.limits = rawLimits.sort((a, b) => (lOrder.get(a.id) ?? 99) - (lOrder.get(b.id) ?? 99));
+
     state.transactions = (await idbAll('transactions')).sort((a, b) => new Date(b.date) - new Date(a.date));
     state.loans = await idbAll('loans');
+
     renderDashboard();
     renderLoans();
     renderRekap();
     checkBackupReminder();
   }
 
-  // --- 4. KALKULASI SIKLUS PAYLATER (CUT-OFF TANGGAL 20 SPAYLATER) ---
-  function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0) {
+  // --- 4. KALKULASI SIKLUS PAYLATER & HELPER LIMIT ---
+  function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0, bucket = null) {
     const parts = (dateStr || getLocalTodayStr()).split('-').map(Number);
-    const year = parts[0];
-    const month = parts[1];
-    const day = parts[2];
-
-    let baseOffset = 1;
-    if (provider === 'SPayLater' && day > 20) {
-      baseOffset = 2;
-    }
-    const totalOffset = baseOffset + monthAddExtra;
-    const targetDate = new Date(year, (month - 1) + totalOffset, 1);
+    const year = parts[0], month = parts[1], day = parts[2];
+    const baseOffset = (provider === 'SPayLater' && day > 20) ? 2 : 1;
+    const targetDate = new Date(year, (month - 1) + baseOffset + monthAddExtra, 1);
     const tYear = targetDate.getFullYear();
     const tMonth = targetDate.getMonth();
-    const key = `${provider}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
+    const bucketSuffix = bucket ? `-${bucket}` : '';
+    const key = `${provider}${bucketSuffix}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
     const label = `${MONTHS_ID[tMonth]} ${tYear}`;
     const dueDay = provider === 'SPayLater' ? 22 : 1;
     return { key, label, dueDay, baseOffset };
   }
 
-  // --- 5. RENDERING UI ---
+  async function adjustCreditLimit(provider, bucket, delta) {
+    let limitId = null;
+    if (provider === 'SPinjam') limitId = 'limit-spinjam';
+    else if (provider === 'SeaBank Pinjam') limitId = 'limit-seabank';
+    else if (provider === 'SPayLater') limitId = 'limit-spaylater';
+    else if (provider === 'GoPayLater') {
+      limitId = bucket === 'Utama' ? 'limit-gopaylater-utama' : 'limit-gopaylater-qris';
+    }
+    if (!limitId) return;
+    const lim = state.limits.find((x) => x.id === limitId);
+    if (!lim) return;
+
+    let nextRem = Number(lim.remainingLimit || 0) + Number(delta);
+    if (nextRem < 0) nextRem = 0;
+    if (Number(lim.maxLimit) > 0 && nextRem > Number(lim.maxLimit)) {
+      nextRem = Number(lim.maxLimit);
+    }
+    lim.remainingLimit = nextRem;
+    await idbPut('limits', lim);
+  }
+
+  function getLoanRemainingFriend(loan) {
+    if (!loan.friendName || !loan.friendTotalAmount) return 0;
+    return Math.max(0, Number(loan.friendTotalAmount) - Number(loan.friendPaidAmount || 0));
+  }
+
+  // --- 5. RENDERING DASHBOARD & MUTASI ---
   function renderDashboard() {
     const totalBal = state.wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0);
     document.getElementById('totalBalance').textContent = formatRp(totalBal);
@@ -844,32 +1059,29 @@
     // Spotlight Dompet Tunai
     const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash') || { balance: 0 };
     document.getElementById('cashWalletBal').textContent = formatRp(cashWallet.balance);
-    const checkedTxt = cashWallet.lastChecked
+    document.getElementById('cashLastChecked').textContent = cashWallet.lastChecked
       ? `Terakhir dicocokkan: ${new Date(cashWallet.lastChecked).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}`
       : 'Tip tunai otomatis masuk ke sini • Ketuk Cocokkan jika selisih';
-    document.getElementById('cashLastChecked').textContent = checkedTxt;
 
-    // Hitung tagihan aktif terdekat & piutang teman
+    // Hitung tagihan aktif terdekat & total piutang teman
     let nearestBill = 0;
     let totalFriendReceivable = 0;
     let nearestInstallment = null;
 
     state.loans.forEach((loan) => {
-      loan.installments.forEach((i) => {
-        if (!i.friendPaid) totalFriendReceivable += Number(i.friendAmount || 0);
-      });
+      totalFriendReceivable += getLoanRemainingFriend(loan);
       const nextInst = loan.installments.find((i) => !i.paidToProvider);
       if (nextInst) {
-        const amt = Number(nextInst.personalAmount || 0) + Number(nextInst.friendAmount || 0);
-        nearestBill += amt;
-        if (!nearestInstallment) nearestInstallment = { loan, inst: nextInst };
+        const instAmt = Number(nextInst.amount ?? ((nextInst.personalAmount || 0) + (nextInst.friendAmount || 0)));
+        nearestBill += instAmt;
+        if (!nearestInstallment) nearestInstallment = { loan, inst: nextInst, instAmt };
       }
     });
 
     document.getElementById('monthlyBillTotal').textContent = formatRp(nearestBill);
     document.getElementById('monthlyFriendReceivable').textContent = formatRp(totalFriendReceivable);
 
-    // Render Grid 2 Kolom Bank & E-Wallet
+    // Grid 2 Kolom Bank & E-Wallet
     const digitalWallets = state.wallets.filter((w) => {
       if (w.id === 'wallet-cash') return false;
       if (accountFilter === 'bank') return w.group === 'bank';
@@ -887,16 +1099,16 @@
       </div>
     `).join('');
 
-    // Render Jatuh Tempo Terdekat
+    // Jatuh Tempo Terdekat
     const upcomingBox = document.getElementById('upcomingLoanBox');
     if (!nearestInstallment) {
       upcomingBox.innerHTML = `<div class="card" style="color:var(--muted);font-size:0.8rem;">Tidak ada tagihan aktif saat ini.</div>`;
     } else {
-      const { loan, inst } = nearestInstallment;
-      const totalInst = Number(inst.personalAmount) + Number(inst.friendAmount);
+      const { loan, inst, instAmt } = nearestInstallment;
       const dueStr = inst.billingMonthLabel ? `${loan.dueDay} ${inst.billingMonthLabel}` : `Tgl ${loan.dueDay}`;
-      const friendStatus = inst.friendAmount > 0
-        ? `<span class="pill ${inst.friendPaid ? 'pill-ok' : 'pill-wait'}">${esc(loan.friendName)}: ${inst.friendPaid ? 'Sudah Setor ✅' : 'Belum Setor ⏳'}</span>`
+      const remFriend = getLoanRemainingFriend(loan);
+      const friendPill = remFriend > 0
+        ? `<span class="pill pill-ok">Sisa Piutang ${esc(loan.friendName)}: ${formatRp(remFriend)}</span>`
         : '';
       upcomingBox.innerHTML = `
         <div class="card" onclick="switchTab('loans')" style="cursor:pointer;">
@@ -905,27 +1117,59 @@
             <span class="pill pill-info">${esc(dueStr)}</span>
           </div>
           <div style="font-size:0.8rem;color:var(--muted);margin-bottom:7px;">
-            Tagihan Bln ${inst.monthIndex}/${loan.tenor}: <strong style="color:var(--text)">${formatRp(totalInst)}</strong>
+            Tagihan Bln ${inst.monthIndex}/${loan.tenor}: <strong style="color:var(--text)">${formatRp(instAmt)}</strong>
           </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            ${friendStatus}
-            <span class="pill pill-wait">Pribadi: ${formatRp(inst.personalAmount)}</span>
-          </div>
+          ${friendPill}
         </div>
       `;
     }
 
-    // Render Mutasi Terakhir
+    // Filter Mutasi (Waktu + Akun)
+    const todayStr = getLocalTodayStr();
+    const targetDateVal = document.getElementById('txFilterDateVal').value || todayStr;
+    const targetMonthVal = document.getElementById('txFilterMonthVal').value || getLocalCurrentMonthStr();
+
     const filteredTx = state.transactions.filter((t) => {
-      if (txFilter === 'cash') return t.walletId === 'wallet-cash' || t.targetWalletId === 'wallet-cash';
+      const txLocalDate = toLocalDatePart(t.date);
+      if (txTimeMode === 'today' && txLocalDate !== todayStr) return false;
+      if (txTimeMode === 'date' && txLocalDate !== targetDateVal) return false;
+      if (txTimeMode === 'month' && !txLocalDate.startsWith(targetMonthVal)) return false;
+
+      if (txAccountFilter === 'cash') {
+        return t.walletId === 'wallet-cash' || t.targetWalletId === 'wallet-cash';
+      }
+      if (txAccountFilter === 'bank') {
+        return ['wallet-seabank', 'wallet-bca'].includes(t.walletId) || ['wallet-seabank', 'wallet-bca'].includes(t.targetWalletId);
+      }
+      if (txAccountFilter === 'ewallet') {
+        const ew = ['wallet-dana', 'wallet-gopay', 'wallet-shopeepay', 'wallet-ovo'];
+        return ew.includes(t.walletId) || ew.includes(t.targetWalletId);
+      }
+      if (txAccountFilter === 'paylater') {
+        return t.type === 'paylater_expense';
+      }
       return true;
     });
 
+    let sumIn = 0, sumOut = 0;
+    filteredTx.forEach((t) => {
+      const amt = Math.abs(Number(t.amount || 0));
+      if (t.type === 'income' || t.type === 'receivable_in' || (t.type === 'reconcile' && t.amount > 0)) {
+        sumIn += amt;
+      } else if (t.type === 'expense' || t.type === 'debt_payment' || (t.type === 'reconcile' && t.amount < 0)) {
+        sumOut += amt;
+      }
+    });
+
+    document.getElementById('txFilteredCount').textContent = `${filteredTx.length} data`;
+    document.getElementById('txSumIn').textContent = formatRp(sumIn);
+    document.getElementById('txSumOut').textContent = formatRp(sumOut);
+
     const txList = document.getElementById('recentTxList');
     if (filteredTx.length === 0) {
-      txList.innerHTML = `<div style="padding:14px 0;color:var(--muted);font-size:0.8rem;text-align:center;">Belum ada mutasi pada filter ini.</div>`;
+      txList.innerHTML = `<div style="padding:14px 0;color:var(--muted);font-size:0.8rem;text-align:center;">Tidak ada transaksi pada filter waktu/akun ini.</div>`;
     } else {
-      txList.innerHTML = filteredTx.slice(0, 18).map((t) => {
+      txList.innerHTML = filteredTx.slice(0, 40).map((t) => {
         const w = state.wallets.find((x) => x.id === t.walletId);
         let accountLabel = w ? `${w.icon} ${w.name}` : (t.walletLabel || '');
         if (t.paymentMethod && t.paymentMethod !== 'Tunai') {
@@ -933,7 +1177,7 @@
         }
         const isPaylater = t.type === 'paylater_expense';
         const isPlus = t.type === 'income' || t.type === 'receivable_in' || (t.type === 'reconcile' && t.amount > 0);
-        const sign = isPaylater ? '' : (isPlus ? '+' : '-');
+        const sign = isPaylater ? '' : (t.type === 'transfer' ? '⇄ ' : (isPlus ? '+' : '-'));
         const cls = isPaylater ? 'paylater-txt' : (t.type === 'receivable_in' || t.type === 'transfer' ? 'neutral' : (isPlus ? 'plus' : 'minus'));
         const dateStr = new Date(t.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
         return `
@@ -962,26 +1206,55 @@
     renderDashboard();
   }
 
-  function setTxFilter(filter) {
-    txFilter = filter;
-    document.getElementById('filterTxAll').classList.toggle('active', filter === 'all');
-    document.getElementById('filterTxCash').classList.toggle('active', filter === 'cash');
+  function setTxTimeMode(mode) {
+    txTimeMode = mode;
+    ['All', 'Today', 'Date', 'Month'].forEach((k) => {
+      document.getElementById('timeFilter' + k).classList.toggle('active', k.toLowerCase() === mode);
+    });
+    document.getElementById('txDatePickerWrap').style.display = mode === 'date' ? 'block' : 'none';
+    document.getElementById('txMonthPickerWrap').style.display = mode === 'month' ? 'block' : 'none';
     renderDashboard();
   }
 
+  function setTxAccountFilter(filter) {
+    txAccountFilter = filter;
+    ['All', 'Cash', 'Bank', 'Ewallet', 'Paylater'].forEach((k) => {
+      document.getElementById('filterTx' + k).classList.toggle('active', k.toLowerCase() === filter);
+    });
+    renderDashboard();
+  }
+
+  // --- 6. RENDERING CICILAN & LIMIT KREDIT ---
   function renderLoans() {
-    let totalRemPersonal = 0;
-    let totalRemFriend = 0;
+    // Render 5 Credit Limits
+    document.getElementById('creditLimitsGrid').innerHTML = state.limits.map((lim) => {
+      const max = Number(lim.maxLimit || 0);
+      const rem = Number(lim.remainingLimit || 0);
+      const pct = max > 0 ? Math.min(100, Math.round((rem / max) * 100)) : 0;
+      return `
+        <div class="limit-card" onclick="openLimitModal('${lim.id}')">
+          <div style="font-size:0.74rem;font-weight:700;color:#e2e8f0;">${esc(lim.label)}</div>
+          <div style="font-size:0.9rem;font-weight:800;color:var(--info);margin-top:2px;">${formatRp(rem)}</div>
+          <div style="font-size:0.65rem;color:var(--muted);">dari ${formatRp(max)}</div>
+          <div class="limit-bar-bg"><div class="limit-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+      `;
+    }).join('');
+
+    let totalBankRem = 0;
+    let totalFriendRem = 0;
 
     state.loans.forEach((loan) => {
       loan.installments.forEach((inst) => {
-        if (!inst.paidToProvider) totalRemPersonal += Number(inst.personalAmount || 0);
-        if (!inst.friendPaid) totalRemFriend += Number(inst.friendAmount || 0);
+        if (!inst.paidToProvider) {
+          totalBankRem += Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0)));
+        }
       });
+      totalFriendRem += getLoanRemainingFriend(loan);
     });
 
-    document.getElementById('loanSummaryPersonal').textContent = formatRp(totalRemPersonal);
-    document.getElementById('loanSummaryFriend').textContent = formatRp(totalRemFriend);
+    document.getElementById('loanSummaryPersonal').textContent = formatRp(Math.max(0, totalBankRem - totalFriendRem));
+    document.getElementById('loanSummaryFriend').textContent = formatRp(totalFriendRem);
 
     const container = document.getElementById('loansContainer');
     if (state.loans.length === 0) {
@@ -990,12 +1263,13 @@
     }
 
     container.innerHTML = state.loans.map((loan) => {
-      const isSplit = loan.friendName && loan.installments.some((i) => i.friendAmount > 0);
-      const remPersonal = loan.installments.filter((i) => !i.paidToProvider).reduce((s, i) => s + Number(i.personalAmount), 0);
-      const remFriend = loan.installments.filter((i) => !i.friendPaid).reduce((s, i) => s + Number(i.friendAmount), 0);
+      const hasFriend = Boolean(loan.friendName && Number(loan.friendTotalAmount) > 0);
+      const remBank = loan.installments.filter((i) => !i.paidToProvider).reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0);
+      const remFriend = getLoanRemainingFriend(loan);
+      const remFriendMonths = (hasFriend && Number(loan.friendMonthly) > 0) ? Math.ceil(remFriend / Number(loan.friendMonthly)) : 0;
 
       const instHtml = loan.installments.map((inst) => {
-        const totalBulan = Number(inst.personalAmount) + Number(inst.friendAmount);
+        const instAmt = Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0)));
         const periodLabel = inst.billingMonthLabel ? ` (${inst.billingMonthLabel})` : '';
         const itemsHtml = (inst.items && inst.items.length > 0)
           ? `<div style="margin:6px 0;padding:6px 8px;background:rgba(255,255,255,0.03);border-radius:7px;font-size:0.72rem;color:var(--muted);">
@@ -1004,43 +1278,27 @@
           : '';
 
         if (inst.paidToProvider) {
-          const lunasLabel = inst.isHistorical ? 'LUNAS (Historis) ✅' : 'LUNAS ✅';
           return `
             <div class="row-between" style="padding:8px 0;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted);">
-              <span>Bln ${inst.monthIndex}${periodLabel} • ${formatRp(totalBulan)}</span>
-              <span class="pill pill-ok">${lunasLabel}</span>
+              <span>Bln ${inst.monthIndex}/${loan.tenor}${periodLabel} • ${formatRp(instAmt)}</span>
+              <span class="pill pill-ok">LUNAS ✅</span>
             </div>
           `;
         }
 
         return `
           <div style="padding:10px;margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;">
-            <div class="row-between" style="margin-bottom:5px;">
+            <div class="row-between" style="margin-bottom:6px;">
               <strong style="font-size:0.82rem;">Bln ${inst.monthIndex}/${loan.tenor}${periodLabel} • Tgl ${loan.dueDay}</strong>
-              <strong style="font-size:0.86rem;">${formatRp(totalBulan)}</strong>
+              <strong style="font-size:0.88rem;">${formatRp(instAmt)}</strong>
             </div>
             ${itemsHtml}
-            ${inst.friendAmount > 0 ? `
-              <div class="row-between" style="font-size:0.77rem;margin-bottom:4px;">
-                <span>1. Porsi ${esc(loan.friendName)}: <b>${formatRp(inst.friendAmount)}</b></span>
-                <span class="pill ${inst.friendPaid ? 'pill-ok' : 'pill-wait'}">${inst.friendPaid ? 'Sudah Setor ✅' : 'Belum Setor ⏳'}</span>
-              </div>
-            ` : ''}
-            <div class="row-between" style="font-size:0.77rem;margin-bottom:8px;">
-              <span>${inst.friendAmount > 0 ? '2. ' : ''}Porsi Pribadi: <b>${formatRp(inst.personalAmount)}</b></span>
-              <span class="pill pill-wait">Tagihan Aktif ⏳</span>
-            </div>
-            <div style="display:grid;gap:6px;">
-              ${(inst.friendAmount > 0 && !inst.friendPaid) ? `
-                <button class="btn btn-secondary btn-sm btn-block" onclick="openPayActionModal('friend', '${loan.id}', ${inst.monthIndex})">
-                  + Terima Setoran ${esc(loan.friendName)} (${formatRp(inst.friendAmount)})
-                </button>
-              ` : ''}
-              <button class="btn btn-primary btn-sm btn-block" onclick="openPayActionModal('provider', '${loan.id}', ${inst.monthIndex})">
+            <div style="display:grid;gap:6px;margin-top:6px;">
+              <button class="btn btn-primary btn-sm btn-block" onclick="openPayBillModal('${loan.id}', ${inst.monthIndex})">
                 ✔ Bayar Tagihan Bln ${inst.monthIndex} ke ${esc(loan.provider)}
               </button>
               <button class="btn btn-ghost-muted btn-sm btn-block" onclick="markInstallmentPaidNoBalance('${loan.id}', ${inst.monthIndex})">
-                Tandai Sudah Lunas (Tanpa Potong Saldo)
+                Tandai LUNAS (Tanpa Potong Saldo)
               </button>
             </div>
           </div>
@@ -1051,50 +1309,180 @@
         <div class="card">
           <div class="row-between" style="margin-bottom:6px;">
             <div>
-              <span class="pill ${isSplit ? 'pill-info' : 'pill-pl'}">${esc(loan.provider)}</span>
-              <span class="pill ${isSplit ? 'pill-wait' : 'pill-ok'}" style="margin-left:3px;">${isSplit ? 'Split Teman' : 'Pribadi'}</span>
+              <span class="pill ${hasFriend ? 'pill-info' : 'pill-pl'}">${esc(loan.provider)}${loan.paylaterBucket ? ' • ' + esc(loan.paylaterBucket) : ''}</span>
+              <span class="pill ${hasFriend ? 'pill-wait' : 'pill-ok'}" style="margin-left:3px;">${hasFriend ? 'Split ' + esc(loan.friendName) : 'Pribadi'}</span>
               <div style="font-weight:700;font-size:0.93rem;margin-top:4px;">${esc(loan.title)}</div>
             </div>
             <span onclick="deleteLoan('${loan.id}')" style="font-size:0.71rem;color:var(--muted);cursor:pointer;">Hapus</span>
           </div>
-          ${isSplit ? `
-            <div class="stat-grid" style="margin:8px 0;">
+
+          <div class="stat-grid" style="margin:8px 0;">
+            <div class="stat-box" style="padding:8px;">
+              <small>Sisa Tagihan ke ${esc(loan.provider)}</small>
+              <strong>${formatRp(remBank)}</strong>
+            </div>
+            ${hasFriend ? `
               <div class="stat-box" style="padding:8px;">
-                <small>Sisa Utang Pribadi</small>
-                <strong>${formatRp(remPersonal)}</strong>
-              </div>
-              <div class="stat-box" style="padding:8px;">
-                <small>Sisa Piutang ${esc(loan.friendName)}</small>
+                <small>Sisa Piutang ${esc(loan.friendName)} (${remFriendMonths} bln)</small>
                 <strong style="color:#6ee7b7">${formatRp(remFriend)}</strong>
               </div>
-            </div>
+            ` : `
+              <div class="stat-box" style="padding:8px;">
+                <small>Jatuh Tempo</small>
+                <strong>Tanggal ${loan.dueDay}</strong>
+              </div>
+            `}
+          </div>
+
+          ${(hasFriend && remFriend > 0) ? `
+            <button class="btn btn-info btn-sm btn-block" style="margin-bottom:8px;" onclick="openFriendPayModal('${loan.id}')">
+              + Terima Setoran ${esc(loan.friendName)} (Bebas Nominal)
+            </button>
           ` : ''}
+
           ${instHtml}
         </div>
       `;
     }).join('');
   }
 
-  function renderRekap() {
-    let tipCash = 0, tipBank = 0, salary = 0, ops = 0;
-    state.transactions.forEach((t) => {
-      const amt = Number(t.amount || 0);
-      if (t.category === 'Uang Tip Kurir') {
-        if (t.walletId === 'wallet-cash') tipCash += amt;
-        else tipBank += amt;
-      } else if (t.category === 'Gaji / Insentif Kurir') {
-        salary += amt;
-      } else if (t.type === 'expense' && ['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir'].includes(t.category)) {
-        ops += amt;
-      }
-    });
-    document.getElementById('statTipCash').textContent = formatRp(tipCash);
-    document.getElementById('statTipBank').textContent = formatRp(tipBank);
-    document.getElementById('statSalary').textContent = formatRp(salary);
-    document.getElementById('statOps').textContent = formatRp(ops);
+  // --- 7. REKAP KURIR & EXPORT JOPLIN MARKDOWN ---
+  function toggleRekapAllTime() {
+    rekapAllTime = !rekapAllTime;
+    document.getElementById('rekapAllTimeBtn').classList.toggle('active', rekapAllTime);
+    renderRekap();
   }
 
-  // --- 6. QUICK-ADD TIP (3 PILIHAN: TUNAI, SEABANK, BCA) ---
+  function getRekapMetrics() {
+    const selectedMonth = document.getElementById('rekapMonthInput').value || getLocalCurrentMonthStr();
+    let tipTotal = 0, salaryTotal = 0, opsTotal = 0, personalExpTotal = 0;
+
+    state.transactions.forEach((t) => {
+      if (!rekapAllTime && !toLocalDatePart(t.date).startsWith(selectedMonth)) return;
+      const amt = Math.abs(Number(t.amount || 0));
+      if (t.category === 'Uang Tip') {
+        tipTotal += amt;
+      } else if (t.type === 'income') {
+        salaryTotal += amt;
+      } else if (t.type === 'expense' || t.type === 'paylater_expense') {
+        if (ROAD_OPS_CATS.includes(t.category)) {
+          opsTotal += amt;
+        } else {
+          personalExpTotal += amt;
+        }
+      }
+    });
+
+    const roadNet = tipTotal - opsTotal;
+    const workNet = (salaryTotal + tipTotal) - (opsTotal + personalExpTotal);
+    return { selectedMonth, tipTotal, salaryTotal, opsTotal, personalExpTotal, roadNet, workNet };
+  }
+
+  function renderRekap() {
+    const m = getRekapMetrics();
+    const roadEl = document.getElementById('rekapRoadNet');
+    const roadBadge = document.getElementById('rekapRoadBadge');
+    const roadDesc = document.getElementById('rekapRoadDesc');
+
+    roadEl.textContent = (m.roadNet >= 0 ? '+' : '-') + formatRp(Math.abs(m.roadNet));
+    roadEl.className = m.roadNet >= 0 ? 'plus' : 'minus';
+    if (m.roadNet >= 0) {
+      roadBadge.className = 'pill pill-ok';
+      roadBadge.textContent = 'Surplus Tip ✅';
+      roadDesc.textContent = 'Biaya bensin & makan jalan tertutup penuh oleh uang tip; gaji bulanan aman.';
+    } else {
+      roadBadge.className = 'pill pill-wait';
+      roadBadge.textContent = 'Nombor Gaji ⚠️';
+      roadDesc.textContent = `Gaji bulanan terpakai ${formatRp(Math.abs(m.roadNet))} untuk menambal biaya jalan.`;
+    }
+
+    const workEl = document.getElementById('rekapWorkNet');
+    workEl.textContent = (m.workNet >= 0 ? '+' : '-') + formatRp(Math.abs(m.workNet));
+    workEl.className = m.workNet >= 0 ? 'plus' : 'minus';
+
+    document.getElementById('statTipTotal').textContent = formatRp(m.tipTotal);
+    document.getElementById('statSalary').textContent = formatRp(m.salaryTotal);
+    document.getElementById('statOps').textContent = formatRp(m.opsTotal);
+    document.getElementById('statPersonalExp').textContent = formatRp(m.personalExpTotal);
+  }
+
+  function generateJoplinMarkdown() {
+    const today = getLocalTodayStr();
+    const totalLiquid = state.wallets.reduce((s, w) => s + Number(w.balance || 0), 0);
+
+    let nearestBill = 0;
+    let totalBankDebt = 0;
+    let totalFriendRec = 0;
+    const loanLines = [];
+
+    state.loans.forEach((loan) => {
+      const remFriend = getLoanRemainingFriend(loan);
+      totalFriendRec += remFriend;
+      const unpaid = loan.installments.filter((i) => !i.paidToProvider);
+      const remBank = unpaid.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0);
+      totalBankDebt += remBank;
+
+      if (unpaid.length > 0) {
+        const next = unpaid[0];
+        const nextAmt = Number(next.amount ?? ((next.personalAmount || 0) + (next.friendAmount || 0)));
+        nearestBill += nextAmt;
+        const friendInfo = remFriend > 0 ? ` | Sisa Piutang ${loan.friendName}: ${formatRp(remFriend)}` : '';
+        loanLines.push(`- **${loan.provider} (${loan.title})**: Tagihan Bln ${next.monthIndex}/${loan.tenor} = ${formatRp(nextAmt)} (Jatuh tempo tgl ${loan.dueDay}) | Total Sisa: ${formatRp(remBank)}${friendInfo}`);
+      }
+    });
+
+    const walletLines = state.wallets.map((w) => `| ${w.name} | ${formatRp(w.balance)} |`).join('\n');
+    const limitLines = state.limits.map((l) => `| ${l.label} | ${formatRp(l.remainingLimit)} | ${formatRp(l.maxLimit)} |`).join('\n');
+    const m = getRekapMetrics();
+    const safeSpendBuffer = (totalLiquid + totalFriendRec) - nearestBill;
+
+    return [
+      `# 📊 Evaluasi Cash Flow & Pertimbangan Belanja (${today})`,
+      ``,
+      `## 1. Posisi Uang Aktif`,
+      `| Akun / Dompet | Saldo |`,
+      `| :--- | ---: |`,
+      walletLines,
+      `| **TOTAL UANG AKTIF** | **${formatRp(totalLiquid)}** |`,
+      ``,
+      `## 2. Kewajiban Cicilan & Piutang Teman`,
+      `- **Tagihan Terdekat (Bulan Aktif):** ${formatRp(nearestBill)}`,
+      `- **Total Sisa Tagihan ke Bank/App:** ${formatRp(totalBankDebt)}`,
+      `- **Total Sisa Piutang Teman:** ${formatRp(totalFriendRec)}`,
+      `- **Sisa Beban Pribadi Murni:** ${formatRp(Math.max(0, totalBankDebt - totalFriendRec))}`,
+      loanLines.length > 0 ? `\n**Rincian Kontrak Aktif:**\n${loanLines.join('\n')}` : `- Tidak ada tagihan aktif.`,
+      ``,
+      `## 3. Sisa Limit Kredit Tersedia`,
+      `| Layanan | Sisa Limit | Limit Maksimal |`,
+      `| :--- | ---: | ---: |`,
+      limitLines,
+      ``,
+      `## 4. Ringkasan Pertimbangan Sebelum Membeli`,
+      `- **Performa Uang Jalan (${rekapAllTime ? 'Semua Waktu' : m.selectedMonth}):** ${m.roadNet >= 0 ? '+' : '-'}${formatRp(Math.abs(m.roadNet))} *(Tip ${formatRp(m.tipTotal)} − Biaya Jalan ${formatRp(m.opsTotal)})*`,
+      `- **Sisa Bersih Hasil Kerja:** ${m.workNet >= 0 ? '+' : '-'}${formatRp(Math.abs(m.workNet))}`,
+      `- **Batas Aman Dana Cair (Setelah Cadangkan Tagihan Terdekat):** **${safeSpendBuffer >= 0 ? formatRp(safeSpendBuffer) : '-' + formatRp(Math.abs(safeSpendBuffer))}**`
+    ].join('\n');
+  }
+
+  async function exportJoplinMarkdown() {
+    const md = generateJoplinMarkdown();
+    document.getElementById('joplinMarkdownText').value = md;
+    try {
+      await navigator.clipboard.writeText(md);
+      showToast('Ringkasan Markdown tersalin! Tinggal paste di Joplin');
+    } catch (e) {
+      document.getElementById('joplinModal').classList.add('open');
+    }
+  }
+
+  function copyJoplinTextarea() {
+    const ta = document.getElementById('joplinMarkdownText');
+    ta.select();
+    document.execCommand('copy');
+    showToast('Teks berhasil disalin');
+  }
+
+  // --- 8. QUICK-ADD TIP (3 PILIHAN: TUNAI, SEABANK, BCA) ---
   function openTipModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tip') || '{}');
     document.getElementById('tipAmount').value = draft.amount || '';
@@ -1136,7 +1524,7 @@
     await idbPut('transactions', {
       id: uuid(),
       type: 'income',
-      category: 'Uang Tip Kurir',
+      category: 'Uang Tip',
       amount,
       walletId: wallet.id,
       paymentMethod: wallet.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
@@ -1150,7 +1538,7 @@
     await refreshAll();
   }
 
-  // --- 7. CATAT ARUS KAS (KELOMPOK A QRIS/TRANSFER & KELOMPOK B PAYLATER) ---
+  // --- 9. CATAT TRANSAKSI (KELOMPOK A & B + 2 LIMIT GOPAYLATER) ---
   function openTxModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tx') || '{}');
     document.getElementById('txDate').value = draft.date || getLocalTodayStr();
@@ -1159,6 +1547,7 @@
     if (draft.category) document.getElementById('txCategory').value = draft.category;
     document.getElementById('txNote').value = draft.note || '';
     selectPaymentChannel(draft.channel || 'QRIS');
+    selectGplBucket(draft.gplBucket || 'QRIS');
     document.getElementById('txModal').classList.add('open');
   }
 
@@ -1178,7 +1567,7 @@
         </optgroup>
         <optgroup label="Kelompok B — PayLater (Minimarket / Online)">
           <option value="paylater-SPayLater">🟠 SPayLater (Cut-off Tgl 20)</option>
-          <option value="paylater-GoPayLater">🟢 GoPayLater</option>
+          <option value="paylater-GoPayLater">🟢 GoPayLater (QRIS / Utama)</option>
         </optgroup>
       `;
       walletSelect.value = preferredWallet || 'wallet-seabank';
@@ -1191,7 +1580,7 @@
     const catSelect = document.getElementById('txCategory');
     const cats = type === 'expense'
       ? ['Makan & Minum Jalan', 'Bensin & Servis', 'Minimarket (Indomaret/Alfamart)', 'Operasional Kurir', 'Kebutuhan Pribadi', 'Belanja Online']
-      : ['Gaji / Insentif Kurir', 'Uang Tip Kurir', 'Bonus / Lainnya'];
+      : ['Gaji Bulanan', 'Uang Tip', 'Pemasukan Lainnya'];
     catSelect.innerHTML = cats.map((c) => `<option value="${c}">${c}</option>`).join('');
 
     onTxSourceOrDateChange();
@@ -1204,6 +1593,14 @@
     saveTxDraft();
   }
 
+  function selectGplBucket(bucket) {
+    activeGplBucket = bucket;
+    document.getElementById('gplBucketQris').className = 'toggle-opt' + (bucket === 'QRIS' ? ' active-info' : '');
+    document.getElementById('gplBucketUtama').className = 'toggle-opt' + (bucket === 'Utama' ? ' active-info' : '');
+    updatePaylaterPreview();
+    saveTxDraft();
+  }
+
   function onTxSourceOrDateChange() {
     const val = document.getElementById('txWallet').value;
     const isPaylater = val.startsWith('paylater-');
@@ -1211,6 +1608,7 @@
 
     document.getElementById('digitalMethodBox').style.display = (!isPaylater && !isCash && activeTxType === 'expense') ? 'block' : 'none';
     document.getElementById('paylaterOptionsBox').style.display = (isPaylater && activeTxType === 'expense') ? 'block' : 'none';
+    document.getElementById('gopaylaterBucketBox').style.display = (val === 'paylater-GoPayLater' && activeTxType === 'expense') ? 'block' : 'none';
 
     if (isPaylater) updatePaylaterPreview();
     saveTxDraft();
@@ -1219,9 +1617,10 @@
   function updatePaylaterPreview() {
     const val = document.getElementById('txWallet').value;
     const provider = val.replace('paylater-', '');
+    const bucket = provider === 'GoPayLater' ? activeGplBucket : null;
     const dateStr = document.getElementById('txDate').value || getLocalTodayStr();
     const tenor = Number(document.getElementById('paylaterTenor').value || 1);
-    const target = calculatePaylaterTarget(provider, dateStr, 0);
+    const target = calculatePaylaterTarget(provider, dateStr, 0, bucket);
     const day = Number(dateStr.split('-')[2]);
 
     let ruleNote = '';
@@ -1230,7 +1629,7 @@
         ? `Karena transaksi tgl <b>${day} (di atas tgl 20)</b>, tagihan melompat 2 bulan ke siklus <b>${target.label}</b>.`
         : `Karena transaksi tgl <b>${day} (1–20)</b>, tagihan masuk bulan depan siklus <b>${target.label}</b>.`;
     } else {
-      ruleNote = `Tagihan GoPayLater masuk siklus <b>${target.label}</b>.`;
+      ruleNote = `Memotong <b>GoPayLater Limit ${bucket}</b> dan masuk tagihan siklus <b>${target.label}</b>.`;
     }
     if (tenor > 1) ruleNote += ` Dicicil <b>${tenor}x</b> mulai ${target.label}.`;
     document.getElementById('paylaterCyclePreview').innerHTML = ruleNote;
@@ -1243,6 +1642,7 @@
       date: document.getElementById('txDate').value,
       wallet: document.getElementById('txWallet').value,
       channel: activePaymentChannel,
+      gplBucket: activeGplBucket,
       category: document.getElementById('txCategory').value,
       note: document.getElementById('txNote').value
     }));
@@ -1257,17 +1657,21 @@
     const note = document.getElementById('txNote').value.trim() || category;
     const txIsoDate = new Date(`${dateStr}T${new Date().toTimeString().slice(0, 8)}`).toISOString();
 
-    // KASUS KELOMPOK B: PAYLATER (SPayLater / GoPayLater)
+    // KASUS KELOMPOK B: PAYLATER
     if (activeTxType === 'expense' && walletVal.startsWith('paylater-')) {
       const provider = walletVal.replace('paylater-', '');
+      const bucket = provider === 'GoPayLater' ? activeGplBucket : null;
       const tenor = Number(document.getElementById('paylaterTenor').value || 1);
-      const target0 = calculatePaylaterTarget(provider, dateStr, 0);
+      const target0 = calculatePaylaterTarget(provider, dateStr, 0, bucket);
+
+      // Kurangi sisa limit PayLater
+      await adjustCreditLimit(provider, bucket, -amount);
 
       if (tenor === 1) {
         let existingBill = state.loans.find((l) => l.billingKey === target0.key);
         if (existingBill && !existingBill.installments[0].paidToProvider) {
           const inst = existingBill.installments[0];
-          inst.personalAmount = Number(inst.personalAmount) + amount;
+          inst.amount = Number(inst.amount ?? (inst.personalAmount || 0)) + amount;
           inst.items = inst.items || [];
           inst.items.push({ date: dateStr, note, amount });
           await idbPut('loans', existingBill);
@@ -1275,19 +1679,20 @@
           await idbPut('loans', {
             id: uuid(),
             provider,
-            title: `Tagihan ${provider} • ${target0.label}`,
+            paylaterBucket: bucket,
+            title: `Tagihan ${provider}${bucket ? ' (' + bucket + ')' : ''} • ${target0.label}`,
             billingKey: target0.key,
             friendName: '',
+            friendMonthly: 0,
+            friendTotalAmount: 0,
+            friendPaidAmount: 0,
             tenor: 1,
             dueDay: target0.dueDay,
             installments: [{
               monthIndex: 1,
               billingMonthLabel: target0.label,
-              personalAmount: amount,
-              friendAmount: 0,
-              friendPaid: true,
+              amount,
               paidToProvider: false,
-              isHistorical: false,
               items: [{ date: dateStr, note, amount }]
             }]
           });
@@ -1296,24 +1701,25 @@
         const perMonth = Math.ceil(amount / tenor);
         const installments = [];
         for (let m = 0; m < tenor; m++) {
-          const tInfo = calculatePaylaterTarget(provider, dateStr, m);
+          const tInfo = calculatePaylaterTarget(provider, dateStr, m, bucket);
           installments.push({
             monthIndex: m + 1,
             billingMonthLabel: tInfo.label,
-            personalAmount: perMonth,
-            friendAmount: 0,
-            friendPaid: true,
+            amount: perMonth,
             paidToProvider: false,
-            isHistorical: false,
             items: m === 0 ? [{ date: dateStr, note: `${note} (${tenor}x)`, amount }] : []
           });
         }
         await idbPut('loans', {
           id: uuid(),
           provider,
+          paylaterBucket: bucket,
           title: `${note} (${tenor}x)`,
           billingKey: null,
           friendName: '',
+          friendMonthly: 0,
+          friendTotalAmount: 0,
+          friendPaidAmount: 0,
           tenor,
           dueDay: target0.dueDay,
           installments
@@ -1326,8 +1732,8 @@
         category,
         amount,
         walletId: walletVal,
-        walletLabel: `${provider} (Tagihan ${target0.label})`,
-        paymentMethod: 'QRIS PayLater',
+        walletLabel: `${provider}${bucket ? ' ' + bucket : ''} (${target0.label})`,
+        paymentMethod: bucket ? `PayLater ${bucket}` : 'QRIS PayLater',
         note,
         date: txIsoDate
       });
@@ -1382,7 +1788,7 @@
     await refreshAll();
   }
 
-  // --- 8. COCOKKAN UANG FISIK DOMPET TUNAI ---
+  // --- 10. COCOKKAN UANG FISIK DOMPET TUNAI ---
   function openReconcileModal() {
     const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash');
     document.getElementById('recAppBal').textContent = formatRp(cashWallet.balance);
@@ -1402,9 +1808,9 @@
     if (diff === 0) {
       box.textContent = 'Saldo fisik sudah sama persis dengan catatan aplikasi.';
     } else if (diff < 0) {
-      box.innerHTML = `Selisih kurang <b>${formatRp(Math.abs(diff))}</b> akan dicatat otomatis sebagai <b>Pengeluaran Tunai Tak Tercatat</b>.`;
+      box.innerHTML = `Selisih kurang <b>${formatRp(Math.abs(diff))}</b> akan dicatat sebagai <b>Pengeluaran Tunai Tak Tercatat</b>.`;
     } else {
-      box.innerHTML = `Selisih lebih <b>+${formatRp(diff)}</b> akan dicatat otomatis sebagai <b>Pemasukan Tunai Tak Tercatat</b>.`;
+      box.innerHTML = `Selisih lebih <b>+${formatRp(diff)}</b> akan dicatat sebagai <b>Pemasukan Tunai Tak Tercatat</b>.`;
     }
   }
 
@@ -1437,7 +1843,7 @@
     await refreshAll();
   }
 
-  // --- 9. KELOLA AKUN & TRANSFER / TARIK TUNAI ---
+  // --- 11. KELOLA AKUN & LIMIT KREDIT ---
   function openWalletModal(walletId) {
     selectedWalletId = walletId;
     const w = state.wallets.find((x) => x.id === walletId);
@@ -1486,17 +1892,37 @@
     await refreshAll();
   }
 
-  // --- 10. CICILAN (BARU & BERJALAN) + PEMBAYARAN DUA TAHAP ---
+  function openLimitModal(limitId) {
+    selectedLimitId = limitId;
+    const lim = state.limits.find((x) => x.id === limitId);
+    document.getElementById('limitModalTitle').textContent = `Atur ${lim.label}`;
+    document.getElementById('editLimitMax').value = lim.maxLimit || '';
+    document.getElementById('editLimitRem').value = lim.remainingLimit || '';
+    document.getElementById('limitModal').classList.add('open');
+  }
+
+  async function saveCreditLimit() {
+    const lim = state.limits.find((x) => x.id === selectedLimitId);
+    lim.maxLimit = Math.max(0, Number(document.getElementById('editLimitMax').value || 0));
+    lim.remainingLimit = Math.max(0, Number(document.getElementById('editLimitRem').value || 0));
+    await idbPut('limits', lim);
+    closeModal('limitModal');
+    showToast('Limit kredit disimpan');
+    await refreshAll();
+  }
+
+  // --- 12. CICILAN BERJALAN, SETORAN TEMAN FLEKSIBEL & BAYAR TAGIHAN ---
   function openNewLoanModal() {
     document.getElementById('loanTitle').value = '';
-    document.getElementById('loanPersonalMonthly').value = '';
-    document.getElementById('loanFriendName').value = '';
-    document.getElementById('loanFriendMonthly').value = '';
-    document.getElementById('loanInitialFriendPaid').checked = false;
-    document.getElementById('loanTenor').value = 6;
+    document.getElementById('loanTotalMonthly').value = '';
+    document.getElementById('loanTenor').value = 12;
     document.getElementById('loanPaidCount').value = 0;
     document.getElementById('loanNextBillMonth').value = getLocalCurrentMonthStr();
     document.getElementById('loanDueDay').value = 25;
+    document.getElementById('loanFriendName').value = '';
+    document.getElementById('loanFriendMonthly').value = '';
+    document.getElementById('loanFriendTenor').value = 12;
+    document.getElementById('loanFriendPaidCount').value = 0;
     toggleFriendFields();
     updateLoanModalPreview();
     document.getElementById('loanModal').classList.add('open');
@@ -1510,46 +1936,38 @@
   }
 
   function updateLoanModalPreview() {
-    const provider = document.getElementById('loanProvider').value;
-    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
-    const friendName = document.getElementById('loanFriendName').value.trim();
-    const friendMonthly = Number(document.getElementById('loanFriendMonthly').value || 0);
-
-    // Tampilkan checkbox setoran awal teman hanya jika ada split teman
-    const showFriendCheck = !isPaylater && friendName.length > 0 && friendMonthly > 0;
-    document.getElementById('initialFriendPaidBox').style.display = showFriendCheck ? 'block' : 'none';
-
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
     let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
     if (paidCount >= tenor) paidCount = tenor - 1;
 
     const monthVal = document.getElementById('loanNextBillMonth').value || getLocalCurrentMonthStr();
-    const [yStr, mStr] = monthVal.split('-');
-    const startYear = Number(yStr);
-    const startMonth = Number(mStr); // 1..12
-
+    const [startYear, startMonth] = monthVal.split('-').map(Number);
     const firstActiveIdx = paidCount + 1;
-    const lastDate = new Date(startYear, (startMonth - 1) + (tenor - firstActiveIdx), 1);
     const firstLabel = `${MONTHS_ID[startMonth - 1]} ${startYear}`;
-    const lastLabel = `${MONTHS_ID[lastDate.getMonth()]} ${lastDate.getFullYear()}`;
-    const remainingCount = tenor - paidCount;
+    const remBankMonths = tenor - paidCount;
 
-    const previewBox = document.getElementById('loanSetupPreview');
-    if (paidCount > 0) {
-      previewBox.innerHTML = `Bulan <b>1–${paidCount}</b> ditandai <b>Lunas (Historis)</b> tanpa memotong saldo. Sisa <b>${remainingCount} tagihan aktif</b> dimulai dari <b>Bulan ${firstActiveIdx} (${firstLabel})</b> s.d. <b>Bulan ${tenor} (${lastLabel})</b>.`;
-    } else {
-      previewBox.innerHTML = `Kontrak baru <b>${tenor} bulan</b> dimulai dari <b>Bulan 1 (${firstLabel})</b> s.d. <b>Bulan ${tenor} (${lastLabel})</b>.`;
+    const provider = document.getElementById('loanProvider').value;
+    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
+    const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
+    const friendMonthly = Number(document.getElementById('loanFriendMonthly').value || 0);
+    const fTenor = Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
+    const fPaid = Math.min(fTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
+
+    let html = `Tagihan ke <b>${esc(provider)}</b>: Bulan 1–${paidCount || 0} <b>LUNAS</b>, sisa <b>${remBankMonths} bulan aktif</b> mulai Bln ${firstActiveIdx} (${firstLabel}).`;
+    if (friendName && friendMonthly > 0) {
+      const remFMonths = fTenor - fPaid;
+      const remFAmt = remFMonths * friendMonthly;
+      html += `<br/>Porsi <b>${esc(friendName)}</b>: Terbayar ${fPaid}/${fTenor} bln, sisa piutang <b>${remFMonths} bln (${formatRp(remFAmt)})</b>.`;
     }
+    document.getElementById('loanSetupPreview').innerHTML = html;
   }
 
   async function createLoanContract() {
     const provider = document.getElementById('loanProvider').value;
     const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
     const title = document.getElementById('loanTitle').value.trim() || provider;
-    const personalMonthly = Number(document.getElementById('loanPersonalMonthly').value || 0);
-    const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
-    const friendMonthly = (isPaylater || !friendName) ? 0 : Number(document.getElementById('loanFriendMonthly').value || 0);
-    const initialFriendPaid = !isPaylater && document.getElementById('loanInitialFriendPaid').checked;
+    const totalMonthly = Number(document.getElementById('loanTotalMonthly').value || 0);
+    if (totalMonthly <= 0) return showToast('Isi cicilan total per bulan');
 
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
     let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
@@ -1559,139 +1977,160 @@
     const monthVal = document.getElementById('loanNextBillMonth').value || getLocalCurrentMonthStr();
     const [startYear, startMonth] = monthVal.split('-').map(Number);
 
-    if (personalMonthly + friendMonthly <= 0) return showToast('Isi nominal cicilan bulanan');
+    const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
+    const friendMonthly = (isPaylater || !friendName) ? 0 : Number(document.getElementById('loanFriendMonthly').value || 0);
+    const friendTenor = Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
+    const friendPaidCount = Math.min(friendTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
 
     const firstActiveIdx = paidCount + 1;
     const installments = [];
-
     for (let m = 1; m <= tenor; m++) {
-      const isHistorical = m <= paidCount;
+      const isPaid = m <= paidCount;
       const relOffset = m - firstActiveIdx;
       const d = new Date(startYear, (startMonth - 1) + relOffset, 1);
-      const billingMonthLabel = `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`;
-      const isFirstActive = m === firstActiveIdx;
-
       installments.push({
         monthIndex: m,
-        billingMonthLabel,
-        personalAmount: personalMonthly,
-        friendAmount: friendMonthly,
-        friendPaid: isHistorical || friendMonthly === 0 || (isFirstActive && initialFriendPaid),
-        paidToProvider: isHistorical,
-        isHistorical
+        billingMonthLabel: `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`,
+        amount: totalMonthly,
+        paidToProvider: isPaid
       });
     }
 
     await idbPut('loans', {
       id: uuid(),
       provider,
+      paylaterBucket: provider === 'GoPayLater' ? 'QRIS' : null,
       title,
       billingKey: null,
-      friendName,
       tenor,
       dueDay,
+      friendName,
+      friendMonthly,
+      friendTotalAmount: friendMonthly * friendTenor,
+      friendPaidAmount: friendMonthly * friendPaidCount,
       installments
     });
 
     closeModal('loanModal');
-    showToast(paidCount > 0 ? `Kontrak ditambahkan (${paidCount} bln historis)` : 'Kontrak cicilan ditambahkan');
+    showToast('Kontrak cicilan disimpan');
     await refreshAll();
+  }
+
+  function openFriendPayModal(loanId) {
+    activeFriendLoanId = loanId;
+    const loan = state.loans.find((l) => l.id === loanId);
+    const rem = getLoanRemainingFriend(loan);
+    document.getElementById('friendPayTitle').textContent = `Terima Setoran ${loan.friendName}`;
+    document.getElementById('friendPayDesc').textContent = `Sisa piutang ${loan.friendName} saat ini: ${formatRp(rem)}. Uang akan langsung masuk ke dompet/rekening pilihanmu.`;
+    document.getElementById('friendPayAmount').value = Math.min(rem, Number(loan.friendMonthly || rem));
+    document.getElementById('friendPayWallet').innerHTML = state.wallets
+      .map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
+    document.getElementById('friendPayWallet').value = 'wallet-cash';
+    document.getElementById('friendPayModal').classList.add('open');
+  }
+
+  async function submitFriendPayment() {
+    const amt = Number(document.getElementById('friendPayAmount').value);
+    if (!amt || amt <= 0) return showToast('Masukkan nominal setoran');
+    const loan = state.loans.find((l) => l.id === activeFriendLoanId);
+    const walletId = document.getElementById('friendPayWallet').value;
+    const w = state.wallets.find((x) => x.id === walletId);
+
+    loan.friendPaidAmount = Number(loan.friendPaidAmount || 0) + amt;
+    w.balance = Number(w.balance) + amt;
+
+    await idbPut('loans', loan);
+    await idbPut('wallets', w);
+    await idbPut('transactions', {
+      id: uuid(),
+      type: 'receivable_in',
+      category: 'Setoran Cicilan Teman',
+      amount: amt,
+      walletId: w.id,
+      paymentMethod: w.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
+      note: `Setoran ${loan.friendName} (${loan.provider})`,
+      date: new Date().toISOString()
+    });
+
+    closeModal('friendPayModal');
+    showToast(`+${formatRp(amt)} dari ${loan.friendName} masuk ${w.name}`);
+    await refreshAll();
+  }
+
+  function openPayBillModal(loanId, monthIndex) {
+    const loan = state.loans.find((l) => l.id === loanId);
+    const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
+    const instAmt = Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0)));
+
+    document.getElementById('payBillTitle').textContent = `Bayar ${loan.provider} (Bln ${monthIndex})`;
+    document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} otomatis naik kembali.`;
+
+    const walletSel = document.getElementById('payBillWallet');
+    walletSel.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
+    walletSel.value = loan.provider === 'GoPayLater' ? 'wallet-gopay' : 'wallet-seabank';
+
+    const gplBox = document.getElementById('payBillGplBucketBox');
+    if (loan.provider === 'GoPayLater') {
+      gplBox.style.display = 'block';
+      document.getElementById('payBillGplBucket').value = loan.paylaterBucket || 'QRIS';
+    } else {
+      gplBox.style.display = 'none';
+    }
+
+    document.getElementById('payBillConfirmBtn').onclick = async () => {
+      const w = state.wallets.find((x) => x.id === walletSel.value);
+      const bucket = loan.provider === 'GoPayLater' ? document.getElementById('payBillGplBucket').value : null;
+
+      inst.paidToProvider = true;
+      w.balance = Number(w.balance) - instAmt;
+
+      await idbPut('wallets', w);
+      await idbPut('loans', loan);
+      await adjustCreditLimit(loan.provider, bucket, instAmt);
+      await idbPut('transactions', {
+        id: uuid(),
+        type: 'debt_payment',
+        category: `Bayar Tagihan ${loan.provider}`,
+        amount: instAmt,
+        walletId: w.id,
+        paymentMethod: w.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
+        note: `Lunas ${loan.title} (Bln ${monthIndex}/${loan.tenor})`,
+        date: new Date().toISOString()
+      });
+
+      closeModal('payBillModal');
+      showToast(`Tagihan ${loan.provider} LUNAS & limit pulih!`);
+      await refreshAll();
+    };
+
+    document.getElementById('payBillModal').classList.add('open');
   }
 
   async function markInstallmentPaidNoBalance(loanId, monthIndex) {
     const loan = state.loans.find((l) => l.id === loanId);
     const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
     if (!inst || inst.paidToProvider) return;
-
     inst.paidToProvider = true;
-    inst.friendPaid = true;
-    inst.isHistorical = true;
-
     await idbPut('loans', loan);
-    showToast(`Bln ${monthIndex} ditandai lunas tanpa potong saldo`);
+    showToast(`Bln ${monthIndex} ditandai LUNAS`);
     await refreshAll();
-  }
-
-  function openPayActionModal(mode, loanId, monthIndex) {
-    const loan = state.loans.find((l) => l.id === loanId);
-    const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
-    const walletSel = document.getElementById('payActionWallet');
-    walletSel.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
-
-    if (mode === 'friend') {
-      document.getElementById('payActionTitle').textContent = `Terima Setoran ${loan.friendName}`;
-      document.getElementById('payActionDesc').textContent = `Nominal setoran ${formatRp(inst.friendAmount)} untuk ${loan.provider} (Bln ${monthIndex}).`;
-      document.getElementById('payActionWalletLabel').textContent = 'Masuk ke Rekening / Dompet Mana?';
-      walletSel.value = 'wallet-seabank';
-    } else {
-      const total = Number(inst.personalAmount) + Number(inst.friendAmount);
-      document.getElementById('payActionTitle').textContent = `Bayar Tagihan ${loan.provider}`;
-      document.getElementById('payActionDesc').textContent = `Total tagihan Bln ${monthIndex}: ${formatRp(total)}. Saldo akun yang dipilih akan langsung terpotong.`;
-      document.getElementById('payActionWalletLabel').textContent = 'Bayar Menggunakan Saldo Apa?';
-      walletSel.value = loan.provider === 'GoPayLater' ? 'wallet-gopay' : 'wallet-seabank';
-    }
-
-    document.getElementById('payActionConfirmBtn').onclick = async () => {
-      const chosenWalletId = walletSel.value;
-      const w = state.wallets.find((x) => x.id === chosenWalletId);
-
-      if (mode === 'friend') {
-        inst.friendPaid = true;
-        w.balance = Number(w.balance) + Number(inst.friendAmount);
-        await idbPut('wallets', w);
-        await idbPut('loans', loan);
-        await idbPut('transactions', {
-          id: uuid(),
-          type: 'receivable_in',
-          category: 'Pelunasan Piutang Teman',
-          amount: Number(inst.friendAmount),
-          walletId: w.id,
-          paymentMethod: w.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
-          note: `Setoran ${loan.friendName} (${loan.provider} Bln ${monthIndex})`,
-          date: new Date().toISOString()
-        });
-        showToast(`Setoran ${loan.friendName} masuk ke ${w.name}`);
-      } else {
-        const total = Number(inst.personalAmount) + Number(inst.friendAmount);
-        inst.paidToProvider = true;
-        inst.isHistorical = false;
-        w.balance = Number(w.balance) - total;
-        await idbPut('wallets', w);
-        await idbPut('loans', loan);
-        await idbPut('transactions', {
-          id: uuid(),
-          type: 'debt_payment',
-          category: `Bayar Tagihan ${loan.provider}`,
-          amount: total,
-          walletId: w.id,
-          paymentMethod: w.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
-          note: `Lunas ${loan.title} (Bln ${monthIndex}/${loan.tenor})`,
-          date: new Date().toISOString()
-        });
-        showToast(`Tagihan ${loan.provider} Lunas!`);
-      }
-
-      closeModal('payActionModal');
-      await refreshAll();
-    };
-
-    document.getElementById('payActionModal').classList.add('open');
   }
 
   async function deleteLoan(id) {
     await idbDelete('loans', id);
-    showToast('Tagihan dihapus');
+    showToast('Kontrak cicilan dihapus');
     await refreshAll();
   }
 
-  // --- 11. BACKUP JSON & DEMO DATA ---
+  // --- 13. BACKUP JSON & DEMO DATA ---
   function exportJSON() {
     const payload = {
       app: 'Cash Flow',
       exported_at: new Date().toISOString(),
       wallets: state.wallets,
       transactions: state.transactions,
-      loans: state.loans
+      loans: state.loans,
+      limits: state.limits
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1721,7 +2160,11 @@
         for (const w of data.wallets) await idbPut('wallets', w);
         for (const t of data.transactions) await idbPut('transactions', t);
         for (const l of data.loans) await idbPut('loans', l);
-        await ensureDefaultWallets();
+        if (Array.isArray(data.limits)) {
+          await idbClear('limits');
+          for (const lim of data.limits) await idbPut('limits', lim);
+        }
+        await ensureDefaults();
         showToast('Data berhasil dipulihkan!');
         await refreshAll();
       } catch (err) {
@@ -1743,6 +2186,7 @@
     await idbClear('wallets');
     await idbClear('transactions');
     await idbClear('loans');
+    await idbClear('limits');
 
     const demoWallets = [
       { id: 'wallet-cash', name: 'Dompet Tunai', group: 'cash', icon: '💵', tag: 'Fisik', balance: 135000, lastChecked: new Date().toISOString() },
@@ -1755,40 +2199,43 @@
     ];
     for (const w of demoWallets) await idbPut('wallets', w);
 
+    const demoLimits = [
+      { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam (Permanen)', maxLimit: 4000000, remainingLimit: 1000000 },
+      { id: 'limit-seabank', provider: 'SeaBank Pinjam', bucket: null, label: 'SeaBank Pinjam', maxLimit: 3000000, remainingLimit: 1200000 },
+      { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', maxLimit: 2500000, remainingLimit: 2476000 },
+      { id: 'limit-gopaylater-qris', provider: 'GoPayLater', bucket: 'QRIS', label: 'GoPayLater • QRIS', maxLimit: 1500000, remainingLimit: 1500000 },
+      { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', maxLimit: 2000000, remainingLimit: 2000000 }
+    ];
+    for (const l of demoLimits) await idbPut('limits', l);
+
     await idbPut('transactions', {
-      id: uuid(), type: 'income', category: 'Uang Tip Kurir', amount: 15000,
+      id: uuid(), type: 'income', category: 'Uang Tip', amount: 20000,
       walletId: 'wallet-cash', paymentMethod: 'Tunai', note: 'Tip Tunai Customer COD', date: new Date().toISOString()
     });
     await idbPut('transactions', {
-      id: uuid(), type: 'expense', category: 'Makan & Minum Jalan', amount: 18000,
+      id: uuid(), type: 'expense', category: 'Makan & Minum Jalan', amount: 15000,
       walletId: 'wallet-seabank', paymentMethod: 'QRIS', note: 'Warung Makan Siang', date: new Date(Date.now() - 3600000).toISOString()
     });
-    await idbPut('transactions', {
-      id: uuid(), type: 'paylater_expense', category: 'Minimarket (Indomaret/Alfamart)', amount: 24000,
-      walletId: 'paylater-SPayLater', walletLabel: 'SPayLater (Tagihan Des 2026)', paymentMethod: 'QRIS PayLater',
-      note: 'Kopi & Roti Indomaret', date: new Date(Date.now() - 7200000).toISOString()
-    });
 
+    // Skenario Adi: Pinjaman 3jt (12 bln @ 311.511, terbayar 2 bln), Adi 105.000/bln (12 bln, sudah setor 7 bln -> sisa 5 bln)
+    const demoInstallments = [];
+    for (let m = 1; m <= 12; m++) {
+      const d = new Date(2026, 8 + m, 1);
+      demoInstallments.push({
+        monthIndex: m,
+        billingMonthLabel: `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`,
+        amount: 311511,
+        paidToProvider: m <= 2
+      });
+    }
     await idbPut('loans', {
-      id: uuid(), provider: 'SeaBank Pinjam', title: 'Pinjaman Okt (Split Andi)',
-      billingKey: null, friendName: 'Andi', tenor: 3, dueDay: 25,
-      installments: [
-        { monthIndex: 1, billingMonthLabel: 'Okt 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: true, isHistorical: true },
-        { monthIndex: 2, billingMonthLabel: 'Nov 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: false, isHistorical: false },
-        { monthIndex: 3, billingMonthLabel: 'Des 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: false, paidToProvider: false, isHistorical: false }
-      ]
-    });
-
-    await idbPut('loans', {
-      id: uuid(), provider: 'SPayLater', title: 'Tagihan SPayLater • Des 2026',
-      billingKey: 'SPayLater-2026-12', friendName: '', tenor: 1, dueDay: 22,
-      installments: [
-        {
-          monthIndex: 1, billingMonthLabel: 'Des 2026', personalAmount: 24000, friendAmount: 0,
-          friendPaid: true, paidToProvider: false, isHistorical: false,
-          items: [{ date: getLocalTodayStr(), note: 'Kopi & Roti Indomaret', amount: 24000 }]
-        }
-      ]
+      id: uuid(), provider: 'SPinjam', paylaterBucket: null,
+      title: 'Pinjaman 3jt (Split Adi 1jt)', billingKey: null,
+      tenor: 12, dueDay: 25,
+      friendName: 'Adi', friendMonthly: 105000,
+      friendTotalAmount: 105000 * 12,
+      friendPaidAmount: 105000 * 7,
+      installments: demoInstallments
     });
 
     showToast('Data contoh dimuat');
@@ -1799,12 +2246,13 @@
     await idbClear('wallets');
     await idbClear('transactions');
     await idbClear('loans');
-    await ensureDefaultWallets();
+    await idbClear('limits');
+    await ensureDefaults();
     showToast('Semua data dikosongkan');
     await refreshAll();
   }
 
-  // --- 12. NAVIGATION & MODAL UTILS ---
+  // --- 14. NAVIGATION & MODAL UTILS ---
   function switchTab(tab) {
     ['home', 'loans', 'rekap'].forEach((t) => {
       document.getElementById('view-' + t).classList.toggle('active', t === tab);
@@ -1816,8 +2264,11 @@
   function closeModalOnBackdrop(e, id) { if (e.target.id === id) closeModal(id); }
 
   (async function init() {
+    document.getElementById('txFilterDateVal').value = getLocalTodayStr();
+    document.getElementById('txFilterMonthVal').value = getLocalCurrentMonthStr();
+    document.getElementById('rekapMonthInput').value = getLocalCurrentMonthStr();
     await openDB();
-    await ensureDefaultWallets();
+    await ensureDefaults();
     await refreshAll();
   })();
 </script>
