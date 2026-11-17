@@ -23,6 +23,7 @@
       --danger: #f43f5e;
       --warning: #f59e0b;
       --info: #38bdf8;
+      --purple: #c084fc;
       --radius: 14px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -188,6 +189,7 @@
     .pill-wait { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
     .pill-info { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
     .pill-pl { background: rgba(249, 115, 22, 0.16); color: #fdba74; }
+    .pill-friend { background: rgba(192, 132, 252, 0.18); color: #e9d5ff; }
 
     .tx-summary-bar {
       display: flex; justify-content: space-between; align-items: center;
@@ -255,17 +257,20 @@
       font-family: inherit;
     }
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    input[readonly] { opacity: 0.72; background: rgba(15, 23, 42, 0.55); }
     .money-input { font-weight: 700; letter-spacing: 0.01em; }
     .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .toggle-row-3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 7px; }
+    .toggle-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
     .toggle-opt {
       padding: 10px 6px; text-align: center; border-radius: 10px;
       background: var(--bg); border: 1px solid var(--border);
-      font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--muted);
+      font-size: 0.78rem; font-weight: 700; cursor: pointer; color: var(--muted);
     }
     .toggle-opt.active { background: rgba(16, 185, 129, 0.16); border-color: var(--primary); color: var(--primary); }
     .toggle-opt.active-danger { background: rgba(244, 63, 94, 0.16); border-color: var(--danger); color: #fda4af; }
     .toggle-opt.active-info { background: rgba(56, 189, 248, 0.16); border-color: var(--info); color: #7dd3fc; }
+    .toggle-opt.active-warn { background: rgba(245, 158, 11, 0.16); border-color: var(--warning); color: #fcd34d; }
+    .toggle-opt.active-purple { background: rgba(192, 132, 252, 0.18); border-color: var(--purple); color: #e9d5ff; }
 
     .info-banner {
       background: rgba(249, 115, 22, 0.12);
@@ -328,7 +333,7 @@
           </div>
           <div>
             <span>Sisa Piutang Teman</span>
-            <strong id="monthlyFriendReceivable" style="color:#6ee7b7">Rp 0</strong>
+            <strong id="monthlyFriendReceivable" style="color:#e9d5ff">Rp 0</strong>
           </div>
         </div>
       </div>
@@ -403,7 +408,7 @@
       <div class="row-between" style="margin-bottom: 10px;">
         <div>
           <h2 style="font-size:1.05rem;">Cicilan & Limit Kredit</h2>
-          <p style="font-size:0.75rem;color:var(--muted);">SPayLater, GoPayLater, SPinjam & SeaBank Pinjam</p>
+          <p style="font-size:0.75rem;color:var(--muted);">Pisahkan beban pribadi, split, & 100% talangan teman</p>
         </div>
         <button class="btn btn-primary btn-sm" onclick="openNewLoanModal()">+ Kontrak</button>
       </div>
@@ -415,7 +420,7 @@
         </div>
         <div class="stat-box">
           <small>Sisa Piutang Teman</small>
-          <strong class="plus" id="loanSummaryFriend">Rp 0</strong>
+          <strong style="color:#e9d5ff" id="loanSummaryFriend">Rp 0</strong>
         </div>
       </div>
 
@@ -493,7 +498,7 @@
           <span class="pill pill-info">Markdown</span>
         </div>
         <p style="font-size:0.76rem;color:var(--muted);margin-bottom:10px;">
-          Salin ringkasan posisi uang aktif, sisa kewajiban cicilan, piutang teman, dan sisa limit kredit ke <b>Joplin</b> sebagai acuan sebelum membeli barang.
+          Salin ringkasan posisi uang aktif, sisa beban pribadi, piutang teman, dan sisa limit kredit ke <b>Joplin</b> sebagai acuan sebelum membeli barang.
         </p>
         <button class="btn btn-info btn-block btn-sm" onclick="exportJoplinMarkdown()">📋 Salin Ringkasan Markdown (Joplin)</button>
       </div>
@@ -620,11 +625,23 @@
           </div>
         </div>
         <div class="form-group">
+          <label>Ini Belanjaan Siapa?</label>
+          <div class="toggle-row">
+            <div class="toggle-opt active" id="plOwnerPersonal" onclick="selectPaylaterOwner('personal')">👤 Untuk Pribadi</div>
+            <div class="toggle-opt" id="plOwnerFriend" onclick="selectPaylaterOwner('friend')">👥 Titipan Teman</div>
+          </div>
+        </div>
+        <div class="form-group" id="paylaterFriendNameBox" style="display:none;">
+          <label>Nama Teman (Masuk ke Piutang Teman)</label>
+          <input type="text" id="paylaterFriendName" placeholder="Contoh: Budi" oninput="updatePaylaterPreview(); saveTxDraft();" />
+        </div>
+        <div class="form-group">
           <label>Tenor PayLater</label>
           <select id="paylaterTenor" onchange="updatePaylaterPreview()">
             <option value="1">1x Bayar (Gabung Tagihan Siklus)</option>
             <option value="3">Cicilan 3 Bulan</option>
             <option value="6">Cicilan 6 Bulan</option>
+            <option value="12">Cicilan 12 Bulan</option>
           </select>
         </div>
         <div class="info-banner" id="paylaterCyclePreview"></div>
@@ -761,7 +778,7 @@
     </div>
   </div>
 
-  <!-- MODAL 6: TAMBAH KONTRAK CICILAN -->
+  <!-- MODAL 6: TAMBAH KONTRAK CICILAN (3 MODE KEPEMILIKAN) -->
   <div class="modal-backdrop" id="loanModal" onclick="closeModalOnBackdrop(event, 'loanModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -769,28 +786,45 @@
         <strong>Tambah Kontrak Cicilan</strong>
         <button class="btn btn-secondary btn-sm" onclick="closeModal('loanModal')">Tutup</button>
       </div>
+
+      <div class="form-group">
+        <label>Kepemilikan Tagihan / Pinjaman</label>
+        <div class="toggle-row-3">
+          <div class="toggle-opt active" id="ownOptPersonal" onclick="setLoanOwnership('personal')">👤 100% Pribadi</div>
+          <div class="toggle-opt" id="ownOptSplit" onclick="setLoanOwnership('split')">🤝 Split</div>
+          <div class="toggle-opt" id="ownOptFriend" onclick="setLoanOwnership('friend')">👥 100% Teman</div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label>Penyedia Pinjaman / PayLater</label>
-        <select id="loanProvider" onchange="toggleFriendFields()">
-          <option value="SPinjam">SPinjam (Pribadi / Split Teman)</option>
-          <option value="SeaBank Pinjam">SeaBank Pinjam (Pribadi / Split Teman)</option>
-          <option value="SPayLater">SPayLater (100% Pribadi)</option>
-          <option value="GoPayLater">GoPayLater (100% Pribadi)</option>
+        <select id="loanProvider" onchange="updateLoanModalPreview()">
+          <option value="SPinjam">SPinjam</option>
+          <option value="SeaBank Pinjam">SeaBank Pinjam</option>
+          <option value="SPayLater">SPayLater</option>
+          <option value="GoPayLater">GoPayLater</option>
         </select>
       </div>
       <div class="form-group">
         <label>Judul / Keperluan</label>
-        <input type="text" id="loanTitle" placeholder="Contoh: Pinjaman 3jt (Split Adi)" />
+        <input type="text" id="loanTitle" placeholder="Contoh: HP Budi / Pinjaman 3jt" />
       </div>
 
-      <div class="form-group">
-        <label>Cicilan Total ke Aplikasi per Bulan (Rp)</label>
-        <input type="text" class="money-input" id="loanTotalMonthly" inputmode="decimal" placeholder="311.511" oninput="updateLoanModalPreview()" />
+      <div class="stat-grid" style="margin-bottom:10px;">
+        <div class="form-group" style="margin:0;">
+          <label>Cicilan Total ke Aplikasi / Bln</label>
+          <input type="text" class="money-input" id="loanTotalMonthly" inputmode="decimal" placeholder="311.511" oninput="syncFriendModeValues(); updateLoanModalPreview();" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Pokok / Bln (Opsional)</label>
+          <input type="text" class="money-input" id="loanPrincipalMonthly" inputmode="decimal" placeholder="Sama dgn cicilan" oninput="updateLoanModalPreview()" />
+        </div>
       </div>
+
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
           <label>Total Tenor Bank (Bln)</label>
-          <input type="number" id="loanTenor" inputmode="numeric" value="12" min="1" max="36" oninput="updateLoanModalPreview()" />
+          <input type="number" id="loanTenor" inputmode="numeric" value="12" min="1" max="36" oninput="syncFriendModeValues(); updateLoanModalPreview();" />
         </div>
         <div class="form-group" style="margin:0;">
           <label>Sudah Dibayar ke Bank (Bln)</label>
@@ -809,15 +843,15 @@
         </div>
       </div>
 
-      <div id="friendLoanSection" style="padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
-        <strong style="font-size:0.82rem;color:#7dd3fc;display:block;margin-bottom:8px;">Porsi Talangan Teman (Opsional)</strong>
+      <div id="friendLoanSection" style="display:none;padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
+        <strong id="friendSectionTitle" style="font-size:0.82rem;color:#e9d5ff;display:block;margin-bottom:8px;">Detail Porsi Teman</strong>
         <div class="stat-grid" style="margin-bottom:8px;">
           <div class="form-group" style="margin:0;">
             <label>Nama Teman</label>
             <input type="text" id="loanFriendName" placeholder="Contoh: Adi" oninput="updateLoanModalPreview()" />
           </div>
           <div class="form-group" style="margin:0;">
-            <label>Cicilan Teman / Bln (Rp)</label>
+            <label id="loanFriendMonthlyLabel">Cicilan Teman / Bln (Rp)</label>
             <input type="text" class="money-input" id="loanFriendMonthly" inputmode="decimal" placeholder="105.000" oninput="updateLoanModalPreview()" />
           </div>
         </div>
@@ -846,22 +880,37 @@
         <strong>✎ Edit Kontrak Cicilan</strong>
         <button class="btn btn-secondary btn-sm" onclick="closeModal('editLoanModal')">Tutup</button>
       </div>
+
+      <div class="form-group">
+        <label>Kepemilikan Tagihan / Pinjaman</label>
+        <div class="toggle-row-3">
+          <div class="toggle-opt active" id="editOwnOptPersonal" onclick="setEditLoanOwnership('personal')">👤 100% Pribadi</div>
+          <div class="toggle-opt" id="editOwnOptSplit" onclick="setEditLoanOwnership('split')">🤝 Split</div>
+          <div class="toggle-opt" id="editOwnOptFriend" onclick="setEditLoanOwnership('friend')">👥 100% Teman</div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label>Judul / Keperluan</label>
         <input type="text" id="editLoanTitle" />
       </div>
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
-          <label>Cicilan Belum Lunas / Bln (Rp)</label>
-          <input type="text" class="money-input" id="editLoanMonthly" inputmode="decimal" />
+          <label>Cicilan Belum Lunas / Bln</label>
+          <input type="text" class="money-input" id="editLoanMonthly" inputmode="decimal" oninput="syncEditFriendModeValues()" />
         </div>
         <div class="form-group" style="margin:0;">
-          <label>Tanggal Jatuh Tempo</label>
-          <input type="number" id="editLoanDueDay" inputmode="numeric" min="1" max="31" />
+          <label>Pokok / Bln (Opsional)</label>
+          <input type="text" class="money-input" id="editLoanPrincipal" inputmode="decimal" placeholder="Sama dgn cicilan" />
         </div>
       </div>
+      <div class="form-group">
+        <label>Tanggal Jatuh Tempo</label>
+        <input type="number" id="editLoanDueDay" inputmode="numeric" min="1" max="31" />
+      </div>
+
       <div id="editLoanFriendWrap" style="padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
-        <strong style="font-size:0.82rem;color:#7dd3fc;display:block;margin-bottom:8px;">Edit Data Piutang Teman</strong>
+        <strong style="font-size:0.82rem;color:#e9d5ff;display:block;margin-bottom:8px;">Edit Data Piutang Teman</strong>
         <div class="stat-grid" style="margin-bottom:8px;">
           <div class="form-group" style="margin:0;">
             <label>Nama Teman</label>
@@ -1134,6 +1183,9 @@
   let activeTxType = 'expense';
   let activePaymentChannel = 'QRIS';
   let activeGplBucket = 'QRIS';
+  let activePaylaterOwner = 'personal';
+  let activeLoanOwnership = 'personal';
+  let editLoanOwnership = 'personal';
   let accountFilter = 'all';
   let txTimeMode = 'all';
   let txAccountFilter = 'all';
@@ -1231,8 +1283,8 @@
     checkBackupReminder();
   }
 
-  // --- 5. KALKULASI SIKLUS PAYLATER & HELPER LIMIT ---
-  function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0, bucket = null) {
+  // --- 5. KALKULASI SIKLUS PAYLATER, LIMIT & KEPEMILIKAN CICILAN ---
+  function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0, bucket = null, friendSlug = '') {
     const parts = (dateStr || getLocalTodayStr()).split('-').map(Number);
     const year = parts[0], month = parts[1], day = parts[2];
     const baseOffset = (provider === 'SPayLater' && day > 20) ? 2 : 1;
@@ -1240,7 +1292,8 @@
     const tYear = targetDate.getFullYear();
     const tMonth = targetDate.getMonth();
     const bucketSuffix = bucket ? `-${bucket}` : '';
-    const key = `${provider}${bucketSuffix}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
+    const ownerSuffix = friendSlug ? `-friend-${friendSlug}` : '';
+    const key = `${provider}${bucketSuffix}${ownerSuffix}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
     const label = `${MONTHS_ID[tMonth]} ${tYear}`;
     const dueDay = provider === 'SPayLater' ? 22 : 1;
     return { key, label, dueDay, baseOffset };
@@ -1268,9 +1321,26 @@
     await idbPut('limits', lim);
   }
 
+  function getLoanOwnershipType(loan) {
+    if (loan.ownershipType) return loan.ownershipType;
+    if (loan.friendName && Number(loan.friendTotalAmount) > 0) {
+      const totalContract = round2(loan.installments.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
+      if (Math.abs(Number(loan.friendTotalAmount) - totalContract) < 1) return 'friend';
+      return 'split';
+    }
+    return 'personal';
+  }
+
   function getLoanRemainingFriend(loan) {
-    if (!loan.friendName || !loan.friendTotalAmount) return 0;
+    const mode = getLoanOwnershipType(loan);
+    if (mode === 'personal' || !loan.friendName || !loan.friendTotalAmount) return 0;
     return round2(Math.max(0, Number(loan.friendTotalAmount) - Number(loan.friendPaidAmount || 0)));
+  }
+
+  function getLoanRemainingPersonal(loan, remBank, remFriend) {
+    const mode = getLoanOwnershipType(loan);
+    if (mode === 'personal') return remBank;
+    return Math.max(0, round2(remBank - remFriend));
   }
 
   // --- 6. RENDERING DASHBOARD & MUTASI ---
@@ -1328,11 +1398,15 @@
       upcomingBox.innerHTML = `<div class="card" style="color:var(--muted);font-size:0.8rem;">Tidak ada tagihan aktif saat ini.</div>`;
     } else {
       const { loan, inst, instAmt } = nearestInstallment;
+      const mode = getLoanOwnershipType(loan);
       const dueStr = inst.billingMonthLabel ? `${loan.dueDay} ${inst.billingMonthLabel}` : `Tgl ${loan.dueDay}`;
       const remFriend = getLoanRemainingFriend(loan);
-      const friendPill = remFriend > 0
-        ? `<span class="pill pill-ok">Sisa Piutang ${esc(loan.friendName)}: ${formatRp(remFriend)}</span>`
-        : '';
+      let ownerPill = '';
+      if (mode === 'friend') {
+        ownerPill = `<span class="pill pill-friend">100% Teman: ${esc(loan.friendName)} (${formatRp(remFriend)})</span>`;
+      } else if (mode === 'split' && remFriend > 0) {
+        ownerPill = `<span class="pill pill-wait">Split ${esc(loan.friendName)}: ${formatRp(remFriend)}</span>`;
+      }
       upcomingBox.innerHTML = `
         <div class="card" onclick="openLoanFromDashboard('${loan.id}')" style="cursor:pointer;">
           <div class="row-between" style="margin-bottom:5px;">
@@ -1342,7 +1416,7 @@
           <div style="font-size:0.8rem;color:var(--muted);margin-bottom:7px;">
             Tagihan Bln ${inst.monthIndex}/${loan.tenor}: <strong style="color:var(--text)">${formatRp(instAmt)}</strong>
           </div>
-          ${friendPill}
+          ${ownerPill}
         </div>
       `;
     }
@@ -1488,36 +1562,86 @@
       `;
     }).join('');
 
-    let totalBankRem = 0;
+    let totalPersonalRem = 0;
     let totalFriendRem = 0;
 
     state.loans.forEach((loan) => {
-      loan.installments.forEach((inst) => {
-        if (!inst.paidToProvider) {
-          totalBankRem = round2(totalBankRem + Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
-        }
-      });
-      totalFriendRem = round2(totalFriendRem + getLoanRemainingFriend(loan));
+      const remBank = round2(loan.installments
+        .filter((i) => !i.paidToProvider)
+        .reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
+      const remFriend = getLoanRemainingFriend(loan);
+      const remPersonal = getLoanRemainingPersonal(loan, remBank, remFriend);
+
+      totalPersonalRem = round2(totalPersonalRem + remPersonal);
+      totalFriendRem = round2(totalFriendRem + remFriend);
     });
 
-    document.getElementById('loanSummaryPersonal').textContent = formatRp(Math.max(0, round2(totalBankRem - totalFriendRem)));
+    document.getElementById('loanSummaryPersonal').textContent = formatRp(totalPersonalRem);
     document.getElementById('loanSummaryFriend').textContent = formatRp(totalFriendRem);
 
     const container = document.getElementById('loansContainer');
     if (state.loans.length === 0) {
-      container.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:0.82rem;padding:24px 14px;">Belum ada tagihan PayLater atau cicilan.<br/>Tekan <b>+ Kontrak</b> untuk mencatat cicilan baru maupun yang sudah berjalan.</div>`;
+      container.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:0.82rem;padding:24px 14px;">Belum ada tagihan PayLater atau cicilan.<br/>Tekan <b>+ Kontrak</b> untuk mencatat cicilan pribadi, split, maupun 100% talangan teman.</div>`;
       return;
     }
 
     container.innerHTML = state.loans.map((loan) => {
       const isExpanded = expandedLoanId === loan.id;
-      const hasFriend = Boolean(loan.friendName && Number(loan.friendTotalAmount) > 0);
+      const mode = getLoanOwnershipType(loan);
+      const hasFriend = mode !== 'personal' && Boolean(loan.friendName);
       const unpaidInsts = loan.installments.filter((i) => !i.paidToProvider);
       const remBank = round2(unpaidInsts.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
       const remFriend = getLoanRemainingFriend(loan);
+      const remPersonal = getLoanRemainingPersonal(loan, remBank, remFriend);
       const remFriendMonths = (hasFriend && Number(loan.friendMonthly) > 0) ? Math.ceil(remFriend / Number(loan.friendMonthly)) : 0;
       const nextInst = unpaidInsts[0] || null;
       const nextAmt = nextInst ? round2(Number(nextInst.amount ?? ((nextInst.personalAmount || 0) + (nextInst.friendAmount || 0)))) : 0;
+
+      let ownerBadgeHtml = `<span class="pill pill-ok" style="margin-left:3px;">100% Pribadi</span>`;
+      if (mode === 'split') {
+        ownerBadgeHtml = `<span class="pill pill-wait" style="margin-left:3px;">Split • ${esc(loan.friendName)}</span>`;
+      } else if (mode === 'friend') {
+        ownerBadgeHtml = `<span class="pill pill-friend" style="margin-left:3px;">100% Teman • ${esc(loan.friendName)}</span>`;
+      }
+
+      // Stat Boxes menyesuaikan kepemilikan
+      let statBoxesHtml = '';
+      if (mode === 'friend') {
+        statBoxesHtml = `
+          <div class="stat-box" style="padding:8px;cursor:pointer;">
+            <small>Sisa Tagihan ke ${esc(loan.provider)}</small>
+            <strong>${formatRp(remBank)}</strong>
+            <span style="font-size:0.65rem;color:var(--muted);">Beban Pribadi: Rp 0</span>
+          </div>
+          <div class="stat-box" style="padding:8px;cursor:pointer;">
+            <small>Sisa Piutang ${esc(loan.friendName)} (${remFriendMonths} bln)</small>
+            <strong style="color:#e9d5ff">${formatRp(remFriend)}</strong>
+          </div>
+        `;
+      } else if (mode === 'split') {
+        statBoxesHtml = `
+          <div class="stat-box" style="padding:8px;cursor:pointer;">
+            <small>Sisa Tagihan ke ${esc(loan.provider)}</small>
+            <strong>${formatRp(remBank)}</strong>
+            <span style="font-size:0.65rem;color:var(--muted);">Pribadi: ${formatRp(remPersonal)}</span>
+          </div>
+          <div class="stat-box" style="padding:8px;cursor:pointer;">
+            <small>Sisa Piutang ${esc(loan.friendName)} (${remFriendMonths} bln)</small>
+            <strong style="color:#e9d5ff">${formatRp(remFriend)}</strong>
+          </div>
+        `;
+      } else {
+        statBoxesHtml = `
+          <div class="stat-box" style="padding:8px;cursor:pointer;">
+            <small>Sisa Beban Pribadi (${esc(loan.provider)})</small>
+            <strong>${formatRp(remBank)}</strong>
+          </div>
+          <div class="stat-box" style="padding:8px;cursor:pointer;">
+            <small>Jatuh Tempo</small>
+            <strong>Tanggal ${loan.dueDay}</strong>
+          </div>
+        `;
+      }
 
       // Tampilan Collapsed: Aksi Cepat untuk 1 Tagihan Terdekat Bulan Ini
       let collapsedQuickAction = '';
@@ -1602,8 +1726,8 @@
         <div class="card ${isExpanded ? 'loan-expanded' : ''}" id="loan-card-${loan.id}">
           <div class="row-between" style="margin-bottom:6px;">
             <div onclick="toggleLoanAccordion('${loan.id}')" style="cursor:pointer;flex:1;">
-              <span class="pill ${hasFriend ? 'pill-info' : 'pill-pl'}">${esc(loan.provider)}${loan.paylaterBucket ? ' • ' + esc(loan.paylaterBucket) : ''}</span>
-              <span class="pill ${hasFriend ? 'pill-wait' : 'pill-ok'}" style="margin-left:3px;">${hasFriend ? 'Split ' + esc(loan.friendName) : 'Pribadi'}</span>
+              <span class="pill pill-info">${esc(loan.provider)}${loan.paylaterBucket ? ' • ' + esc(loan.paylaterBucket) : ''}</span>
+              ${ownerBadgeHtml}
               <span class="pill" style="background:var(--bg);color:var(--muted);margin-left:3px;">Sisa ${unpaidInsts.length}/${loan.tenor} bln</span>
               <div style="font-weight:700;font-size:0.93rem;margin-top:5px;">${esc(loan.title)}</div>
             </div>
@@ -1614,21 +1738,7 @@
           </div>
 
           <div class="stat-grid" style="margin:8px 0;" onclick="toggleLoanAccordion('${loan.id}')">
-            <div class="stat-box" style="padding:8px;cursor:pointer;">
-              <small>Sisa Tagihan ke ${esc(loan.provider)}</small>
-              <strong>${formatRp(remBank)}</strong>
-            </div>
-            ${hasFriend ? `
-              <div class="stat-box" style="padding:8px;cursor:pointer;">
-                <small>Sisa Piutang ${esc(loan.friendName)} (${remFriendMonths} bln)</small>
-                <strong style="color:#6ee7b7">${formatRp(remFriend)}</strong>
-              </div>
-            ` : `
-              <div class="stat-box" style="padding:8px;cursor:pointer;">
-                <small>Jatuh Tempo</small>
-                <strong>Tanggal ${loan.dueDay}</strong>
-              </div>
-            `}
+            ${statBoxesHtml}
           </div>
 
           ${(hasFriend && remFriend > 0) ? `
@@ -1672,7 +1782,7 @@
       } else if (t.type === 'expense' || t.type === 'paylater_expense') {
         if (ROAD_OPS_CATS.includes(t.category)) {
           opsTotal = round2(opsTotal + amt);
-        } else {
+        } else if (!t.isFriendOrder) {
           personalExpTotal = round2(personalExpTotal + amt);
         }
       }
@@ -1717,22 +1827,32 @@
 
     let nearestBill = 0;
     let totalBankDebt = 0;
+    let totalPersonalDebt = 0;
     let totalFriendRec = 0;
     const loanLines = [];
 
     state.loans.forEach((loan) => {
+      const mode = getLoanOwnershipType(loan);
       const remFriend = getLoanRemainingFriend(loan);
       totalFriendRec = round2(totalFriendRec + remFriend);
+
       const unpaid = loan.installments.filter((i) => !i.paidToProvider);
       const remBank = round2(unpaid.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
+      const remPersonal = getLoanRemainingPersonal(loan, remBank, remFriend);
+
       totalBankDebt = round2(totalBankDebt + remBank);
+      totalPersonalDebt = round2(totalPersonalDebt + remPersonal);
 
       if (unpaid.length > 0) {
         const next = unpaid[0];
         const nextAmt = round2(Number(next.amount ?? ((next.personalAmount || 0) + (next.friendAmount || 0))));
         nearestBill = round2(nearestBill + nextAmt);
-        const friendInfo = remFriend > 0 ? ` | Sisa Piutang ${loan.friendName}: ${formatRp(remFriend)}` : '';
-        loanLines.push(`- **${loan.provider} (${loan.title})**: Tagihan Bln ${next.monthIndex}/${loan.tenor} = ${formatRp(nextAmt)} (Jatuh tempo tgl ${loan.dueDay}) | Total Sisa: ${formatRp(remBank)}${friendInfo}`);
+
+        let ownerTag = '[100% Pribadi]';
+        if (mode === 'split') ownerTag = `[Split ${loan.friendName} | Sisa Piutang: ${formatRp(remFriend)}]`;
+        else if (mode === 'friend') ownerTag = `[100% Teman: ${loan.friendName} | Sisa Piutang: ${formatRp(remFriend)}]`;
+
+        loanLines.push(`- **${loan.provider} (${loan.title})** ${ownerTag}: Tagihan Bln ${next.monthIndex}/${loan.tenor} = ${formatRp(nextAmt)} (Jatuh tempo tgl ${loan.dueDay}) | Total Sisa ke App: ${formatRp(remBank)}`);
       }
     });
 
@@ -1759,8 +1879,8 @@
       `- **Tagihan Terdekat (Bulan Aktif):** ${formatRp(nearestBill)}`,
       `- **Uang Bebas Pakai Saat Ini (Tunai/Bank − Tagihan Terdekat):** **${freeCash >= 0 ? formatRp(freeCash) : '-' + formatRp(Math.abs(freeCash))}**`,
       `- **Total Sisa Tagihan ke Bank/App:** ${formatRp(totalBankDebt)}`,
+      `- **Sisa Beban Pribadi Murni:** ${formatRp(totalPersonalDebt)}`,
       `- **Total Sisa Piutang Teman:** ${formatRp(totalFriendRec)}`,
-      `- **Sisa Beban Pribadi Murni:** ${formatRp(Math.max(0, round2(totalBankDebt - totalFriendRec)))}`,
       loanLines.length > 0 ? `\n**Rincian Kontrak Aktif:**\n${loanLines.join('\n')}` : `- Tidak ada tagihan aktif.`,
       ``,
       `## 3. Sisa Limit Kredit Tersedia`,
@@ -1857,8 +1977,10 @@
     setMoneyInputValue('txAmount', draft.amount ? parseMoneyInput(draft.amount) : 0, false);
     if (draft.category) document.getElementById('txCategory').value = draft.category;
     document.getElementById('txNote').value = draft.note || '';
+    document.getElementById('paylaterFriendName').value = draft.plFriendName || '';
     selectPaymentChannel(draft.channel || 'QRIS');
     selectGplBucket(draft.gplBucket || 'QRIS');
+    selectPaylaterOwner(draft.plOwner || 'personal');
     document.getElementById('txModal').classList.add('open');
   }
 
@@ -1912,6 +2034,15 @@
     saveTxDraft();
   }
 
+  function selectPaylaterOwner(owner) {
+    activePaylaterOwner = owner;
+    document.getElementById('plOwnerPersonal').className = 'toggle-opt' + (owner === 'personal' ? ' active' : '');
+    document.getElementById('plOwnerFriend').className = 'toggle-opt' + (owner === 'friend' ? ' active-purple' : '');
+    document.getElementById('paylaterFriendNameBox').style.display = owner === 'friend' ? 'block' : 'none';
+    updatePaylaterPreview();
+    saveTxDraft();
+  }
+
   function onTxSourceOrDateChange() {
     const val = document.getElementById('txWallet').value;
     const isPaylater = val.startsWith('paylater-');
@@ -1943,6 +2074,10 @@
       ruleNote = `Memotong <b>GoPayLater Limit ${bucket}</b> dan masuk tagihan siklus <b>${target.label}</b>.`;
     }
     if (tenor > 1) ruleNote += ` Dicicil <b>${tenor}x</b> mulai ${target.label}.`;
+    if (activePaylaterOwner === 'friend') {
+      const fName = document.getElementById('paylaterFriendName').value.trim() || 'Teman';
+      ruleNote += `<br/>Dicatat sebagai <b>100% Piutang ${esc(fName)}</b> (Beban Pribadi Rp 0).`;
+    }
     document.getElementById('paylaterCyclePreview').innerHTML = ruleNote;
   }
 
@@ -1954,6 +2089,8 @@
       wallet: document.getElementById('txWallet').value,
       channel: activePaymentChannel,
       gplBucket: activeGplBucket,
+      plOwner: activePaylaterOwner,
+      plFriendName: document.getElementById('paylaterFriendName').value,
       category: document.getElementById('txCategory').value,
       note: document.getElementById('txNote').value
     }));
@@ -1972,7 +2109,15 @@
       const provider = walletVal.replace('paylater-', '');
       const bucket = provider === 'GoPayLater' ? activeGplBucket : null;
       const tenor = Number(document.getElementById('paylaterTenor').value || 1);
-      const target0 = calculatePaylaterTarget(provider, dateStr, 0, bucket);
+      const isFriendOrder = activePaylaterOwner === 'friend';
+      const friendName = isFriendOrder ? document.getElementById('paylaterFriendName').value.trim() : '';
+
+      if (isFriendOrder && !friendName) {
+        return showToast('Isi nama teman untuk titipan PayLater');
+      }
+
+      const friendSlug = isFriendOrder ? friendName.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+      const target0 = calculatePaylaterTarget(provider, dateStr, 0, bucket, friendSlug);
 
       await adjustCreditLimit(provider, bucket, -amount);
 
@@ -1983,17 +2128,24 @@
           inst.amount = round2(Number(inst.amount ?? (inst.personalAmount || 0)) + amount);
           inst.items = inst.items || [];
           inst.items.push({ date: dateStr, note, amount });
+          if (isFriendOrder) {
+            existingBill.friendMonthly = inst.amount;
+            existingBill.friendTotalAmount = inst.amount;
+          }
           await idbPut('loans', existingBill);
         } else {
           await idbPut('loans', {
             id: uuid(),
             provider,
             paylaterBucket: bucket,
-            title: `Tagihan ${provider}${bucket ? ' (' + bucket + ')' : ''} • ${target0.label}`,
+            ownershipType: isFriendOrder ? 'friend' : 'personal',
+            title: isFriendOrder
+              ? `Titipan ${friendName} • ${provider}${bucket ? ' (' + bucket + ')' : ''} • ${target0.label}`
+              : `Tagihan ${provider}${bucket ? ' (' + bucket + ')' : ''} • ${target0.label}`,
             billingKey: target0.key,
-            friendName: '',
-            friendMonthly: 0,
-            friendTotalAmount: 0,
+            friendName: isFriendOrder ? friendName : '',
+            friendMonthly: isFriendOrder ? amount : 0,
+            friendTotalAmount: isFriendOrder ? amount : 0,
             friendPaidAmount: 0,
             tenor: 1,
             dueDay: target0.dueDay,
@@ -2010,7 +2162,7 @@
         const perMonth = round2(amount / tenor);
         const installments = [];
         for (let m = 0; m < tenor; m++) {
-          const tInfo = calculatePaylaterTarget(provider, dateStr, m, bucket);
+          const tInfo = calculatePaylaterTarget(provider, dateStr, m, bucket, friendSlug);
           installments.push({
             monthIndex: m + 1,
             billingMonthLabel: tInfo.label,
@@ -2023,11 +2175,12 @@
           id: uuid(),
           provider,
           paylaterBucket: bucket,
-          title: `${note} (${tenor}x)`,
+          ownershipType: isFriendOrder ? 'friend' : 'personal',
+          title: isFriendOrder ? `Titipan ${friendName}: ${note} (${tenor}x)` : `${note} (${tenor}x)`,
           billingKey: null,
-          friendName: '',
-          friendMonthly: 0,
-          friendTotalAmount: 0,
+          friendName: isFriendOrder ? friendName : '',
+          friendMonthly: isFriendOrder ? perMonth : 0,
+          friendTotalAmount: isFriendOrder ? round2(perMonth * tenor) : 0,
           friendPaidAmount: 0,
           tenor,
           dueDay: target0.dueDay,
@@ -2038,18 +2191,19 @@
       await idbPut('transactions', {
         id: uuid(),
         type: 'paylater_expense',
+        isFriendOrder,
         category,
         amount,
         walletId: walletVal,
         walletLabel: `${provider}${bucket ? ' ' + bucket : ''} (${target0.label})`,
-        paymentMethod: bucket ? `PayLater ${bucket}` : 'QRIS PayLater',
+        paymentMethod: isFriendOrder ? `Titipan ${friendName}` : (bucket ? `PayLater ${bucket}` : 'QRIS PayLater'),
         note,
         date: txIsoDate
       });
 
       localStorage.removeItem('cashflow_draft_tx');
       closeModal('txModal');
-      showToast(`Masuk tagihan ${provider} (${target0.label})`);
+      showToast(isFriendOrder ? `Masuk piutang ${friendName} (${target0.label})` : `Masuk tagihan ${provider} (${target0.label})`);
       await refreshAll();
       return;
     }
@@ -2329,10 +2483,11 @@
     await refreshAll();
   }
 
-  // --- 13. CICILAN BERJALAN, EDIT KONTRAK, SETORAN TEMAN & BAYAR TAGIHAN ---
+  // --- 13. CICILAN 3 MODE KEPEMILIKAN, EDIT KONTRAK, SETORAN TEMAN & BAYAR TAGIHAN ---
   function openNewLoanModal() {
     document.getElementById('loanTitle').value = '';
     document.getElementById('loanTotalMonthly').value = '';
+    document.getElementById('loanPrincipalMonthly').value = '';
     document.getElementById('loanTenor').value = 12;
     document.getElementById('loanPaidCount').value = 0;
     document.getElementById('loanNextBillMonth').value = getLocalCurrentMonthStr();
@@ -2341,16 +2496,46 @@
     document.getElementById('loanFriendMonthly').value = '';
     document.getElementById('loanFriendTenor').value = 12;
     document.getElementById('loanFriendPaidCount').value = 0;
-    toggleFriendFields();
-    updateLoanModalPreview();
+    setLoanOwnership('personal');
     document.getElementById('loanModal').classList.add('open');
   }
 
-  function toggleFriendFields() {
-    const provider = document.getElementById('loanProvider').value;
-    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
-    document.getElementById('friendLoanSection').style.display = isPaylater ? 'none' : 'block';
+  function setLoanOwnership(mode) {
+    activeLoanOwnership = mode;
+    document.getElementById('ownOptPersonal').className = 'toggle-opt' + (mode === 'personal' ? ' active' : '');
+    document.getElementById('ownOptSplit').className = 'toggle-opt' + (mode === 'split' ? ' active-warn' : '');
+    document.getElementById('ownOptFriend').className = 'toggle-opt' + (mode === 'friend' ? ' active-purple' : '');
+
+    const sec = document.getElementById('friendLoanSection');
+    const fMonthlyInput = document.getElementById('loanFriendMonthly');
+    const fTenorInput = document.getElementById('loanFriendTenor');
+
+    if (mode === 'personal') {
+      sec.style.display = 'none';
+    } else {
+      sec.style.display = 'block';
+      if (mode === 'friend') {
+        document.getElementById('friendSectionTitle').textContent = 'Detail Teman (100% Ditanggung Teman)';
+        document.getElementById('loanFriendMonthlyLabel').textContent = 'Cicilan Teman / Bln (Otomatis 100%)';
+        fMonthlyInput.readOnly = true;
+        fTenorInput.readOnly = true;
+        syncFriendModeValues();
+      } else {
+        document.getElementById('friendSectionTitle').textContent = 'Detail Porsi Teman (Split)';
+        document.getElementById('loanFriendMonthlyLabel').textContent = 'Cicilan Teman / Bln (Rp)';
+        fMonthlyInput.readOnly = false;
+        fTenorInput.readOnly = false;
+      }
+    }
     updateLoanModalPreview();
+  }
+
+  function syncFriendModeValues() {
+    if (activeLoanOwnership !== 'friend') return;
+    const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
+    const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
+    setMoneyInputValue('loanFriendMonthly', totalMonthly, false);
+    document.getElementById('loanFriendTenor').value = tenor;
   }
 
   function updateLoanModalPreview() {
@@ -2364,29 +2549,40 @@
     const firstActiveIdx = paidCount + 1;
     const firstLabel = `${MONTHS_ID[startMonth - 1]} ${startYear}`;
     const remBankMonths = tenor - paidCount;
+    const remBankTotal = round2(remBankMonths * totalMonthly);
 
     const provider = document.getElementById('loanProvider').value;
-    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
-    const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
-    const friendMonthly = parseMoneyInput(document.getElementById('loanFriendMonthly').value);
-    const fTenor = Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
+    const friendName = document.getElementById('loanFriendName').value.trim() || 'Teman';
+    const friendMonthly = activeLoanOwnership === 'friend'
+      ? totalMonthly
+      : parseMoneyInput(document.getElementById('loanFriendMonthly').value);
+    const fTenor = activeLoanOwnership === 'friend'
+      ? tenor
+      : Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
     const fPaid = Math.min(fTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
 
-    let html = `Tagihan ke <b>${esc(provider)}</b>: Bulan 1–${paidCount || 0} <b>LUNAS</b>, sisa <b>${remBankMonths} bulan aktif</b> mulai Bln ${firstActiveIdx} (${firstLabel}).`;
-    if (friendName && friendMonthly > 0) {
+    let html = `Tagihan ke <b>${esc(provider)}</b>: Bulan 1–${paidCount || 0} <b>LUNAS</b>, sisa <b>${remBankMonths} bulan aktif</b> (${formatRp(remBankTotal)}) mulai Bln ${firstActiveIdx} (${firstLabel}).`;
+
+    if (activeLoanOwnership === 'personal') {
+      html += `<br/>Status: <b>100% Beban Pribadi</b>.`;
+    } else if (activeLoanOwnership === 'friend') {
+      const remFMonths = fTenor - fPaid;
+      const remFAmt = round2(remFMonths * friendMonthly);
+      html += `<br/>Status: <b>100% Tanggungan ${esc(friendName)}</b> • Beban Pribadimu: <b>Rp 0</b> • Sisa Piutang ${esc(friendName)}: <b>${formatRp(remFAmt)}</b> (${remFMonths} bln).`;
+    } else if (activeLoanOwnership === 'split') {
       const remFMonths = fTenor - fPaid;
       const remFAmt = round2(remFMonths * friendMonthly);
       const personalShare = round2(Math.max(0, totalMonthly - friendMonthly));
-      html += `<br/>Beban Pribadimu: <b>${formatRp(personalShare)}/bln</b> • Porsi ${esc(friendName)}: <b>${formatRp(friendMonthly)}/bln</b> (Sisa ${remFMonths} bln = <b>${formatRp(remFAmt)}</b>).`;
+      html += `<br/>Split: Beban Pribadimu <b>${formatRp(personalShare)}/bln</b> • Porsi ${esc(friendName)} <b>${formatRp(friendMonthly)}/bln</b> (Sisa ${remFMonths} bln = <b>${formatRp(remFAmt)}</b>).`;
     }
     document.getElementById('loanSetupPreview').innerHTML = html;
   }
 
   async function createLoanContract() {
     const provider = document.getElementById('loanProvider').value;
-    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
     const title = document.getElementById('loanTitle').value.trim() || provider;
     const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
+    const principalMonthly = parseMoneyInput(document.getElementById('loanPrincipalMonthly').value);
     if (totalMonthly <= 0) return showToast('Isi cicilan total per bulan');
 
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
@@ -2397,10 +2593,27 @@
     const monthVal = document.getElementById('loanNextBillMonth').value || getLocalCurrentMonthStr();
     const [startYear, startMonth] = monthVal.split('-').map(Number);
 
-    const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
-    const friendMonthly = (isPaylater || !friendName) ? 0 : parseMoneyInput(document.getElementById('loanFriendMonthly').value);
-    const friendTenor = Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
-    const friendPaidCount = Math.min(friendTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
+    let friendName = '';
+    let friendMonthly = 0;
+    let friendTenor = tenor;
+    let friendPaidCount = 0;
+
+    if (activeLoanOwnership !== 'personal') {
+      friendName = document.getElementById('loanFriendName').value.trim();
+      if (!friendName) return showToast('Isi nama teman');
+      friendPaidCount = Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0));
+
+      if (activeLoanOwnership === 'friend') {
+        friendMonthly = totalMonthly;
+        friendTenor = tenor;
+        friendPaidCount = Math.min(tenor, friendPaidCount);
+      } else {
+        friendMonthly = parseMoneyInput(document.getElementById('loanFriendMonthly').value);
+        if (friendMonthly <= 0) return showToast('Isi cicilan teman per bulan');
+        friendTenor = Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
+        friendPaidCount = Math.min(friendTenor, friendPaidCount);
+      }
+    }
 
     const firstActiveIdx = paidCount + 1;
     const installments = [];
@@ -2416,15 +2629,16 @@
       });
     }
 
-    const newId = uuid();
     await idbPut('loans', {
-      id: newId,
+      id: uuid(),
       provider,
       paylaterBucket: provider === 'GoPayLater' ? 'QRIS' : null,
+      ownershipType: activeLoanOwnership,
       title,
       billingKey: null,
       tenor,
       dueDay,
+      principalMonthly: principalMonthly > 0 ? principalMonthly : 0,
       friendName,
       friendMonthly,
       friendTotalAmount: round2(friendMonthly * friendTenor),
@@ -2447,22 +2661,58 @@
 
     const firstUnpaid = loan.installments.find((i) => !i.paidToProvider) || loan.installments[0];
     setMoneyInputValue('editLoanMonthly', firstUnpaid ? firstUnpaid.amount : 0, true);
+    setMoneyInputValue('editLoanPrincipal', loan.principalMonthly || 0, false);
 
-    const isPaylater = loan.provider === 'SPayLater' || loan.provider === 'GoPayLater';
-    document.getElementById('editLoanFriendWrap').style.display = isPaylater ? 'none' : 'block';
     document.getElementById('editLoanFriendName').value = loan.friendName || '';
     setMoneyInputValue('editLoanFriendMonthly', loan.friendMonthly || 0, true);
     setMoneyInputValue('editLoanFriendTotal', loan.friendTotalAmount || 0, true);
     setMoneyInputValue('editLoanFriendPaid', loan.friendPaidAmount || 0, true);
 
+    setEditLoanOwnership(getLoanOwnershipType(loan));
     document.getElementById('editLoanModal').classList.add('open');
+  }
+
+  function setEditLoanOwnership(mode) {
+    editLoanOwnership = mode;
+    document.getElementById('editOwnOptPersonal').className = 'toggle-opt' + (mode === 'personal' ? ' active' : '');
+    document.getElementById('editOwnOptSplit').className = 'toggle-opt' + (mode === 'split' ? ' active-warn' : '');
+    document.getElementById('editOwnOptFriend').className = 'toggle-opt' + (mode === 'friend' ? ' active-purple' : '');
+
+    const wrap = document.getElementById('editLoanFriendWrap');
+    const fMonthlyEl = document.getElementById('editLoanFriendMonthly');
+    const fTotalEl = document.getElementById('editLoanFriendTotal');
+
+    if (mode === 'personal') {
+      wrap.style.display = 'none';
+    } else {
+      wrap.style.display = 'block';
+      if (mode === 'friend') {
+        fMonthlyEl.readOnly = true;
+        fTotalEl.readOnly = true;
+        syncEditFriendModeValues();
+      } else {
+        fMonthlyEl.readOnly = false;
+        fTotalEl.readOnly = false;
+      }
+    }
+  }
+
+  function syncEditFriendModeValues() {
+    if (editLoanOwnership !== 'friend') return;
+    const loan = state.loans.find((l) => l.id === editingLoanId);
+    if (!loan) return;
+    const monthly = parseMoneyInput(document.getElementById('editLoanMonthly').value);
+    setMoneyInputValue('editLoanFriendMonthly', monthly, true);
+    setMoneyInputValue('editLoanFriendTotal', round2(monthly * loan.tenor), true);
   }
 
   async function submitEditLoan() {
     const loan = state.loans.find((l) => l.id === editingLoanId);
     if (!loan) return;
+    loan.ownershipType = editLoanOwnership;
     loan.title = document.getElementById('editLoanTitle').value.trim() || loan.title;
     loan.dueDay = Math.min(31, Math.max(1, Number(document.getElementById('editLoanDueDay').value || loan.dueDay)));
+    loan.principalMonthly = parseMoneyInput(document.getElementById('editLoanPrincipal').value);
 
     const newMonthly = parseMoneyInput(document.getElementById('editLoanMonthly').value);
     if (newMonthly > 0) {
@@ -2471,12 +2721,25 @@
       });
     }
 
-    const isPaylater = loan.provider === 'SPayLater' || loan.provider === 'GoPayLater';
-    if (!isPaylater) {
-      loan.friendName = document.getElementById('editLoanFriendName').value.trim();
-      loan.friendMonthly = parseMoneyInput(document.getElementById('editLoanFriendMonthly').value);
-      loan.friendTotalAmount = parseMoneyInput(document.getElementById('editLoanFriendTotal').value);
-      loan.friendPaidAmount = parseMoneyInput(document.getElementById('editLoanFriendPaid').value);
+    if (editLoanOwnership === 'personal') {
+      loan.friendName = '';
+      loan.friendMonthly = 0;
+      loan.friendTotalAmount = 0;
+      loan.friendPaidAmount = 0;
+    } else {
+      const fName = document.getElementById('editLoanFriendName').value.trim();
+      if (!fName) return showToast('Isi nama teman');
+      loan.friendName = fName;
+      if (editLoanOwnership === 'friend') {
+        const effMonthly = newMonthly > 0 ? newMonthly : Number(loan.installments[0]?.amount || 0);
+        loan.friendMonthly = effMonthly;
+        loan.friendTotalAmount = round2(effMonthly * loan.tenor);
+        loan.friendPaidAmount = parseMoneyInput(document.getElementById('editLoanFriendPaid').value);
+      } else {
+        loan.friendMonthly = parseMoneyInput(document.getElementById('editLoanFriendMonthly').value);
+        loan.friendTotalAmount = parseMoneyInput(document.getElementById('editLoanFriendTotal').value);
+        loan.friendPaidAmount = parseMoneyInput(document.getElementById('editLoanFriendPaid').value);
+      }
     }
 
     await idbPut('loans', loan);
@@ -2530,9 +2793,10 @@
     const loan = state.loans.find((l) => l.id === loanId);
     const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
     const instAmt = round2(Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
+    const restoreAmt = (loan.principalMonthly && Number(loan.principalMonthly) > 0) ? Number(loan.principalMonthly) : instAmt;
 
     document.getElementById('payBillTitle').textContent = `Bayar ${loan.provider} (Bln ${monthIndex})`;
-    document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} otomatis naik kembali.`;
+    document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} pulih +${formatRp(restoreAmt)}.`;
 
     const walletSel = document.getElementById('payBillWallet');
     walletSel.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
@@ -2555,7 +2819,7 @@
 
       await idbPut('wallets', w);
       await idbPut('loans', loan);
-      await adjustCreditLimit(loan.provider, bucket, instAmt);
+      await adjustCreditLimit(loan.provider, bucket, restoreAmt);
       await idbPut('transactions', {
         id: uuid(),
         type: 'debt_payment',
@@ -2688,10 +2952,10 @@
       walletId: 'wallet-seabank', paymentMethod: 'QRIS', note: 'Warung Makan Siang', date: new Date(Date.now() - 3600000).toISOString()
     });
 
-    const demoInstallments = [];
+    const splitInsts = [];
     for (let m = 1; m <= 12; m++) {
       const d = new Date(2026, 8 + m, 1);
-      demoInstallments.push({
+      splitInsts.push({
         monthIndex: m,
         billingMonthLabel: `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`,
         amount: 311511,
@@ -2700,12 +2964,34 @@
     }
     await idbPut('loans', {
       id: uuid(), provider: 'SPinjam', paylaterBucket: null,
+      ownershipType: 'split',
       title: 'Pinjaman 3jt (Split Adi 1jt)', billingKey: null,
-      tenor: 12, dueDay: 25,
+      tenor: 12, dueDay: 25, principalMonthly: 250000,
       friendName: 'Adi', friendMonthly: 105000,
       friendTotalAmount: 105000 * 12,
       friendPaidAmount: 105000 * 7,
-      installments: demoInstallments
+      installments: splitInsts
+    });
+
+    const friendInsts = [];
+    for (let m = 1; m <= 6; m++) {
+      const d = new Date(2026, 9 + m, 1);
+      friendInsts.push({
+        monthIndex: m,
+        billingMonthLabel: `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`,
+        amount: 220000,
+        paidToProvider: m <= 1
+      });
+    }
+    await idbPut('loans', {
+      id: uuid(), provider: 'SPayLater', paylaterBucket: null,
+      ownershipType: 'friend',
+      title: 'Titipan Helm & Jaket Budi', billingKey: null,
+      tenor: 6, dueDay: 22, principalMonthly: 200000,
+      friendName: 'Budi', friendMonthly: 220000,
+      friendTotalAmount: 220000 * 6,
+      friendPaidAmount: 220000 * 1,
+      installments: friendInsts
     });
 
     expandedLoanId = null;
