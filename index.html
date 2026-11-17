@@ -59,7 +59,7 @@
     .view { display: none; }
     .view.active { display: block; }
 
-    /* Hero Total Saldo */
+    /* Hero Total Saldo & Uang Bebas Pakai */
     .hero-card {
       background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
       border: 1px solid rgba(16, 185, 129, 0.35);
@@ -68,7 +68,17 @@
       margin-bottom: 12px;
     }
     .hero-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a7f3d0; font-weight: 600; }
-    .hero-amount { font-size: 1.65rem; font-weight: 800; margin: 2px 0 10px; letter-spacing: -0.02em; }
+    .hero-amount { font-size: 1.62rem; font-weight: 800; margin: 2px 0 8px; letter-spacing: -0.02em; }
+    .hero-free-box {
+      background: rgba(2, 44, 34, 0.65);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 10px;
+      padding: 8px 11px;
+      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .hero-free-box span { font-size: 0.73rem; color: #d1fae5; font-weight: 600; }
+    .hero-free-box strong { font-size: 0.95rem; font-weight: 800; }
     .hero-sub {
       display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
       padding-top: 9px; border-top: 1px solid rgba(255,255,255,0.12);
@@ -86,7 +96,7 @@
     }
     .cash-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .cash-title { font-size: 0.8rem; font-weight: 700; color: #fde68a; display: flex; align-items: center; gap: 6px; }
-    .cash-bal { font-size: 1.35rem; font-weight: 800; margin-bottom: 2px; }
+    .cash-bal { font-size: 1.32rem; font-weight: 800; margin-bottom: 2px; }
     .cash-meta { font-size: 0.7rem; color: var(--muted); margin-bottom: 10px; }
     .reconcile-btn {
       background: rgba(245, 158, 11, 0.14);
@@ -107,6 +117,7 @@
     .btn-primary { background: var(--primary); color: #022c22; }
     .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
     .btn-info { background: rgba(56, 189, 248, 0.16); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.38); }
+    .btn-warning { background: rgba(245, 158, 11, 0.16); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.35); }
     .btn-ghost-muted {
       background: transparent;
@@ -143,7 +154,7 @@
     .acc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .acc-name { font-size: 0.8rem; font-weight: 600; color: #e2e8f0; }
     .acc-tag { font-size: 0.62rem; color: var(--muted); background: var(--bg); padding: 2px 6px; border-radius: 5px; }
-    .acc-bal { font-size: 0.98rem; font-weight: 800; }
+    .acc-bal { font-size: 0.96rem; font-weight: 800; }
 
     /* Credit Limits Bar */
     .limit-card {
@@ -181,6 +192,7 @@
     .tx-title { font-size: 0.86rem; font-weight: 600; }
     .tx-meta { font-size: 0.71rem; color: var(--muted); margin-top: 2px; }
     .tx-amt { font-weight: 700; font-size: 0.88rem; text-align: right; white-space: nowrap; }
+    .tx-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 3px; font-size: 0.68rem; }
     .plus { color: var(--primary); }
     .minus { color: #fda4af; }
     .neutral { color: var(--info); }
@@ -233,6 +245,7 @@
       font-family: inherit;
     }
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    .money-input { font-weight: 700; letter-spacing: 0.01em; }
     .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .toggle-row-3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 7px; }
     .toggle-opt {
@@ -262,7 +275,7 @@
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
     .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px; }
     .stat-box small { color: var(--muted); font-size: 0.71rem; display: block; }
-    .stat-box strong { font-size: 0.96rem; margin-top: 3px; display: block; }
+    .stat-box strong { font-size: 0.94rem; margin-top: 3px; display: block; }
 
     .toast {
       position: fixed; top: 62px; left: 50%; transform: translateX(-50%);
@@ -294,6 +307,10 @@
       <div class="hero-card">
         <div class="hero-label">Total Uang Aktif (Tunai + Bank + E-Wallet)</div>
         <div class="hero-amount" id="totalBalance">Rp 0</div>
+        <div class="hero-free-box">
+          <span>Uang Bebas Pakai (Setelah Tagihan)</span>
+          <strong id="freeToSpendBalance" class="plus">Rp 0</strong>
+        </div>
         <div class="hero-sub">
           <div>
             <span>Tagihan Terdekat</span>
@@ -524,7 +541,7 @@
       </div>
       <div class="form-group">
         <label>Nominal Tip (Rp)</label>
-        <input type="number" id="tipAmount" inputmode="numeric" placeholder="10000" oninput="saveTipDraft()" />
+        <input type="text" class="money-input" id="tipAmount" inputmode="decimal" placeholder="10.000" oninput="saveTipDraft()" />
       </div>
       <div class="form-group">
         <label>Masuk ke Mana? (Auto Dompet Tunai)</label>
@@ -542,7 +559,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: CATAT TRANSAKSI (KELOMPOK A QRIS/TRANSFER & KELOMPOK B PAYLATER + 2 LIMIT GOPAYLATER) -->
+  <!-- MODAL 2: CATAT TRANSAKSI -->
   <div class="modal-backdrop" id="txModal" onclick="closeModalOnBackdrop(event, 'txModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -559,7 +576,7 @@
       <div class="stat-grid" style="margin-bottom:12px;">
         <div class="form-group" style="margin:0;">
           <label>Nominal (Rp)</label>
-          <input type="number" id="txAmount" inputmode="numeric" placeholder="25000" oninput="saveTxDraft()" />
+          <input type="text" class="money-input" id="txAmount" inputmode="decimal" placeholder="25.000" oninput="saveTxDraft()" />
         </div>
         <div class="form-group" style="margin:0;">
           <label>Tanggal Transaksi</label>
@@ -612,6 +629,40 @@
     </div>
   </div>
 
+  <!-- MODAL 2B: EDIT TRANSAKSI -->
+  <div class="modal-backdrop" id="editTxModal" onclick="closeModalOnBackdrop(event, 'editTxModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong>✎ Edit Transaksi</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('editTxModal')">Tutup</button>
+      </div>
+      <div class="stat-grid" style="margin-bottom:12px;">
+        <div class="form-group" style="margin:0;">
+          <label>Nominal (Rp)</label>
+          <input type="text" class="money-input" id="editTxAmount" inputmode="decimal" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Tanggal</label>
+          <input type="date" id="editTxDate" />
+        </div>
+      </div>
+      <div class="form-group" id="editTxWalletGroup">
+        <label>Akun / Dompet</label>
+        <select id="editTxWallet"></select>
+      </div>
+      <div class="form-group">
+        <label>Kategori</label>
+        <input type="text" id="editTxCategory" />
+      </div>
+      <div class="form-group">
+        <label>Keterangan</label>
+        <input type="text" id="editTxNote" />
+      </div>
+      <button class="btn btn-primary btn-block" onclick="submitEditTx()">Simpan Perubahan</button>
+    </div>
+  </div>
+
   <!-- MODAL 3: COCOKKAN UANG FISIK DOMPET TUNAI -->
   <div class="modal-backdrop" id="reconcileModal" onclick="closeModalOnBackdrop(event, 'reconcileModal')">
     <div class="sheet">
@@ -629,7 +680,7 @@
       </div>
       <div class="form-group">
         <label>Jumlah Uang Fisik Asli di Dompet Sekarang (Rp)</label>
-        <input type="number" id="recActualBal" inputmode="numeric" placeholder="Masukkan uang asli" oninput="previewReconcileDiff()" />
+        <input type="text" class="money-input" id="recActualBal" inputmode="decimal" placeholder="135.000" oninput="previewReconcileDiff()" />
       </div>
       <div class="info-banner" id="recDiffPreview" style="display:none;"></div>
       <button class="btn btn-primary btn-block" onclick="submitReconcile()">Cocokkan & Perbarui Saldo</button>
@@ -646,7 +697,7 @@
       </div>
       <div class="form-group">
         <label>Koreksi Saldo Langsung (Rp)</label>
-        <input type="number" id="editWalletBalance" inputmode="numeric" />
+        <input type="text" class="money-input" id="editWalletBalance" inputmode="decimal" />
       </div>
       <button class="btn btn-secondary btn-block" style="margin-bottom:14px;" onclick="saveWalletBalance()">Simpan Koreksi Saldo</button>
 
@@ -654,7 +705,7 @@
       <strong style="font-size:0.86rem;display:block;margin-bottom:8px;">Transfer / Top-Up / Tarik Tunai</strong>
       <div class="form-group">
         <label>Nominal Transfer (Rp)</label>
-        <input type="number" id="transferAmount" inputmode="numeric" placeholder="50000" />
+        <input type="text" class="money-input" id="transferAmount" inputmode="decimal" placeholder="50.000" />
       </div>
       <div class="form-group">
         <label>Kirim ke Akun / Dompet</label>
@@ -664,7 +715,7 @@
     </div>
   </div>
 
-  <!-- MODAL 5: ATUR LIMIT KREDIT -->
+  <!-- MODAL 5: ATUR LIMIT KREDIT (PERMANEN + SEMENTARA + TOMBOL HANGUS) -->
   <div class="modal-backdrop" id="limitModal" onclick="closeModalOnBackdrop(event, 'limitModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -672,22 +723,32 @@
         <strong id="limitModalTitle">Atur Limit Kredit</strong>
         <button class="btn btn-secondary btn-sm" onclick="closeModal('limitModal')">Tutup</button>
       </div>
-      <p style="font-size:0.77rem;color:var(--muted);margin-bottom:12px;">
-        Saat tagihan dibayar di tab Cicilan, sisa limit akan otomatis bertambah kembali maksimal sebesar Limit Permanen.
+      <p style="font-size:0.76rem;color:var(--muted);margin-bottom:12px;">
+        Isi <b>Limit Permanen</b> dan <b>Limit Sementara</b> (jika sedang aktif) sesuai yang tampil di aplikasi.
       </p>
-      <div class="form-group">
-        <label>Limit Permanen / Maksimal (Rp)</label>
-        <input type="number" id="editLimitMax" inputmode="numeric" placeholder="3000000" />
+      <div class="stat-grid" style="margin-bottom:10px;">
+        <div class="form-group" style="margin:0;">
+          <label>Limit Permanen (Rp)</label>
+          <input type="text" class="money-input" id="editLimitPerm" inputmode="decimal" placeholder="17.250.000" oninput="previewCreditLimitCalc()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Limit Sementara (Rp)</label>
+          <input type="text" class="money-input" id="editLimitTemp" inputmode="decimal" placeholder="3.000.000" oninput="previewCreditLimitCalc()" />
+        </div>
       </div>
       <div class="form-group">
         <label>Sisa Limit Tersedia Saat Ini (Rp)</label>
-        <input type="number" id="editLimitRem" inputmode="numeric" placeholder="500000" />
+        <input type="text" class="money-input" id="editLimitRem" inputmode="decimal" placeholder="20.131.192" oninput="previewCreditLimitCalc()" />
       </div>
+      <div class="info-banner-blue" id="limitCalcPreview" style="margin-bottom:10px;"></div>
+      <button type="button" class="btn btn-warning btn-sm btn-block" id="expireTempLimitBtn" style="margin-bottom:10px;" onclick="expireTemporaryLimit()">
+        ✕ Limit Sementara Hangus (Reset ke 0)
+      </button>
       <button class="btn btn-primary btn-block" onclick="saveCreditLimit()">Simpan Pengaturan Limit</button>
     </div>
   </div>
 
-  <!-- MODAL 6: TAMBAH KONTRAK CICILAN (BARU & BERJALAN + SPLIT TEMAN TERPISAH) -->
+  <!-- MODAL 6: TAMBAH KONTRAK CICILAN -->
   <div class="modal-backdrop" id="loanModal" onclick="closeModalOnBackdrop(event, 'loanModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -709,10 +770,9 @@
         <input type="text" id="loanTitle" placeholder="Contoh: Pinjaman 3jt (Split Adi)" />
       </div>
 
-      <!-- Bagian Kewajiban ke Aplikasi/Bank -->
       <div class="form-group">
         <label>Cicilan Total ke Aplikasi per Bulan (Rp)</label>
-        <input type="number" id="loanTotalMonthly" inputmode="numeric" placeholder="311511" oninput="updateLoanModalPreview()" />
+        <input type="text" class="money-input" id="loanTotalMonthly" inputmode="decimal" placeholder="311.511" oninput="updateLoanModalPreview()" />
       </div>
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
@@ -736,7 +796,6 @@
         </div>
       </div>
 
-      <!-- Bagian Porsi Teman (Terpisah dari Jadwal Bank) -->
       <div id="friendLoanSection" style="padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
         <strong style="font-size:0.82rem;color:#7dd3fc;display:block;margin-bottom:8px;">Porsi Talangan Teman (Opsional)</strong>
         <div class="stat-grid" style="margin-bottom:8px;">
@@ -746,7 +805,7 @@
           </div>
           <div class="form-group" style="margin:0;">
             <label>Cicilan Teman / Bln (Rp)</label>
-            <input type="number" id="loanFriendMonthly" inputmode="numeric" placeholder="105000" oninput="updateLoanModalPreview()" />
+            <input type="text" class="money-input" id="loanFriendMonthly" inputmode="decimal" placeholder="105.000" oninput="updateLoanModalPreview()" />
           </div>
         </div>
         <div class="stat-grid" style="margin-bottom:4px;">
@@ -766,7 +825,56 @@
     </div>
   </div>
 
-  <!-- MODAL 7: TERIMA SETORAN TEMAN (NOMINAL FLEKSIBEL) -->
+  <!-- MODAL 6B: EDIT KONTRAK CICILAN -->
+  <div class="modal-backdrop" id="editLoanModal" onclick="closeModalOnBackdrop(event, 'editLoanModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong>✎ Edit Kontrak Cicilan</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('editLoanModal')">Tutup</button>
+      </div>
+      <div class="form-group">
+        <label>Judul / Keperluan</label>
+        <input type="text" id="editLoanTitle" />
+      </div>
+      <div class="stat-grid" style="margin-bottom:10px;">
+        <div class="form-group" style="margin:0;">
+          <label>Cicilan Belum Lunas / Bln (Rp)</label>
+          <input type="text" class="money-input" id="editLoanMonthly" inputmode="decimal" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Tanggal Jatuh Tempo</label>
+          <input type="number" id="editLoanDueDay" inputmode="numeric" min="1" max="31" />
+        </div>
+      </div>
+      <div id="editLoanFriendWrap" style="padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
+        <strong style="font-size:0.82rem;color:#7dd3fc;display:block;margin-bottom:8px;">Edit Data Piutang Teman</strong>
+        <div class="stat-grid" style="margin-bottom:8px;">
+          <div class="form-group" style="margin:0;">
+            <label>Nama Teman</label>
+            <input type="text" id="editLoanFriendName" />
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Cicilan Teman / Bln (Rp)</label>
+            <input type="text" class="money-input" id="editLoanFriendMonthly" inputmode="decimal" />
+          </div>
+        </div>
+        <div class="stat-grid" style="margin-bottom:10px;">
+          <div class="form-group" style="margin:0;">
+            <label>Total Piutang Teman (Rp)</label>
+            <input type="text" class="money-input" id="editLoanFriendTotal" inputmode="decimal" />
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Sudah Dibayar Teman (Rp)</label>
+            <input type="text" class="money-input" id="editLoanFriendPaid" inputmode="decimal" />
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="submitEditLoan()">Simpan Perubahan Kontrak</button>
+    </div>
+  </div>
+
+  <!-- MODAL 7: TERIMA SETORAN TEMAN -->
   <div class="modal-backdrop" id="friendPayModal" onclick="closeModalOnBackdrop(event, 'friendPayModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -777,7 +885,7 @@
       <p id="friendPayDesc" style="font-size:0.8rem;color:var(--muted);margin-bottom:10px;"></p>
       <div class="form-group">
         <label>Nominal yang Dikasih Teman (Rp)</label>
-        <input type="number" id="friendPayAmount" inputmode="numeric" />
+        <input type="text" class="money-input" id="friendPayAmount" inputmode="decimal" />
       </div>
       <div class="form-group">
         <label>Uangnya Masuk ke Dompet / Rekening Mana?</label>
@@ -787,7 +895,7 @@
     </div>
   </div>
 
-  <!-- MODAL 8: BAYAR TAGIHAN KE APLIKASI / BANK (OTOMATIS NAIKKAN LIMIT) -->
+  <!-- MODAL 8: BAYAR TAGIHAN KE APLIKASI / BANK -->
   <div class="modal-backdrop" id="payBillModal" onclick="closeModalOnBackdrop(event, 'payBillModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -851,7 +959,86 @@
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
 
-  // --- 2. INDEXEDDB ENGINE (CashFlowDB v2) ---
+  // --- 2. FORMATTER & PARSER ANGKA INDONESIA (TITIK RIBUAN & KOMA DESIMAL) ---
+  function formatMoneyInputStr(raw) {
+    let s = String(raw || '').trim();
+    if (!s) return '';
+    if (!s.includes(',')) {
+      if (s.endsWith('.')) {
+        s = s.slice(0, -1) + ',';
+      } else {
+        const dotParts = s.split('.');
+        if (dotParts.length === 2 && dotParts[1].length > 0 && dotParts[1].length <= 2) {
+          s = dotParts[0] + ',' + dotParts[1];
+        }
+      }
+    }
+    const hasComma = s.includes(',');
+    const parts = s.split(',');
+    let intDigits = parts[0].replace(/\D/g, '');
+    if (intDigits.length > 1) {
+      intDigits = intDigits.replace(/^0+/, '') || '0';
+    }
+    const formattedInt = intDigits ? intDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : (hasComma ? '0' : '');
+    if (hasComma) {
+      const decDigits = parts.slice(1).join('').replace(/\D/g, '').slice(0, 2);
+      return `${formattedInt},${decDigits}`;
+    }
+    return formattedInt;
+  }
+
+  function parseMoneyInput(val) {
+    if (typeof val === 'number') return isFinite(val) ? Math.round(val * 100) / 100 : 0;
+    let s = String(val || '').trim();
+    if (!s) return 0;
+    s = s.replace(/\./g, '').replace(',', '.');
+    const num = parseFloat(s);
+    return isFinite(num) ? Math.round(num * 100) / 100 : 0;
+  }
+
+  function formatNumberID(num) {
+    const val = Math.round((Number(num) || 0) * 100) / 100;
+    const isNeg = val < 0;
+    const absVal = Math.abs(val);
+    const fixed = absVal.toFixed(2);
+    const [intPart, decPart] = fixed.split('.');
+    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    const result = decPart === '00' ? formattedInt : `${formattedInt},${decPart}`;
+    return isNeg ? `-${result}` : result;
+  }
+
+  const formatRp = (num) => {
+    const val = Math.round((Number(num) || 0) * 100) / 100;
+    if (val < 0) return `-Rp ${formatNumberID(Math.abs(val))}`;
+    return `Rp ${formatNumberID(val)}`;
+  };
+
+  function setMoneyInputValue(id, num, allowZero = false) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = Number(num) || 0;
+    if (val === 0 && !allowZero) {
+      el.value = '';
+    } else {
+      el.value = formatNumberID(val);
+    }
+  }
+
+  document.addEventListener('input', (e) => {
+    if (!e.target.classList || !e.target.classList.contains('money-input')) return;
+    const el = e.target;
+    const oldVal = el.value;
+    const selStart = el.selectionStart || oldVal.length;
+    const charsFromEnd = oldVal.length - selStart;
+    const formatted = formatMoneyInputStr(oldVal);
+    if (formatted !== oldVal) {
+      el.value = formatted;
+      const newPos = Math.max(0, formatted.length - charsFromEnd);
+      el.setSelectionRange(newPos, newPos);
+    }
+  });
+
+  // --- 3. INDEXEDDB ENGINE (CashFlowDB v2) ---
   const DB_NAME = 'CashFlowDB';
   const DB_VERSION = 2;
   let db = null;
@@ -907,7 +1094,7 @@
     });
   }
 
-  // --- 3. DEFAULT AKUN, LIMIT & HELPERS ---
+  // --- 4. DEFAULT AKUN, LIMIT & HELPERS ---
   const DEFAULT_WALLETS = [
     { id: 'wallet-cash', name: 'Dompet Tunai', group: 'cash', icon: '💵', tag: 'Fisik', balance: 0, lastChecked: null },
     { id: 'wallet-seabank', name: 'SeaBank', group: 'bank', icon: '🏦', tag: 'QRIS Utama', balance: 0 },
@@ -919,11 +1106,11 @@
   ];
 
   const DEFAULT_LIMITS = [
-    { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam (Permanen)', maxLimit: 0, remainingLimit: 0 },
-    { id: 'limit-seabank', provider: 'SeaBank Pinjam', bucket: null, label: 'SeaBank Pinjam', maxLimit: 0, remainingLimit: 0 },
-    { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', maxLimit: 0, remainingLimit: 0 },
-    { id: 'limit-gopaylater-qris', provider: 'GoPayLater', bucket: 'QRIS', label: 'GoPayLater • QRIS', maxLimit: 0, remainingLimit: 0 },
-    { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', maxLimit: 0, remainingLimit: 0 }
+    { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam', permanentLimit: 0, temporaryLimit: 0, remainingLimit: 0 },
+    { id: 'limit-seabank', provider: 'SeaBank Pinjam', bucket: null, label: 'SeaBank Pinjam', permanentLimit: 0, temporaryLimit: 0, remainingLimit: 0 },
+    { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', permanentLimit: 0, temporaryLimit: 0, remainingLimit: 0 },
+    { id: 'limit-gopaylater-qris', provider: 'GoPayLater', bucket: 'QRIS', label: 'GoPayLater • QRIS', permanentLimit: 0, temporaryLimit: 0, remainingLimit: 0 },
+    { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', permanentLimit: 0, temporaryLimit: 0, remainingLimit: 0 }
   ];
 
   const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -941,10 +1128,12 @@
   let selectedWalletId = null;
   let selectedLimitId = null;
   let activeFriendLoanId = null;
+  let editingTxId = null;
+  let editingLoanId = null;
 
-  const formatRp = (num) => 'Rp ' + Math.round(Number(num) || 0).toLocaleString('id-ID');
   const esc = (str) => String(str || '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
   const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+  const round2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
 
   function getLocalTodayStr() {
     const d = new Date();
@@ -969,6 +1158,10 @@
     window._toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2400);
   }
 
+  function getTotalCeiling(lim) {
+    return round2(Number(lim.permanentLimit || lim.maxLimit || 0) + Number(lim.temporaryLimit || 0));
+  }
+
   async function ensureDefaults() {
     const existingWallets = await idbAll('wallets');
     const wMap = new Map(existingWallets.map((w) => [w.id, w]));
@@ -988,6 +1181,16 @@
     for (const defL of DEFAULT_LIMITS) {
       if (!lMap.has(defL.id)) {
         await idbPut('limits', defL);
+      } else {
+        const curL = lMap.get(defL.id);
+        if (curL.permanentLimit === undefined) {
+          await idbPut('limits', {
+            ...defL,
+            ...curL,
+            permanentLimit: Number(curL.maxLimit || 0),
+            temporaryLimit: 0
+          });
+        }
       }
     }
   }
@@ -1010,7 +1213,7 @@
     checkBackupReminder();
   }
 
-  // --- 4. KALKULASI SIKLUS PAYLATER & HELPER LIMIT ---
+  // --- 5. KALKULASI SIKLUS PAYLATER & HELPER LIMIT ---
   function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0, bucket = null) {
     const parts = (dateStr || getLocalTodayStr()).split('-').map(Number);
     const year = parts[0], month = parts[1], day = parts[2];
@@ -1037,10 +1240,11 @@
     const lim = state.limits.find((x) => x.id === limitId);
     if (!lim) return;
 
-    let nextRem = Number(lim.remainingLimit || 0) + Number(delta);
+    const ceiling = getTotalCeiling(lim);
+    let nextRem = round2(Number(lim.remainingLimit || 0) + Number(delta));
     if (nextRem < 0) nextRem = 0;
-    if (Number(lim.maxLimit) > 0 && nextRem > Number(lim.maxLimit)) {
-      nextRem = Number(lim.maxLimit);
+    if (ceiling > 0 && nextRem > ceiling) {
+      nextRem = ceiling;
     }
     lim.remainingLimit = nextRem;
     await idbPut('limits', lim);
@@ -1048,12 +1252,12 @@
 
   function getLoanRemainingFriend(loan) {
     if (!loan.friendName || !loan.friendTotalAmount) return 0;
-    return Math.max(0, Number(loan.friendTotalAmount) - Number(loan.friendPaidAmount || 0));
+    return round2(Math.max(0, Number(loan.friendTotalAmount) - Number(loan.friendPaidAmount || 0)));
   }
 
-  // --- 5. RENDERING DASHBOARD & MUTASI ---
+  // --- 6. RENDERING DASHBOARD & MUTASI ---
   function renderDashboard() {
-    const totalBal = state.wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0);
+    const totalBal = round2(state.wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0));
     document.getElementById('totalBalance').textContent = formatRp(totalBal);
 
     // Spotlight Dompet Tunai
@@ -1069,14 +1273,19 @@
     let nearestInstallment = null;
 
     state.loans.forEach((loan) => {
-      totalFriendReceivable += getLoanRemainingFriend(loan);
+      totalFriendReceivable = round2(totalFriendReceivable + getLoanRemainingFriend(loan));
       const nextInst = loan.installments.find((i) => !i.paidToProvider);
       if (nextInst) {
-        const instAmt = Number(nextInst.amount ?? ((nextInst.personalAmount || 0) + (nextInst.friendAmount || 0)));
-        nearestBill += instAmt;
+        const instAmt = round2(Number(nextInst.amount ?? ((nextInst.personalAmount || 0) + (nextInst.friendAmount || 0))));
+        nearestBill = round2(nearestBill + instAmt);
         if (!nearestInstallment) nearestInstallment = { loan, inst: nextInst, instAmt };
       }
     });
+
+    const freeToSpend = round2(totalBal - nearestBill);
+    const freeEl = document.getElementById('freeToSpendBalance');
+    freeEl.textContent = formatRp(freeToSpend);
+    freeEl.className = freeToSpend >= 0 ? 'plus' : 'minus';
 
     document.getElementById('monthlyBillTotal').textContent = formatRp(nearestBill);
     document.getElementById('monthlyFriendReceivable').textContent = formatRp(totalFriendReceivable);
@@ -1155,9 +1364,9 @@
     filteredTx.forEach((t) => {
       const amt = Math.abs(Number(t.amount || 0));
       if (t.type === 'income' || t.type === 'receivable_in' || (t.type === 'reconcile' && t.amount > 0)) {
-        sumIn += amt;
+        sumIn = round2(sumIn + amt);
       } else if (t.type === 'expense' || t.type === 'debt_payment' || (t.type === 'reconcile' && t.amount < 0)) {
-        sumOut += amt;
+        sumOut = round2(sumOut + amt);
       }
     });
 
@@ -1188,8 +1397,9 @@
             </div>
             <div>
               <div class="tx-amt ${cls}">${sign}${formatRp(Math.abs(t.amount))}</div>
-              <div style="text-align:right;margin-top:2px;">
-                <span onclick="deleteTransaction('${t.id}')" style="font-size:0.67rem;color:var(--muted);cursor:pointer;">Hapus</span>
+              <div class="tx-actions">
+                <span onclick="openEditTxModal('${t.id}')" style="color:var(--info);cursor:pointer;">Edit</span>
+                <span onclick="deleteTransaction('${t.id}')" style="color:var(--muted);cursor:pointer;">Hapus</span>
               </div>
             </div>
           </div>
@@ -1224,18 +1434,20 @@
     renderDashboard();
   }
 
-  // --- 6. RENDERING CICILAN & LIMIT KREDIT ---
+  // --- 7. RENDERING CICILAN & LIMIT KREDIT ---
   function renderLoans() {
-    // Render 5 Credit Limits
     document.getElementById('creditLimitsGrid').innerHTML = state.limits.map((lim) => {
-      const max = Number(lim.maxLimit || 0);
+      const ceiling = getTotalCeiling(lim);
       const rem = Number(lim.remainingLimit || 0);
-      const pct = max > 0 ? Math.min(100, Math.round((rem / max) * 100)) : 0;
+      const temp = Number(lim.temporaryLimit || 0);
+      const pct = ceiling > 0 ? Math.min(100, Math.round((rem / ceiling) * 100)) : 0;
+      const tempBadge = temp > 0 ? `<div style="font-size:0.62rem;color:#fcd34d;margin-top:1px;">+Temp ${formatRp(temp)}</div>` : '';
       return `
         <div class="limit-card" onclick="openLimitModal('${lim.id}')">
           <div style="font-size:0.74rem;font-weight:700;color:#e2e8f0;">${esc(lim.label)}</div>
-          <div style="font-size:0.9rem;font-weight:800;color:var(--info);margin-top:2px;">${formatRp(rem)}</div>
-          <div style="font-size:0.65rem;color:var(--muted);">dari ${formatRp(max)}</div>
+          <div style="font-size:0.88rem;font-weight:800;color:var(--info);margin-top:2px;">${formatRp(rem)}</div>
+          <div style="font-size:0.65rem;color:var(--muted);">dari ${formatRp(ceiling)}</div>
+          ${tempBadge}
           <div class="limit-bar-bg"><div class="limit-bar-fill" style="width:${pct}%"></div></div>
         </div>
       `;
@@ -1247,13 +1459,13 @@
     state.loans.forEach((loan) => {
       loan.installments.forEach((inst) => {
         if (!inst.paidToProvider) {
-          totalBankRem += Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0)));
+          totalBankRem = round2(totalBankRem + Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
         }
       });
-      totalFriendRem += getLoanRemainingFriend(loan);
+      totalFriendRem = round2(totalFriendRem + getLoanRemainingFriend(loan));
     });
 
-    document.getElementById('loanSummaryPersonal').textContent = formatRp(Math.max(0, totalBankRem - totalFriendRem));
+    document.getElementById('loanSummaryPersonal').textContent = formatRp(Math.max(0, round2(totalBankRem - totalFriendRem)));
     document.getElementById('loanSummaryFriend').textContent = formatRp(totalFriendRem);
 
     const container = document.getElementById('loansContainer');
@@ -1264,12 +1476,12 @@
 
     container.innerHTML = state.loans.map((loan) => {
       const hasFriend = Boolean(loan.friendName && Number(loan.friendTotalAmount) > 0);
-      const remBank = loan.installments.filter((i) => !i.paidToProvider).reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0);
+      const remBank = round2(loan.installments.filter((i) => !i.paidToProvider).reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
       const remFriend = getLoanRemainingFriend(loan);
       const remFriendMonths = (hasFriend && Number(loan.friendMonthly) > 0) ? Math.ceil(remFriend / Number(loan.friendMonthly)) : 0;
 
       const instHtml = loan.installments.map((inst) => {
-        const instAmt = Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0)));
+        const instAmt = round2(Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
         const periodLabel = inst.billingMonthLabel ? ` (${inst.billingMonthLabel})` : '';
         const itemsHtml = (inst.items && inst.items.length > 0)
           ? `<div style="margin:6px 0;padding:6px 8px;background:rgba(255,255,255,0.03);border-radius:7px;font-size:0.72rem;color:var(--muted);">
@@ -1313,7 +1525,10 @@
               <span class="pill ${hasFriend ? 'pill-wait' : 'pill-ok'}" style="margin-left:3px;">${hasFriend ? 'Split ' + esc(loan.friendName) : 'Pribadi'}</span>
               <div style="font-weight:700;font-size:0.93rem;margin-top:4px;">${esc(loan.title)}</div>
             </div>
-            <span onclick="deleteLoan('${loan.id}')" style="font-size:0.71rem;color:var(--muted);cursor:pointer;">Hapus</span>
+            <div style="display:flex;gap:10px;font-size:0.72rem;">
+              <span onclick="openEditLoanModal('${loan.id}')" style="color:var(--info);cursor:pointer;">Edit</span>
+              <span onclick="deleteLoan('${loan.id}')" style="color:var(--muted);cursor:pointer;">Hapus</span>
+            </div>
           </div>
 
           <div class="stat-grid" style="margin:8px 0;">
@@ -1346,7 +1561,7 @@
     }).join('');
   }
 
-  // --- 7. REKAP KURIR & EXPORT JOPLIN MARKDOWN ---
+  // --- 8. REKAP KURIR & EXPORT JOPLIN MARKDOWN ---
   function toggleRekapAllTime() {
     rekapAllTime = !rekapAllTime;
     document.getElementById('rekapAllTimeBtn').classList.toggle('active', rekapAllTime);
@@ -1361,20 +1576,20 @@
       if (!rekapAllTime && !toLocalDatePart(t.date).startsWith(selectedMonth)) return;
       const amt = Math.abs(Number(t.amount || 0));
       if (t.category === 'Uang Tip') {
-        tipTotal += amt;
+        tipTotal = round2(tipTotal + amt);
       } else if (t.type === 'income') {
-        salaryTotal += amt;
+        salaryTotal = round2(salaryTotal + amt);
       } else if (t.type === 'expense' || t.type === 'paylater_expense') {
         if (ROAD_OPS_CATS.includes(t.category)) {
-          opsTotal += amt;
+          opsTotal = round2(opsTotal + amt);
         } else {
-          personalExpTotal += amt;
+          personalExpTotal = round2(personalExpTotal + amt);
         }
       }
     });
 
-    const roadNet = tipTotal - opsTotal;
-    const workNet = (salaryTotal + tipTotal) - (opsTotal + personalExpTotal);
+    const roadNet = round2(tipTotal - opsTotal);
+    const workNet = round2((salaryTotal + tipTotal) - (opsTotal + personalExpTotal));
     return { selectedMonth, tipTotal, salaryTotal, opsTotal, personalExpTotal, roadNet, workNet };
   }
 
@@ -1408,7 +1623,7 @@
 
   function generateJoplinMarkdown() {
     const today = getLocalTodayStr();
-    const totalLiquid = state.wallets.reduce((s, w) => s + Number(w.balance || 0), 0);
+    const totalLiquid = round2(state.wallets.reduce((s, w) => s + Number(w.balance || 0), 0));
 
     let nearestBill = 0;
     let totalBankDebt = 0;
@@ -1417,24 +1632,29 @@
 
     state.loans.forEach((loan) => {
       const remFriend = getLoanRemainingFriend(loan);
-      totalFriendRec += remFriend;
+      totalFriendRec = round2(totalFriendRec + remFriend);
       const unpaid = loan.installments.filter((i) => !i.paidToProvider);
-      const remBank = unpaid.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0);
-      totalBankDebt += remBank;
+      const remBank = round2(unpaid.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
+      totalBankDebt = round2(totalBankDebt + remBank);
 
       if (unpaid.length > 0) {
         const next = unpaid[0];
-        const nextAmt = Number(next.amount ?? ((next.personalAmount || 0) + (next.friendAmount || 0)));
-        nearestBill += nextAmt;
+        const nextAmt = round2(Number(next.amount ?? ((next.personalAmount || 0) + (next.friendAmount || 0))));
+        nearestBill = round2(nearestBill + nextAmt);
         const friendInfo = remFriend > 0 ? ` | Sisa Piutang ${loan.friendName}: ${formatRp(remFriend)}` : '';
         loanLines.push(`- **${loan.provider} (${loan.title})**: Tagihan Bln ${next.monthIndex}/${loan.tenor} = ${formatRp(nextAmt)} (Jatuh tempo tgl ${loan.dueDay}) | Total Sisa: ${formatRp(remBank)}${friendInfo}`);
       }
     });
 
     const walletLines = state.wallets.map((w) => `| ${w.name} | ${formatRp(w.balance)} |`).join('\n');
-    const limitLines = state.limits.map((l) => `| ${l.label} | ${formatRp(l.remainingLimit)} | ${formatRp(l.maxLimit)} |`).join('\n');
+    const limitLines = state.limits.map((l) => {
+      const ceiling = getTotalCeiling(l);
+      const tempNote = Number(l.temporaryLimit || 0) > 0 ? ` *(Permanen ${formatRp(l.permanentLimit)} + Temp ${formatRp(l.temporaryLimit)})*` : '';
+      return `| ${l.label} | ${formatRp(l.remainingLimit)} | ${formatRp(ceiling)}${tempNote} |`;
+    }).join('\n');
     const m = getRekapMetrics();
-    const safeSpendBuffer = (totalLiquid + totalFriendRec) - nearestBill;
+    const freeCash = round2(totalLiquid - nearestBill);
+    const safeSpendWithFriend = round2((totalLiquid + totalFriendRec) - nearestBill);
 
     return [
       `# 📊 Evaluasi Cash Flow & Pertimbangan Belanja (${today})`,
@@ -1447,20 +1667,21 @@
       ``,
       `## 2. Kewajiban Cicilan & Piutang Teman`,
       `- **Tagihan Terdekat (Bulan Aktif):** ${formatRp(nearestBill)}`,
+      `- **Uang Bebas Pakai Saat Ini (Tunai/Bank − Tagihan Terdekat):** **${freeCash >= 0 ? formatRp(freeCash) : '-' + formatRp(Math.abs(freeCash))}**`,
       `- **Total Sisa Tagihan ke Bank/App:** ${formatRp(totalBankDebt)}`,
       `- **Total Sisa Piutang Teman:** ${formatRp(totalFriendRec)}`,
-      `- **Sisa Beban Pribadi Murni:** ${formatRp(Math.max(0, totalBankDebt - totalFriendRec))}`,
+      `- **Sisa Beban Pribadi Murni:** ${formatRp(Math.max(0, round2(totalBankDebt - totalFriendRec)))}`,
       loanLines.length > 0 ? `\n**Rincian Kontrak Aktif:**\n${loanLines.join('\n')}` : `- Tidak ada tagihan aktif.`,
       ``,
       `## 3. Sisa Limit Kredit Tersedia`,
-      `| Layanan | Sisa Limit | Limit Maksimal |`,
+      `| Layanan | Sisa Limit | Plafon Aktif |`,
       `| :--- | ---: | ---: |`,
       limitLines,
       ``,
       `## 4. Ringkasan Pertimbangan Sebelum Membeli`,
       `- **Performa Uang Jalan (${rekapAllTime ? 'Semua Waktu' : m.selectedMonth}):** ${m.roadNet >= 0 ? '+' : '-'}${formatRp(Math.abs(m.roadNet))} *(Tip ${formatRp(m.tipTotal)} − Biaya Jalan ${formatRp(m.opsTotal)})*`,
       `- **Sisa Bersih Hasil Kerja:** ${m.workNet >= 0 ? '+' : '-'}${formatRp(Math.abs(m.workNet))}`,
-      `- **Batas Aman Dana Cair (Setelah Cadangkan Tagihan Terdekat):** **${safeSpendBuffer >= 0 ? formatRp(safeSpendBuffer) : '-' + formatRp(Math.abs(safeSpendBuffer))}**`
+      `- **Batas Aman Total (Termasuk Piutang Teman):** **${safeSpendWithFriend >= 0 ? formatRp(safeSpendWithFriend) : '-' + formatRp(Math.abs(safeSpendWithFriend))}**`
     ].join('\n');
   }
 
@@ -1482,17 +1703,17 @@
     showToast('Teks berhasil disalin');
   }
 
-  // --- 8. QUICK-ADD TIP (3 PILIHAN: TUNAI, SEABANK, BCA) ---
+  // --- 9. QUICK-ADD TIP ---
   function openTipModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tip') || '{}');
-    document.getElementById('tipAmount').value = draft.amount || '';
+    setMoneyInputValue('tipAmount', draft.amount ? parseMoneyInput(draft.amount) : 0, false);
     document.getElementById('tipNote').value = draft.note || '';
     selectTipWallet(draft.wallet || 'wallet-cash');
     document.getElementById('tipModal').classList.add('open');
   }
 
   function setTipAmount(val) {
-    document.getElementById('tipAmount').value = val;
+    setMoneyInputValue('tipAmount', val, false);
     saveTipDraft();
   }
 
@@ -1513,13 +1734,13 @@
   }
 
   async function submitTip() {
-    const amount = Number(document.getElementById('tipAmount').value);
+    const amount = parseMoneyInput(document.getElementById('tipAmount').value);
     if (!amount || amount <= 0) return showToast('Masukkan nominal tip');
     const wallet = state.wallets.find((w) => w.id === activeTipWallet) || state.wallets[0];
     const defaultNote = wallet.id === 'wallet-cash' ? 'Tip Tunai Customer' : `Tip Transfer Customer (${wallet.name})`;
     const note = document.getElementById('tipNote').value.trim() || defaultNote;
 
-    wallet.balance = Number(wallet.balance) + amount;
+    wallet.balance = round2(Number(wallet.balance) + amount);
     await idbPut('wallets', wallet);
     await idbPut('transactions', {
       id: uuid(),
@@ -1538,12 +1759,12 @@
     await refreshAll();
   }
 
-  // --- 9. CATAT TRANSAKSI (KELOMPOK A & B + 2 LIMIT GOPAYLATER) ---
+  // --- 10. CATAT & EDIT TRANSAKSI ---
   function openTxModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tx') || '{}');
     document.getElementById('txDate').value = draft.date || getLocalTodayStr();
     setTxType(draft.type || 'expense', draft.wallet);
-    document.getElementById('txAmount').value = draft.amount || '';
+    setMoneyInputValue('txAmount', draft.amount ? parseMoneyInput(draft.amount) : 0, false);
     if (draft.category) document.getElementById('txCategory').value = draft.category;
     document.getElementById('txNote').value = draft.note || '';
     selectPaymentChannel(draft.channel || 'QRIS');
@@ -1649,7 +1870,7 @@
   }
 
   async function submitTx() {
-    const amount = Number(document.getElementById('txAmount').value);
+    const amount = parseMoneyInput(document.getElementById('txAmount').value);
     if (!amount || amount <= 0) return showToast('Nominal tidak valid');
     const dateStr = document.getElementById('txDate').value || getLocalTodayStr();
     const walletVal = document.getElementById('txWallet').value;
@@ -1657,21 +1878,19 @@
     const note = document.getElementById('txNote').value.trim() || category;
     const txIsoDate = new Date(`${dateStr}T${new Date().toTimeString().slice(0, 8)}`).toISOString();
 
-    // KASUS KELOMPOK B: PAYLATER
     if (activeTxType === 'expense' && walletVal.startsWith('paylater-')) {
       const provider = walletVal.replace('paylater-', '');
       const bucket = provider === 'GoPayLater' ? activeGplBucket : null;
       const tenor = Number(document.getElementById('paylaterTenor').value || 1);
       const target0 = calculatePaylaterTarget(provider, dateStr, 0, bucket);
 
-      // Kurangi sisa limit PayLater
       await adjustCreditLimit(provider, bucket, -amount);
 
       if (tenor === 1) {
         let existingBill = state.loans.find((l) => l.billingKey === target0.key);
         if (existingBill && !existingBill.installments[0].paidToProvider) {
           const inst = existingBill.installments[0];
-          inst.amount = Number(inst.amount ?? (inst.personalAmount || 0)) + amount;
+          inst.amount = round2(Number(inst.amount ?? (inst.personalAmount || 0)) + amount);
           inst.items = inst.items || [];
           inst.items.push({ date: dateStr, note, amount });
           await idbPut('loans', existingBill);
@@ -1698,7 +1917,7 @@
           });
         }
       } else {
-        const perMonth = Math.ceil(amount / tenor);
+        const perMonth = round2(amount / tenor);
         const installments = [];
         for (let m = 0; m < tenor; m++) {
           const tInfo = calculatePaylaterTarget(provider, dateStr, m, bucket);
@@ -1745,11 +1964,10 @@
       return;
     }
 
-    // KASUS KELOMPOK A: POTONG / TAMBAH SALDO LANGSUNG
     const wallet = state.wallets.find((w) => w.id === walletVal);
     wallet.balance = activeTxType === 'income'
-      ? Number(wallet.balance) + amount
-      : Number(wallet.balance) - amount;
+      ? round2(Number(wallet.balance) + amount)
+      : round2(Number(wallet.balance) - amount);
 
     const method = wallet.id === 'wallet-cash' ? 'Tunai' : activePaymentChannel;
 
@@ -1771,15 +1989,98 @@
     await refreshAll();
   }
 
+  function openEditTxModal(txId) {
+    const tx = state.transactions.find((t) => t.id === txId);
+    if (!tx) return;
+    editingTxId = txId;
+    setMoneyInputValue('editTxAmount', Math.abs(Number(tx.amount)), true);
+    document.getElementById('editTxDate').value = toLocalDatePart(tx.date);
+    document.getElementById('editTxCategory').value = tx.category || '';
+    document.getElementById('editTxNote').value = tx.note || '';
+
+    const walletGroup = document.getElementById('editTxWalletGroup');
+    const walletSel = document.getElementById('editTxWallet');
+    if (tx.type === 'paylater_expense' || tx.type === 'transfer') {
+      walletGroup.style.display = 'none';
+    } else {
+      walletGroup.style.display = 'block';
+      walletSel.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)}</option>`).join('');
+      walletSel.value = tx.walletId;
+    }
+    document.getElementById('editTxModal').classList.add('open');
+  }
+
+  async function submitEditTx() {
+    const tx = state.transactions.find((t) => t.id === editingTxId);
+    if (!tx) return;
+    const newAmt = parseMoneyInput(document.getElementById('editTxAmount').value);
+    if (!newAmt || newAmt <= 0) return showToast('Nominal tidak valid');
+
+    const newDateStr = document.getElementById('editTxDate').value || toLocalDatePart(tx.date);
+    const oldTimePart = new Date(tx.date).toTimeString().slice(0, 8);
+    const newIsoDate = new Date(`${newDateStr}T${oldTimePart}`).toISOString();
+    const newCat = document.getElementById('editTxCategory').value.trim() || tx.category;
+    const newNote = document.getElementById('editTxNote').value.trim() || newCat;
+    const oldAbsAmt = Math.abs(Number(tx.amount));
+
+    if (tx.type === 'paylater_expense') {
+      const provider = tx.walletId.replace('paylater-', '');
+      const bucket = tx.paymentMethod && tx.paymentMethod.includes('Utama') ? 'Utama' : (provider === 'GoPayLater' ? 'QRIS' : null);
+      const diff = round2(oldAbsAmt - newAmt);
+      if (diff !== 0) await adjustCreditLimit(provider, bucket, diff);
+      tx.amount = newAmt;
+    } else if (tx.type === 'transfer') {
+      const src = state.wallets.find((w) => w.id === tx.walletId);
+      const dst = state.wallets.find((w) => w.id === tx.targetWalletId);
+      if (src) { src.balance = round2(Number(src.balance) + oldAbsAmt - newAmt); await idbPut('wallets', src); }
+      if (dst) { dst.balance = round2(Number(dst.balance) - oldAbsAmt + newAmt); await idbPut('wallets', dst); }
+      tx.amount = newAmt;
+    } else {
+      const oldW = state.wallets.find((w) => w.id === tx.walletId);
+      const newWalletId = document.getElementById('editTxWallet').value;
+      const wasIn = tx.type === 'income' || tx.type === 'receivable_in' || (tx.type === 'reconcile' && tx.amount > 0);
+
+      if (oldW) {
+        oldW.balance = wasIn ? round2(Number(oldW.balance) - oldAbsAmt) : round2(Number(oldW.balance) + oldAbsAmt);
+        await idbPut('wallets', oldW);
+      }
+      const targetW = state.wallets.find((w) => w.id === newWalletId) || oldW;
+      if (targetW) {
+        targetW.balance = wasIn ? round2(Number(targetW.balance) + newAmt) : round2(Number(targetW.balance) - newAmt);
+        await idbPut('wallets', targetW);
+        tx.walletId = targetW.id;
+      }
+      tx.amount = (tx.type === 'reconcile' && tx.amount < 0) ? -newAmt : newAmt;
+    }
+
+    tx.date = newIsoDate;
+    tx.category = newCat;
+    tx.note = newNote;
+    await idbPut('transactions', tx);
+
+    closeModal('editTxModal');
+    showToast('Transaksi diperbarui');
+    await refreshAll();
+  }
+
   async function deleteTransaction(id) {
     const tx = state.transactions.find((t) => t.id === id);
     if (!tx) return;
-    if (tx.type !== 'paylater_expense') {
+    const absAmt = Math.abs(Number(tx.amount));
+    if (tx.type === 'paylater_expense') {
+      const provider = tx.walletId.replace('paylater-', '');
+      const bucket = tx.paymentMethod && tx.paymentMethod.includes('Utama') ? 'Utama' : (provider === 'GoPayLater' ? 'QRIS' : null);
+      await adjustCreditLimit(provider, bucket, absAmt);
+    } else if (tx.type === 'transfer') {
+      const src = state.wallets.find((w) => w.id === tx.walletId);
+      const dst = state.wallets.find((w) => w.id === tx.targetWalletId);
+      if (src) { src.balance = round2(Number(src.balance) + absAmt); await idbPut('wallets', src); }
+      if (dst) { dst.balance = round2(Number(dst.balance) - absAmt); await idbPut('wallets', dst); }
+    } else {
       const wallet = state.wallets.find((w) => w.id === tx.walletId);
       if (wallet) {
         const wasIn = tx.type === 'income' || tx.type === 'receivable_in' || (tx.type === 'reconcile' && tx.amount > 0);
-        const absAmt = Math.abs(Number(tx.amount));
-        wallet.balance = wasIn ? Number(wallet.balance) - absAmt : Number(wallet.balance) + absAmt;
+        wallet.balance = wasIn ? round2(Number(wallet.balance) - absAmt) : round2(Number(wallet.balance) + absAmt);
         await idbPut('wallets', wallet);
       }
     }
@@ -1788,7 +2089,7 @@
     await refreshAll();
   }
 
-  // --- 10. COCOKKAN UANG FISIK DOMPET TUNAI ---
+  // --- 11. COCOKKAN UANG FISIK DOMPET TUNAI ---
   function openReconcileModal() {
     const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash');
     document.getElementById('recAppBal').textContent = formatRp(cashWallet.balance);
@@ -1799,11 +2100,11 @@
 
   function previewReconcileDiff() {
     const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash');
-    const raw = document.getElementById('recActualBal').value;
+    const raw = document.getElementById('recActualBal').value.trim();
     const box = document.getElementById('recDiffPreview');
     if (raw === '') { box.style.display = 'none'; return; }
-    const actual = Number(raw);
-    const diff = actual - Number(cashWallet.balance);
+    const actual = parseMoneyInput(raw);
+    const diff = round2(actual - Number(cashWallet.balance));
     box.style.display = 'block';
     if (diff === 0) {
       box.textContent = 'Saldo fisik sudah sama persis dengan catatan aplikasi.';
@@ -1815,11 +2116,12 @@
   }
 
   async function submitReconcile() {
-    const raw = document.getElementById('recActualBal').value;
-    if (raw === '' || Number(raw) < 0) return showToast('Masukkan jumlah uang fisik');
-    const actual = Number(raw);
+    const raw = document.getElementById('recActualBal').value.trim();
+    if (raw === '') return showToast('Masukkan jumlah uang fisik');
+    const actual = parseMoneyInput(raw);
+    if (actual < 0) return showToast('Nominal tidak valid');
     const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash');
-    const diff = actual - Number(cashWallet.balance);
+    const diff = round2(actual - Number(cashWallet.balance));
 
     cashWallet.balance = actual;
     cashWallet.lastChecked = new Date().toISOString();
@@ -1843,12 +2145,12 @@
     await refreshAll();
   }
 
-  // --- 11. KELOLA AKUN & LIMIT KREDIT ---
+  // --- 12. KELOLA AKUN & LIMIT KREDIT (PERMANEN + SEMENTARA) ---
   function openWalletModal(walletId) {
     selectedWalletId = walletId;
     const w = state.wallets.find((x) => x.id === walletId);
     document.getElementById('walletModalTitle').textContent = `${w.icon} ${w.name}`;
-    document.getElementById('editWalletBalance').value = w.balance;
+    setMoneyInputValue('editWalletBalance', w.balance, true);
     document.getElementById('transferAmount').value = '';
     document.getElementById('transferTarget').innerHTML = state.wallets
       .filter((x) => x.id !== walletId)
@@ -1858,7 +2160,7 @@
 
   async function saveWalletBalance() {
     const w = state.wallets.find((x) => x.id === selectedWalletId);
-    w.balance = Number(document.getElementById('editWalletBalance').value || 0);
+    w.balance = parseMoneyInput(document.getElementById('editWalletBalance').value);
     await idbPut('wallets', w);
     closeModal('walletModal');
     showToast('Saldo diperbarui');
@@ -1866,12 +2168,12 @@
   }
 
   async function executeTransfer() {
-    const amt = Number(document.getElementById('transferAmount').value);
+    const amt = parseMoneyInput(document.getElementById('transferAmount').value);
     if (!amt || amt <= 0) return showToast('Masukkan nominal transfer');
     const src = state.wallets.find((x) => x.id === selectedWalletId);
     const dst = state.wallets.find((x) => x.id === document.getElementById('transferTarget').value);
-    src.balance = Number(src.balance) - amt;
-    dst.balance = Number(dst.balance) + amt;
+    src.balance = round2(Number(src.balance) - amt);
+    dst.balance = round2(Number(dst.balance) + amt);
 
     await idbPut('wallets', src);
     await idbPut('wallets', dst);
@@ -1896,22 +2198,48 @@
     selectedLimitId = limitId;
     const lim = state.limits.find((x) => x.id === limitId);
     document.getElementById('limitModalTitle').textContent = `Atur ${lim.label}`;
-    document.getElementById('editLimitMax').value = lim.maxLimit || '';
-    document.getElementById('editLimitRem').value = lim.remainingLimit || '';
+    setMoneyInputValue('editLimitPerm', lim.permanentLimit ?? lim.maxLimit ?? 0, true);
+    setMoneyInputValue('editLimitTemp', lim.temporaryLimit ?? 0, true);
+    setMoneyInputValue('editLimitRem', lim.remainingLimit ?? 0, true);
+    previewCreditLimitCalc();
     document.getElementById('limitModal').classList.add('open');
+  }
+
+  function previewCreditLimitCalc() {
+    const perm = parseMoneyInput(document.getElementById('editLimitPerm').value);
+    const temp = parseMoneyInput(document.getElementById('editLimitTemp').value);
+    const rem = parseMoneyInput(document.getElementById('editLimitRem').value);
+    const ceiling = round2(perm + temp);
+    const used = round2(Math.max(0, ceiling - rem));
+    document.getElementById('limitCalcPreview').innerHTML = `Total Plafon Aktif: <b>${formatRp(ceiling)}</b> • Terpakai Saat Ini: <b>${formatRp(used)}</b>`;
+    document.getElementById('expireTempLimitBtn').style.display = temp > 0 ? 'block' : 'none';
+  }
+
+  function expireTemporaryLimit() {
+    const perm = parseMoneyInput(document.getElementById('editLimitPerm').value);
+    const temp = parseMoneyInput(document.getElementById('editLimitTemp').value);
+    const rem = parseMoneyInput(document.getElementById('editLimitRem').value);
+    const used = round2(Math.max(0, (perm + temp) - rem));
+    const newRem = round2(Math.max(0, perm - used));
+
+    setMoneyInputValue('editLimitTemp', 0, true);
+    setMoneyInputValue('editLimitRem', newRem, true);
+    previewCreditLimitCalc();
+    showToast('Limit sementara di-nolkan! Klik Simpan');
   }
 
   async function saveCreditLimit() {
     const lim = state.limits.find((x) => x.id === selectedLimitId);
-    lim.maxLimit = Math.max(0, Number(document.getElementById('editLimitMax').value || 0));
-    lim.remainingLimit = Math.max(0, Number(document.getElementById('editLimitRem').value || 0));
+    lim.permanentLimit = Math.max(0, parseMoneyInput(document.getElementById('editLimitPerm').value));
+    lim.temporaryLimit = Math.max(0, parseMoneyInput(document.getElementById('editLimitTemp').value));
+    lim.remainingLimit = Math.max(0, parseMoneyInput(document.getElementById('editLimitRem').value));
     await idbPut('limits', lim);
     closeModal('limitModal');
     showToast('Limit kredit disimpan');
     await refreshAll();
   }
 
-  // --- 12. CICILAN BERJALAN, SETORAN TEMAN FLEKSIBEL & BAYAR TAGIHAN ---
+  // --- 13. CICILAN BERJALAN, EDIT KONTRAK, SETORAN TEMAN & BAYAR TAGIHAN ---
   function openNewLoanModal() {
     document.getElementById('loanTitle').value = '';
     document.getElementById('loanTotalMonthly').value = '';
@@ -1936,6 +2264,7 @@
   }
 
   function updateLoanModalPreview() {
+    const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
     let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
     if (paidCount >= tenor) paidCount = tenor - 1;
@@ -1949,15 +2278,16 @@
     const provider = document.getElementById('loanProvider').value;
     const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
     const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
-    const friendMonthly = Number(document.getElementById('loanFriendMonthly').value || 0);
+    const friendMonthly = parseMoneyInput(document.getElementById('loanFriendMonthly').value);
     const fTenor = Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
     const fPaid = Math.min(fTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
 
     let html = `Tagihan ke <b>${esc(provider)}</b>: Bulan 1–${paidCount || 0} <b>LUNAS</b>, sisa <b>${remBankMonths} bulan aktif</b> mulai Bln ${firstActiveIdx} (${firstLabel}).`;
     if (friendName && friendMonthly > 0) {
       const remFMonths = fTenor - fPaid;
-      const remFAmt = remFMonths * friendMonthly;
-      html += `<br/>Porsi <b>${esc(friendName)}</b>: Terbayar ${fPaid}/${fTenor} bln, sisa piutang <b>${remFMonths} bln (${formatRp(remFAmt)})</b>.`;
+      const remFAmt = round2(remFMonths * friendMonthly);
+      const personalShare = round2(Math.max(0, totalMonthly - friendMonthly));
+      html += `<br/>Beban Pribadimu: <b>${formatRp(personalShare)}/bln</b> • Porsi ${esc(friendName)}: <b>${formatRp(friendMonthly)}/bln</b> (Sisa ${remFMonths} bln = <b>${formatRp(remFAmt)}</b>).`;
     }
     document.getElementById('loanSetupPreview').innerHTML = html;
   }
@@ -1966,7 +2296,7 @@
     const provider = document.getElementById('loanProvider').value;
     const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
     const title = document.getElementById('loanTitle').value.trim() || provider;
-    const totalMonthly = Number(document.getElementById('loanTotalMonthly').value || 0);
+    const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
     if (totalMonthly <= 0) return showToast('Isi cicilan total per bulan');
 
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
@@ -1978,7 +2308,7 @@
     const [startYear, startMonth] = monthVal.split('-').map(Number);
 
     const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
-    const friendMonthly = (isPaylater || !friendName) ? 0 : Number(document.getElementById('loanFriendMonthly').value || 0);
+    const friendMonthly = (isPaylater || !friendName) ? 0 : parseMoneyInput(document.getElementById('loanFriendMonthly').value);
     const friendTenor = Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
     const friendPaidCount = Math.min(friendTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
 
@@ -2006,13 +2336,60 @@
       dueDay,
       friendName,
       friendMonthly,
-      friendTotalAmount: friendMonthly * friendTenor,
-      friendPaidAmount: friendMonthly * friendPaidCount,
+      friendTotalAmount: round2(friendMonthly * friendTenor),
+      friendPaidAmount: round2(friendMonthly * friendPaidCount),
       installments
     });
 
     closeModal('loanModal');
     showToast('Kontrak cicilan disimpan');
+    await refreshAll();
+  }
+
+  function openEditLoanModal(loanId) {
+    const loan = state.loans.find((l) => l.id === loanId);
+    if (!loan) return;
+    editingLoanId = loanId;
+    document.getElementById('editLoanTitle').value = loan.title || '';
+    document.getElementById('editLoanDueDay').value = loan.dueDay || 25;
+
+    const firstUnpaid = loan.installments.find((i) => !i.paidToProvider) || loan.installments[0];
+    setMoneyInputValue('editLoanMonthly', firstUnpaid ? firstUnpaid.amount : 0, true);
+
+    const isPaylater = loan.provider === 'SPayLater' || loan.provider === 'GoPayLater';
+    document.getElementById('editLoanFriendWrap').style.display = isPaylater ? 'none' : 'block';
+    document.getElementById('editLoanFriendName').value = loan.friendName || '';
+    setMoneyInputValue('editLoanFriendMonthly', loan.friendMonthly || 0, true);
+    setMoneyInputValue('editLoanFriendTotal', loan.friendTotalAmount || 0, true);
+    setMoneyInputValue('editLoanFriendPaid', loan.friendPaidAmount || 0, true);
+
+    document.getElementById('editLoanModal').classList.add('open');
+  }
+
+  async function submitEditLoan() {
+    const loan = state.loans.find((l) => l.id === editingLoanId);
+    if (!loan) return;
+    loan.title = document.getElementById('editLoanTitle').value.trim() || loan.title;
+    loan.dueDay = Math.min(31, Math.max(1, Number(document.getElementById('editLoanDueDay').value || loan.dueDay)));
+
+    const newMonthly = parseMoneyInput(document.getElementById('editLoanMonthly').value);
+    if (newMonthly > 0) {
+      loan.installments.forEach((inst) => {
+        if (!inst.paidToProvider) inst.amount = newMonthly;
+      });
+    }
+
+    const isPaylater = loan.provider === 'SPayLater' || loan.provider === 'GoPayLater';
+    if (!isPaylater) {
+      loan.friendName = document.getElementById('editLoanFriendName').value.trim();
+      loan.friendMonthly = parseMoneyInput(document.getElementById('editLoanFriendMonthly').value);
+      loan.friendTotalAmount = parseMoneyInput(document.getElementById('editLoanFriendTotal').value);
+      loan.friendPaidAmount = parseMoneyInput(document.getElementById('editLoanFriendPaid').value);
+    }
+
+    await idbPut('loans', loan);
+    closeModal('editLoanModal');
+    showToast('Kontrak cicilan diperbarui');
     await refreshAll();
   }
 
@@ -2022,7 +2399,7 @@
     const rem = getLoanRemainingFriend(loan);
     document.getElementById('friendPayTitle').textContent = `Terima Setoran ${loan.friendName}`;
     document.getElementById('friendPayDesc').textContent = `Sisa piutang ${loan.friendName} saat ini: ${formatRp(rem)}. Uang akan langsung masuk ke dompet/rekening pilihanmu.`;
-    document.getElementById('friendPayAmount').value = Math.min(rem, Number(loan.friendMonthly || rem));
+    setMoneyInputValue('friendPayAmount', Math.min(rem, Number(loan.friendMonthly || rem)), false);
     document.getElementById('friendPayWallet').innerHTML = state.wallets
       .map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
     document.getElementById('friendPayWallet').value = 'wallet-cash';
@@ -2030,14 +2407,14 @@
   }
 
   async function submitFriendPayment() {
-    const amt = Number(document.getElementById('friendPayAmount').value);
+    const amt = parseMoneyInput(document.getElementById('friendPayAmount').value);
     if (!amt || amt <= 0) return showToast('Masukkan nominal setoran');
     const loan = state.loans.find((l) => l.id === activeFriendLoanId);
     const walletId = document.getElementById('friendPayWallet').value;
     const w = state.wallets.find((x) => x.id === walletId);
 
-    loan.friendPaidAmount = Number(loan.friendPaidAmount || 0) + amt;
-    w.balance = Number(w.balance) + amt;
+    loan.friendPaidAmount = round2(Number(loan.friendPaidAmount || 0) + amt);
+    w.balance = round2(Number(w.balance) + amt);
 
     await idbPut('loans', loan);
     await idbPut('wallets', w);
@@ -2060,7 +2437,7 @@
   function openPayBillModal(loanId, monthIndex) {
     const loan = state.loans.find((l) => l.id === loanId);
     const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
-    const instAmt = Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0)));
+    const instAmt = round2(Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
 
     document.getElementById('payBillTitle').textContent = `Bayar ${loan.provider} (Bln ${monthIndex})`;
     document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} otomatis naik kembali.`;
@@ -2082,7 +2459,7 @@
       const bucket = loan.provider === 'GoPayLater' ? document.getElementById('payBillGplBucket').value : null;
 
       inst.paidToProvider = true;
-      w.balance = Number(w.balance) - instAmt;
+      w.balance = round2(Number(w.balance) - instAmt);
 
       await idbPut('wallets', w);
       await idbPut('loans', loan);
@@ -2122,7 +2499,7 @@
     await refreshAll();
   }
 
-  // --- 13. BACKUP JSON & DEMO DATA ---
+  // --- 14. BACKUP JSON & DEMO DATA ---
   function exportJSON() {
     const payload = {
       app: 'Cash Flow',
@@ -2200,11 +2577,11 @@
     for (const w of demoWallets) await idbPut('wallets', w);
 
     const demoLimits = [
-      { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam (Permanen)', maxLimit: 4000000, remainingLimit: 1000000 },
-      { id: 'limit-seabank', provider: 'SeaBank Pinjam', bucket: null, label: 'SeaBank Pinjam', maxLimit: 3000000, remainingLimit: 1200000 },
-      { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', maxLimit: 2500000, remainingLimit: 2476000 },
-      { id: 'limit-gopaylater-qris', provider: 'GoPayLater', bucket: 'QRIS', label: 'GoPayLater • QRIS', maxLimit: 1500000, remainingLimit: 1500000 },
-      { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', maxLimit: 2000000, remainingLimit: 2000000 }
+      { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam', permanentLimit: 4000000, temporaryLimit: 0, remainingLimit: 1000000 },
+      { id: 'limit-seabank', provider: 'SeaBank Pinjam', bucket: null, label: 'SeaBank Pinjam', permanentLimit: 3000000, temporaryLimit: 0, remainingLimit: 1200000 },
+      { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', permanentLimit: 17250000, temporaryLimit: 3000000, remainingLimit: 20131192 },
+      { id: 'limit-gopaylater-qris', provider: 'GoPayLater', bucket: 'QRIS', label: 'GoPayLater • QRIS', permanentLimit: 1500000, temporaryLimit: 0, remainingLimit: 1500000 },
+      { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', permanentLimit: 2000000, temporaryLimit: 0, remainingLimit: 2000000 }
     ];
     for (const l of demoLimits) await idbPut('limits', l);
 
@@ -2217,7 +2594,6 @@
       walletId: 'wallet-seabank', paymentMethod: 'QRIS', note: 'Warung Makan Siang', date: new Date(Date.now() - 3600000).toISOString()
     });
 
-    // Skenario Adi: Pinjaman 3jt (12 bln @ 311.511, terbayar 2 bln), Adi 105.000/bln (12 bln, sudah setor 7 bln -> sisa 5 bln)
     const demoInstallments = [];
     for (let m = 1; m <= 12; m++) {
       const d = new Date(2026, 8 + m, 1);
@@ -2252,7 +2628,7 @@
     await refreshAll();
   }
 
-  // --- 14. NAVIGATION & MODAL UTILS ---
+  // --- 15. NAVIGATION & MODAL UTILS ---
   function switchTab(tab) {
     ['home', 'loans', 'rekap'].forEach((t) => {
       document.getElementById('view-' + t).classList.toggle('active', t === tab);
