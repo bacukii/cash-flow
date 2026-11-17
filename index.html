@@ -31,24 +31,24 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.4;
-      padding-bottom: 84px;
+      padding-bottom: 86px;
       max-width: 480px;
       margin: 0 auto;
       min-height: 100vh;
     }
     header {
       position: sticky; top: 0; z-index: 20;
-      background: rgba(15, 23, 42, 0.92);
+      background: rgba(15, 23, 42, 0.94);
       backdrop-filter: blur(8px);
-      padding: 14px 16px;
+      padding: 13px 16px;
       display: flex; justify-content: space-between; align-items: center;
       border-bottom: 1px solid var(--border);
     }
-    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.1rem; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.08rem; letter-spacing: -0.01em; }
     .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
     .badges { display: flex; gap: 6px; align-items: center; }
     .badge {
-      font-size: 0.72rem; padding: 4px 8px; border-radius: 99px;
+      font-size: 0.7rem; padding: 4px 8px; border-radius: 99px;
       background: var(--surface); border: 1px solid var(--border); color: var(--muted);
       font-weight: 600;
     }
@@ -59,55 +59,84 @@
     .view { display: none; }
     .view.active { display: block; }
 
+    /* Hero Total Saldo */
     .hero-card {
-      background: linear-gradient(135deg, #065f46 0%, #0f172a 100%);
+      background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
       border: 1px solid rgba(16, 185, 129, 0.35);
       border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
     }
-    .hero-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a7f3d0; }
-    .hero-amount { font-size: 1.75rem; font-weight: 800; margin: 4px 0 12px; letter-spacing: -0.02em; }
+    .hero-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a7f3d0; font-weight: 600; }
+    .hero-amount { font-size: 1.65rem; font-weight: 800; margin: 2px 0 10px; letter-spacing: -0.02em; }
     .hero-sub {
       display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-      padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.12);
+      padding-top: 9px; border-top: 1px solid rgba(255,255,255,0.12);
       font-size: 0.78rem;
     }
-    .hero-sub span { display: block; color: #cbd5e1; font-size: 0.7rem; }
+    .hero-sub span { display: block; color: #cbd5e1; font-size: 0.69rem; }
 
-    .section-title {
-      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 8px;
-      display: flex; justify-content: space-between; align-items: center;
+    /* Spotlight Dompet Tunai */
+    .cash-spotlight {
+      background: var(--surface);
+      border: 1px solid rgba(245, 158, 11, 0.38);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      margin-bottom: 12px;
+    }
+    .cash-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .cash-title { font-size: 0.8rem; font-weight: 700; color: #fde68a; display: flex; align-items: center; gap: 6px; }
+    .cash-bal { font-size: 1.35rem; font-weight: 800; margin-bottom: 2px; }
+    .cash-meta { font-size: 0.7rem; color: var(--muted); margin-bottom: 10px; }
+    .reconcile-btn {
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fcd34d;
+      font-size: 0.72rem; font-weight: 700;
+      padding: 4px 9px; border-radius: 8px; cursor: pointer;
     }
 
-    .wallets-scroll {
-      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
-      scrollbar-width: none;
-    }
-    .wallets-scroll::-webkit-scrollbar { display: none; }
-    .wallet-card {
-      min-width: 148px; flex: 1;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 12px; cursor: pointer;
-    }
-    .wallet-card:active { transform: scale(0.98); }
-    .wallet-name { font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
-    .wallet-bal { font-size: 1rem; font-weight: 700; }
-
-    .quick-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 10px; margin-top: 12px; }
+    .quick-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 9px; }
     .btn {
-      border: none; border-radius: 12px; padding: 13px 14px;
-      font-weight: 700; font-size: 0.88rem; cursor: pointer;
+      border: none; border-radius: 11px; padding: 12px 13px;
+      font-weight: 700; font-size: 0.86rem; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       transition: transform 0.1s;
     }
     .btn:active { transform: scale(0.97); }
     .btn-primary { background: var(--primary); color: #022c22; }
-    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.35); }
-    .btn-sm { padding: 8px 11px; font-size: 0.78rem; border-radius: 9px; }
+    .btn-sm { padding: 7px 10px; font-size: 0.76rem; border-radius: 9px; }
     .btn-block { width: 100%; }
+
+    .section-title {
+      font-size: 0.76rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 8px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* Filter Chips */
+    .chip-group { display: flex; gap: 5px; }
+    .chip {
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+      font-size: 0.69rem; font-weight: 700; padding: 3px 8px; border-radius: 99px; cursor: pointer;
+    }
+    .chip.active { background: rgba(16, 185, 129, 0.16); border-color: var(--primary); color: var(--primary); }
+
+    /* Grid 2 Kolom Akun Digital */
+    .accounts-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 9px;
+    }
+    .acc-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 11px 12px; cursor: pointer;
+    }
+    .acc-card:active { transform: scale(0.98); }
+    .acc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .acc-name { font-size: 0.8rem; font-weight: 600; color: #e2e8f0; }
+    .acc-tag { font-size: 0.62rem; color: var(--muted); background: var(--bg); padding: 2px 6px; border-radius: 5px; }
+    .acc-bal { font-size: 0.98rem; font-weight: 800; }
 
     .card {
       background: var(--surface); border: 1px solid var(--border);
@@ -115,23 +144,25 @@
     }
     .row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .pill {
-      font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+      font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; display: inline-block;
     }
     .pill-ok { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
     .pill-wait { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
     .pill-info { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
+    .pill-pl { background: rgba(249, 115, 22, 0.16); color: #fdba74; }
 
     .tx-item {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
       padding: 11px 0; border-bottom: 1px solid var(--border);
     }
     .tx-item:last-child { border-bottom: none; }
-    .tx-title { font-size: 0.88rem; font-weight: 600; }
-    .tx-meta { font-size: 0.73rem; color: var(--muted); margin-top: 2px; }
-    .tx-amt { font-weight: 700; font-size: 0.9rem; text-align: right; }
+    .tx-title { font-size: 0.86rem; font-weight: 600; }
+    .tx-meta { font-size: 0.71rem; color: var(--muted); margin-top: 2px; }
+    .tx-amt { font-weight: 700; font-size: 0.88rem; text-align: right; white-space: nowrap; }
     .plus { color: var(--primary); }
     .minus { color: #fda4af; }
     .neutral { color: var(--info); }
+    .paylater-txt { color: #fdba74; }
 
     /* Bottom Navigation */
     nav.bottom-nav {
@@ -153,17 +184,17 @@
 
     /* Bottom Sheet Modal */
     .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78);
+      position: fixed; inset: 0; background: rgba(2, 6, 23, 0.8);
       display: none; align-items: flex-end; justify-content: center; z-index: 50;
     }
     .modal-backdrop.open { display: flex; }
     .sheet {
       background: var(--surface); width: 100%; max-width: 480px;
       border-radius: 20px 20px 0 0; border-top: 1px solid var(--border);
-      padding: 14px 16px 24px; max-height: 90vh; overflow-y: auto;
-      animation: slideUp 0.18s ease-out;
+      padding: 14px 16px 24px; max-height: 92vh; overflow-y: auto;
+      animation: slideUp 0.16s ease-out;
     }
-    @keyframes slideUp { from { transform: translateY(30px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(24px); opacity: 0.7; } to { transform: translateY(0); opacity: 1; } }
     .sheet-handle { width: 38px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 12px; }
     .preset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
     .preset-btn {
@@ -173,31 +204,42 @@
     .preset-btn:active { background: var(--primary); color: #022c22; }
 
     .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
     input, select {
       width: 100%; background: var(--bg); border: 1px solid var(--border);
-      color: var(--text); padding: 11px 12px; border-radius: 10px; font-size: 0.95rem;
+      color: var(--text); padding: 11px 12px; border-radius: 10px; font-size: 0.93rem;
     }
     input:focus, select:focus { outline: none; border-color: var(--primary); }
     .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .toggle-row-3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 7px; }
     .toggle-opt {
-      padding: 10px; text-align: center; border-radius: 10px;
+      padding: 10px 6px; text-align: center; border-radius: 10px;
       background: var(--bg); border: 1px solid var(--border);
-      font-size: 0.82rem; font-weight: 700; cursor: pointer; color: var(--muted);
+      font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--muted);
     }
-    .toggle-opt.active { background: rgba(16, 185, 129, 0.15); border-color: var(--primary); color: var(--primary); }
-    .toggle-opt.active-danger { background: rgba(244, 63, 94, 0.15); border-color: var(--danger); color: #fda4af; }
+    .toggle-opt.active { background: rgba(16, 185, 129, 0.16); border-color: var(--primary); color: var(--primary); }
+    .toggle-opt.active-danger { background: rgba(244, 63, 94, 0.16); border-color: var(--danger); color: #fda4af; }
+    .toggle-opt.active-info { background: rgba(56, 189, 248, 0.16); border-color: var(--info); color: #7dd3fc; }
+
+    .info-banner {
+      background: rgba(249, 115, 22, 0.12);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      color: #fed7aa;
+      padding: 9px 11px; border-radius: 10px;
+      font-size: 0.76rem; margin-bottom: 12px;
+    }
 
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
     .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px; }
-    .stat-box small { color: var(--muted); font-size: 0.72rem; display: block; }
-    .stat-box strong { font-size: 0.98rem; margin-top: 3px; display: block; }
+    .stat-box small { color: var(--muted); font-size: 0.71rem; display: block; }
+    .stat-box strong { font-size: 0.96rem; margin-top: 3px; display: block; }
 
     .toast {
-      position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
+      position: fixed; top: 62px; left: 50%; transform: translateX(-50%);
       background: #065f46; color: #ecfdf5; border: 1px solid var(--primary);
-      padding: 8px 14px; border-radius: 99px; font-size: 0.8rem; font-weight: 600;
-      z-index: 60; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      padding: 8px 14px; border-radius: 99px; font-size: 0.79rem; font-weight: 600;
+      z-index: 60; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -220,50 +262,81 @@
     <!-- TAB 1: BERANDA -->
     <section id="view-home" class="view active">
       <div class="hero-card">
-        <div class="hero-label">Saldo Bersih Tersedia</div>
+        <div class="hero-label">Total Uang Aktif (Tunai + Bank + E-Wallet)</div>
         <div class="hero-amount" id="totalBalance">Rp 0</div>
         <div class="hero-sub">
           <div>
-            <span>Tagihan Aktif Bln Ini</span>
+            <span>Tagihan Terdekat</span>
             <strong id="monthlyBillTotal">Rp 0</strong>
           </div>
           <div>
-            <span>Piutang Teman Bln Ini</span>
+            <span>Piutang Teman Aktif</span>
             <strong id="monthlyFriendReceivable" style="color:#6ee7b7">Rp 0</strong>
           </div>
         </div>
       </div>
 
+      <!-- SPOTLIGHT DOMPET TUNAI FISIK -->
+      <div class="cash-spotlight">
+        <div class="cash-top">
+          <div class="cash-title">💵 Dompet Tunai (Fisik)</div>
+          <button class="reconcile-btn" onclick="openReconcileModal()">✎ Cocokkan Fisik</button>
+        </div>
+        <div class="cash-bal" id="cashWalletBal">Rp 0</div>
+        <div class="cash-meta" id="cashLastChecked">Tip tunai otomatis masuk ke sini • Belum pernah dicocokkan</div>
+        <div class="quick-grid">
+          <button class="btn btn-primary" onclick="openTipModal()">⚡ + Uang Tip</button>
+          <button class="btn btn-secondary" onclick="openTxModal()">💸 Catat Transaksi</button>
+        </div>
+      </div>
+
+      <!-- BANK & E-WALLET (GRID 2 KOLOM) -->
       <div class="section-title">
-        <span>Dompet & Rekening</span>
-        <span style="font-size:0.7rem;font-weight:500;">Ketuk untuk transfer/edit</span>
+        <span>Bank & E-Wallet</span>
+        <div class="chip-group">
+          <button class="chip active" id="filterAccAll" onclick="setAccountFilter('all')">Semua (6)</button>
+          <button class="chip" id="filterAccBank" onclick="setAccountFilter('bank')">Bank</button>
+          <button class="chip" id="filterAccEwallet" onclick="setAccountFilter('ewallet')">E-Wallet</button>
+        </div>
       </div>
-      <div class="wallets-scroll" id="walletList"></div>
+      <div class="accounts-grid" id="digitalAccountsGrid"></div>
 
-      <div class="quick-grid">
-        <button class="btn btn-primary" onclick="openTipModal()">⚡ + Uang Tip</button>
-        <button class="btn btn-secondary" onclick="openTxModal()">💸 Catat Arus Kas</button>
-      </div>
-
+      <!-- JATUH TEMPO TERDEKAT -->
       <div class="section-title"><span>Jatuh Tempo Terdekat</span></div>
       <div id="upcomingLoanBox"></div>
 
+      <!-- RIWAYAT TRANSAKSI -->
       <div class="section-title">
-        <span>Transaksi Terbaru</span>
-        <span id="txCountLabel" style="font-size:0.7rem;">0 catatan</span>
+        <span>Mutasi Terakhir</span>
+        <div class="chip-group">
+          <button class="chip active" id="filterTxAll" onclick="setTxFilter('all')">Semua</button>
+          <button class="chip" id="filterTxCash" onclick="setTxFilter('cash')">💵 Tunai Saja</button>
+        </div>
       </div>
       <div class="card" id="recentTxList" style="padding: 4px 13px;"></div>
     </section>
 
-    <!-- TAB 2: CICILAN & PIUTANG -->
+    <!-- TAB 2: CICILAN & PAYLATER -->
     <section id="view-loans" class="view">
-      <div class="row-between" style="margin-bottom: 12px;">
+      <div class="row-between" style="margin-bottom: 10px;">
         <div>
-          <h2 style="font-size:1.05rem;">Cicilan & Talangan</h2>
-          <p style="font-size:0.76rem;color:var(--muted);">SPayLater, SPinjam & SeaBank Pinjam</p>
+          <h2 style="font-size:1.05rem;">Cicilan & PayLater</h2>
+          <p style="font-size:0.75rem;color:var(--muted);">SPayLater, GoPayLater, SPinjam & SeaBank Pinjam</p>
         </div>
         <button class="btn btn-primary btn-sm" onclick="openNewLoanModal()">+ Kontrak</button>
       </div>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <small>Sisa Beban Pribadi</small>
+          <strong id="loanSummaryPersonal">Rp 0</strong>
+        </div>
+        <div class="stat-box">
+          <small>Sisa Piutang Teman</small>
+          <strong class="plus" id="loanSummaryFriend">Rp 0</strong>
+        </div>
+      </div>
+
       <div id="loansContainer"></div>
     </section>
 
@@ -272,12 +345,12 @@
       <h2 style="font-size:1.05rem;margin-bottom:10px;">Rekap Arus Kas Kurir</h2>
       <div class="stat-grid">
         <div class="stat-box">
-          <small>Total Tip (Tunai)</small>
+          <small>Total Tip (Tunai Dompet)</small>
           <strong class="plus" id="statTipCash">Rp 0</strong>
         </div>
         <div class="stat-box">
-          <small>Total Tip (Digital/QRIS)</small>
-          <strong class="plus" id="statTipDigital">Rp 0</strong>
+          <small>Total Tip (Transfer Bank)</small>
+          <strong class="plus" id="statTipBank">Rp 0</strong>
         </div>
         <div class="stat-box">
           <small>Gaji / Insentif Kurir</small>
@@ -294,8 +367,8 @@
           <strong style="font-size:0.9rem;">Cadangan & Penyimpanan Lokal</strong>
           <span class="pill pill-ok" id="persistBadge">IndexedDB</span>
         </div>
-        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
-          Data tersimpan 100% offline di HP kamu dengan UUID siap sinkronisasi. Unduh file JSON secara berkala sebagai cadangan aman.
+        <p style="font-size:0.77rem;color:var(--muted);margin-bottom:12px;">
+          Seluruh data tersimpan 100% offline di HP kamu dengan ID unik (UUID). Export JSON secara rutin agar data aman.
         </p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
           <button class="btn btn-primary btn-sm" onclick="exportJSON()">⬇ Export JSON</button>
@@ -328,7 +401,7 @@
     </button>
   </nav>
 
-  <!-- MODAL 1: QUICK-ADD TIP -->
+  <!-- MODAL 1: QUICK-ADD TIP (3 PILIHAN: DOMPET TUNAI, SEABANK, BCA) -->
   <div class="modal-backdrop" id="tipModal" onclick="closeModalOnBackdrop(event, 'tipModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -347,26 +420,27 @@
         <input type="number" id="tipAmount" inputmode="numeric" placeholder="10000" oninput="saveTipDraft()" />
       </div>
       <div class="form-group">
-        <label>Masuk ke Dompet</label>
-        <div class="toggle-row">
-          <div class="toggle-opt active" id="tipOptCash" onclick="selectTipWallet('wallet-cash')">💵 Tunai (Saku)</div>
-          <div class="toggle-opt" id="tipOptBank" onclick="selectTipWallet('wallet-seabank')">🏦 SeaBank / QRIS</div>
+        <label>Masuk ke Mana? (Auto Dompet Tunai)</label>
+        <div class="toggle-row-3">
+          <div class="toggle-opt active" id="tipOptCash" onclick="selectTipWallet('wallet-cash')">💵 Dompet Tunai</div>
+          <div class="toggle-opt" id="tipOptSea" onclick="selectTipWallet('wallet-seabank')">🏦 SeaBank</div>
+          <div class="toggle-opt" id="tipOptBca" onclick="selectTipWallet('wallet-bca')">🏦 BCA</div>
         </div>
       </div>
       <div class="form-group">
-        <label>Catatan Singkat (Opsional — Auto-Save)</label>
-        <input type="text" id="tipNote" placeholder="Contoh: Paket COD Perumahan Griya" oninput="saveTipDraft()" />
+        <label>Catatan (Opsional — Auto-Save)</label>
+        <input type="text" id="tipNote" placeholder="Contoh: Lebih bayar paket COD" oninput="saveTipDraft()" />
       </div>
       <button class="btn btn-primary btn-block" onclick="submitTip()">Simpan Uang Tip</button>
     </div>
   </div>
 
-  <!-- MODAL 2: CATAT ARUS KAS UMUM -->
+  <!-- MODAL 2: CATAT TRANSAKSI (KELOMPOK A QRIS/TRANSFER & KELOMPOK B PAYLATER CUT-OFF) -->
   <div class="modal-backdrop" id="txModal" onclick="closeModalOnBackdrop(event, 'txModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
       <div class="row-between" style="margin-bottom:10px;">
-        <strong style="font-size:1rem;">Catat Pemasukan / Pengeluaran</strong>
+        <strong style="font-size:1rem;">Catat Arus Kas</strong>
         <button class="btn btn-secondary btn-sm" onclick="closeModal('txModal')">Tutup</button>
       </div>
       <div class="form-group">
@@ -375,53 +449,110 @@
           <div class="toggle-opt" id="txTypeIn" onclick="setTxType('income')">💰 Pemasukan</div>
         </div>
       </div>
-      <div class="form-group">
-        <label>Nominal (Rp)</label>
-        <input type="number" id="txAmount" inputmode="numeric" placeholder="25000" oninput="saveTxDraft()" />
+      <div class="stat-grid" style="margin-bottom:12px;">
+        <div class="form-group" style="margin:0;">
+          <label>Nominal (Rp)</label>
+          <input type="number" id="txAmount" inputmode="numeric" placeholder="25000" oninput="saveTxDraft()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Tanggal Transaksi</label>
+          <input type="date" id="txDate" onchange="onTxSourceOrDateChange()" />
+        </div>
       </div>
       <div class="form-group">
-        <label>Dompet / Rekening</label>
-        <select id="txWallet" onchange="saveTxDraft()"></select>
+        <label id="txSourceLabel">Sumber Dana / Metode Bayar</label>
+        <select id="txWallet" onchange="onTxSourceOrDateChange()"></select>
       </div>
+
+      <!-- Sub-opsi Kelompok A: QRIS (Default) vs Transfer -->
+      <div class="form-group" id="digitalMethodBox" style="display:none;">
+        <label>Kanal Pembayaran Digital</label>
+        <div class="toggle-row">
+          <div class="toggle-opt active-info" id="methodQris" onclick="selectPaymentChannel('QRIS')">📱 QRIS (Default)</div>
+          <div class="toggle-opt" id="methodTransfer" onclick="selectPaymentChannel('Transfer')">💸 Transfer</div>
+        </div>
+      </div>
+
+      <!-- Sub-opsi Kelompok B: PayLater (SPayLater / GoPayLater) -->
+      <div id="paylaterOptionsBox" style="display:none;">
+        <div class="form-group">
+          <label>Tenor PayLater</label>
+          <select id="paylaterTenor" onchange="updatePaylaterPreview()">
+            <option value="1">1x Bayar (Gabung Tagihan Siklus)</option>
+            <option value="3">Cicilan 3 Bulan</option>
+            <option value="6">Cicilan 6 Bulan</option>
+          </select>
+        </div>
+        <div class="info-banner" id="paylaterCyclePreview">
+          Info siklus tagihan akan muncul di sini.
+        </div>
+      </div>
+
       <div class="form-group">
         <label>Kategori</label>
         <select id="txCategory" onchange="saveTxDraft()"></select>
       </div>
       <div class="form-group">
         <label>Keterangan</label>
-        <input type="text" id="txNote" placeholder="Contoh: Pertalite / Gaji Mingguan" oninput="saveTxDraft()" />
+        <input type="text" id="txNote" placeholder="Contoh: Jajan Indomaret / Pertalite" oninput="saveTxDraft()" />
       </div>
       <button class="btn btn-primary btn-block" onclick="submitTx()">Simpan Transaksi</button>
     </div>
   </div>
 
-  <!-- MODAL 3: TRANSFER / EDIT SALDO DOMPET -->
+  <!-- MODAL 3: COCOKKAN UANG FISIK DOMPET TUNAI -->
+  <div class="modal-backdrop" id="reconcileModal" onclick="closeModalOnBackdrop(event, 'reconcileModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong>✎ Cocokkan Uang Fisik Dompet</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('reconcileModal')">Tutup</button>
+      </div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
+        Hitung uang tunai yang ada di dompetmu sekarang. Jika ada selisih karena lupa mencatat pengeluaran/pemasukan, aplikasi akan menyesuaikan otomatis.
+      </p>
+      <div class="stat-box" style="margin-bottom:12px;">
+        <small>Saldo Dompet Tunai di Aplikasi</small>
+        <strong id="recAppBal">Rp 0</strong>
+      </div>
+      <div class="form-group">
+        <label>Jumlah Uang Fisik Asli di Dompet Sekarang (Rp)</label>
+        <input type="number" id="recActualBal" inputmode="numeric" placeholder="Masukkan uang asli" oninput="previewReconcileDiff()" />
+      </div>
+      <div class="info-banner" id="recDiffPreview" style="display:none;"></div>
+      <button class="btn btn-primary btn-block" onclick="submitReconcile()">Cocokkan & Perbarui Saldo</button>
+    </div>
+  </div>
+
+  <!-- MODAL 4: KELOLA AKUN & TRANSFER / TARIK TUNAI / TOP-UP -->
   <div class="modal-backdrop" id="walletModal" onclick="closeModalOnBackdrop(event, 'walletModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
       <div class="row-between" style="margin-bottom:10px;">
-        <strong id="walletModalTitle">Kelola Dompet</strong>
+        <strong id="walletModalTitle">Kelola Akun</strong>
         <button class="btn btn-secondary btn-sm" onclick="closeModal('walletModal')">Tutup</button>
       </div>
       <div class="form-group">
-        <label>Koreksi Saldo Saat Ini (Rp)</label>
+        <label>Koreksi Saldo Langsung (Rp)</label>
         <input type="number" id="editWalletBalance" inputmode="numeric" />
       </div>
-      <button class="btn btn-primary btn-block" style="margin-bottom:14px;" onclick="saveWalletBalance()">Simpan Saldo Baru</button>
+      <button class="btn btn-secondary btn-block" style="margin-bottom:14px;" onclick="saveWalletBalance()">Simpan Koreksi Saldo</button>
+
       <hr style="border:none;border-top:1px solid var(--border);margin-bottom:12px;" />
+      <strong style="font-size:0.86rem;display:block;margin-bottom:8px;">Transfer / Top-Up / Tarik Tunai</strong>
       <div class="form-group">
-        <label>Atau Transfer ke Dompet Lain (Rp)</label>
-        <input type="number" id="transferAmount" inputmode="numeric" placeholder="Nominal transfer" />
+        <label>Nominal Transfer (Rp)</label>
+        <input type="number" id="transferAmount" inputmode="numeric" placeholder="50000" />
       </div>
       <div class="form-group">
-        <label>Tujuan Dompet</label>
+        <label>Kirim ke Akun / Dompet</label>
         <select id="transferTarget"></select>
       </div>
-      <button class="btn btn-secondary btn-block" onclick="executeTransfer()">Transfer Dana</button>
+      <button class="btn btn-primary btn-block" onclick="executeTransfer()">Proses Transfer Dana</button>
     </div>
   </div>
 
-  <!-- MODAL 4: TAMBAH KONTRAK CICILAN -->
+  <!-- MODAL 5: TAMBAH KONTRAK CICILAN MANUAL -->
   <div class="modal-backdrop" id="loanModal" onclick="closeModalOnBackdrop(event, 'loanModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -430,16 +561,17 @@
         <button class="btn btn-secondary btn-sm" onclick="closeModal('loanModal')">Tutup</button>
       </div>
       <div class="form-group">
-        <label>Penyedia Pinjaman</label>
+        <label>Penyedia Pinjaman / PayLater</label>
         <select id="loanProvider" onchange="toggleFriendFields()">
           <option value="SPayLater">SPayLater (100% Pribadi)</option>
-          <option value="SPinjam">SPinjam (Pribadi / Campuran Teman)</option>
-          <option value="SeaBank Pinjam">SeaBank Pinjam (Pribadi / Campuran Teman)</option>
+          <option value="GoPayLater">GoPayLater (100% Pribadi)</option>
+          <option value="SPinjam">SPinjam (Pribadi / Split Teman)</option>
+          <option value="SeaBank Pinjam">SeaBank Pinjam (Pribadi / Split Teman)</option>
         </select>
       </div>
       <div class="form-group">
         <label>Judul / Keperluan</label>
-        <input type="text" id="loanTitle" placeholder="Contoh: Pinjaman Okt / Beli Ban Motor" />
+        <input type="text" id="loanTitle" placeholder="Contoh: Pinjaman Okt / Belanja Bulanan" />
       </div>
       <div class="form-group">
         <label>Cicilan Porsi Pribadi per Bulan (Rp)</label>
@@ -466,6 +598,23 @@
         </div>
       </div>
       <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="createLoanContract()">Simpan Kontrak Cicilan</button>
+    </div>
+  </div>
+
+  <!-- MODAL 6: KONFIRMASI PEMBAYARAN TAGIHAN / TERIMA SETORAN TEMAN -->
+  <div class="modal-backdrop" id="payActionModal" onclick="closeModalOnBackdrop(event, 'payActionModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong id="payActionTitle">Konfirmasi Pembayaran</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('payActionModal')">Tutup</button>
+      </div>
+      <p id="payActionDesc" style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;"></p>
+      <div class="form-group">
+        <label id="payActionWalletLabel">Pilih Rekening / Dompet</label>
+        <select id="payActionWallet"></select>
+      </div>
+      <button class="btn btn-primary btn-block" id="payActionConfirmBtn">Konfirmasi</button>
     </div>
   </div>
 
@@ -503,15 +652,9 @@
       const req = indexedDB.open(DB_NAME, DB_VERSION);
       req.onupgradeneeded = (e) => {
         const database = e.target.result;
-        if (!database.objectStoreNames.contains('wallets')) {
-          database.createObjectStore('wallets', { keyPath: 'id' });
-        }
-        if (!database.objectStoreNames.contains('transactions')) {
-          database.createObjectStore('transactions', { keyPath: 'id' });
-        }
-        if (!database.objectStoreNames.contains('loans')) {
-          database.createObjectStore('loans', { keyPath: 'id' });
-        }
+        if (!database.objectStoreNames.contains('wallets')) database.createObjectStore('wallets', { keyPath: 'id' });
+        if (!database.objectStoreNames.contains('transactions')) database.createObjectStore('transactions', { keyPath: 'id' });
+        if (!database.objectStoreNames.contains('loans')) database.createObjectStore('loans', { keyPath: 'id' });
       };
       req.onsuccess = (e) => { db = e.target.result; resolve(db); };
       req.onerror = (e) => reject(e.target.error);
@@ -554,35 +697,66 @@
     });
   }
 
-  // --- 3. STATE & HELPERS ---
+  // --- 3. DEFAULT 7 AKUN & HELPERS ---
+  const DEFAULT_WALLETS = [
+    { id: 'wallet-cash', name: 'Dompet Tunai', group: 'cash', icon: '💵', tag: 'Fisik', balance: 0, lastChecked: null },
+    { id: 'wallet-seabank', name: 'SeaBank', group: 'bank', icon: '🏦', tag: 'QRIS Utama', balance: 0 },
+    { id: 'wallet-bca', name: 'BCA', group: 'bank', icon: '🏦', tag: 'Bank', balance: 0 },
+    { id: 'wallet-dana', name: 'DANA', group: 'ewallet', icon: '💙', tag: 'E-Wallet', balance: 0 },
+    { id: 'wallet-gopay', name: 'GoPay', group: 'ewallet', icon: '💚', tag: 'E-Wallet', balance: 0 },
+    { id: 'wallet-shopeepay', name: 'ShopeePay', group: 'ewallet', icon: '🧡', tag: 'E-Wallet', balance: 0 },
+    { id: 'wallet-ovo', name: 'OVO', group: 'ewallet', icon: '💜', tag: 'E-Wallet', balance: 0 }
+  ];
+
+  const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
   let state = { wallets: [], transactions: [], loans: [] };
   let activeTipWallet = 'wallet-cash';
   let activeTxType = 'expense';
+  let activePaymentChannel = 'QRIS';
+  let accountFilter = 'all';
+  let txFilter = 'all';
   let selectedWalletId = null;
 
   const formatRp = (num) => 'Rp ' + Math.round(Number(num) || 0).toLocaleString('id-ID');
   const esc = (str) => String(str || '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
   const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
 
+  function getLocalTodayStr() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg;
     el.style.display = 'block';
     clearTimeout(window._toastTimer);
-    window._toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2200);
+    window._toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2400);
   }
 
   async function ensureDefaultWallets() {
     const existing = await idbAll('wallets');
-    if (existing.length === 0) {
-      await idbPut('wallets', { id: 'wallet-cash', name: '💵 Tunai (Tip/Ops)', balance: 0 });
-      await idbPut('wallets', { id: 'wallet-seabank', name: '🏦 SeaBank', balance: 0 });
-      await idbPut('wallets', { id: 'wallet-shopeepay', name: '📱 ShopeePay', balance: 0 });
+    const existingMap = new Map(existing.map((w) => [w.id, w]));
+    for (const def of DEFAULT_WALLETS) {
+      if (!existingMap.has(def.id)) {
+        await idbPut('wallets', def);
+      } else {
+        const cur = existingMap.get(def.id);
+        if (!cur.group || !cur.icon) {
+          await idbPut('wallets', { ...def, ...cur, group: def.group, icon: def.icon, tag: def.tag });
+        }
+      }
     }
   }
 
   async function refreshAll() {
-    state.wallets = await idbAll('wallets');
+    const rawWallets = await idbAll('wallets');
+    const orderMap = new Map(DEFAULT_WALLETS.map((w, idx) => [w.id, idx]));
+    state.wallets = rawWallets.sort((a, b) => (orderMap.get(a.id) ?? 99) - (orderMap.get(b.id) ?? 99));
     state.transactions = (await idbAll('transactions')).sort((a, b) => new Date(b.date) - new Date(a.date));
     state.loans = await idbAll('loans');
     renderDashboard();
@@ -591,59 +765,97 @@
     checkBackupReminder();
   }
 
-  // --- 4. RENDERING UI ---
+  // --- 4. KALKULASI SIKLUS PAYLATER (CUT-OFF TANGGAL 20 SPAYLATER) ---
+  function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0) {
+    const parts = (dateStr || getLocalTodayStr()).split('-').map(Number);
+    const year = parts[0];
+    const month = parts[1]; // 1..12
+    const day = parts[2];
+
+    let baseOffset = 1;
+    if (provider === 'SPayLater' && day > 20) {
+      baseOffset = 2; // Transaksi > tgl 20 masuk 2 bulan berikutnya (misal 22 Nov -> 22 Jan)
+    }
+    const totalOffset = baseOffset + monthAddExtra;
+    const targetDate = new Date(year, (month - 1) + totalOffset, 1);
+    const tYear = targetDate.getFullYear();
+    const tMonth = targetDate.getMonth(); // 0..11
+    const key = `${provider}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
+    const label = `${MONTHS_ID[tMonth]} ${tYear}`;
+    const dueDay = provider === 'SPayLater' ? 22 : 1;
+    return { key, label, dueDay, baseOffset };
+  }
+
+  // --- 5. RENDERING UI ---
   function renderDashboard() {
     const totalBal = state.wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0);
     document.getElementById('totalBalance').textContent = formatRp(totalBal);
 
-    // Hitung tagihan bulan aktif terdekat per kontrak
-    let monthlyBill = 0;
-    let monthlyReceivable = 0;
+    // Spotlight Dompet Tunai
+    const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash') || { balance: 0 };
+    document.getElementById('cashWalletBal').textContent = formatRp(cashWallet.balance);
+    const checkedTxt = cashWallet.lastChecked
+      ? `Terakhir dicocokkan: ${new Date(cashWallet.lastChecked).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}`
+      : 'Tip tunai otomatis masuk ke sini • Ketuk Cocokkan jika selisih';
+    document.getElementById('cashLastChecked').textContent = checkedTxt;
+
+    // Hitung tagihan aktif terdekat & piutang teman
+    let nearestBill = 0;
+    let totalFriendReceivable = 0;
     let nearestInstallment = null;
 
     state.loans.forEach((loan) => {
+      loan.installments.forEach((i) => {
+        if (!i.friendPaid) totalFriendReceivable += Number(i.friendAmount || 0);
+      });
       const nextInst = loan.installments.find((i) => !i.paidToProvider);
       if (nextInst) {
-        monthlyBill += Number(nextInst.personalAmount || 0) + Number(nextInst.friendAmount || 0);
-        if (nextInst.friendAmount > 0 && !nextInst.friendPaid) {
-          monthlyReceivable += Number(nextInst.friendAmount || 0);
-        }
-        if (!nearestInstallment) {
-          nearestInstallment = { loan, inst: nextInst };
-        }
+        const amt = Number(nextInst.personalAmount || 0) + Number(nextInst.friendAmount || 0);
+        nearestBill += amt;
+        if (!nearestInstallment) nearestInstallment = { loan, inst: nextInst };
       }
     });
 
-    document.getElementById('monthlyBillTotal').textContent = formatRp(monthlyBill);
-    document.getElementById('monthlyFriendReceivable').textContent = formatRp(monthlyReceivable);
+    document.getElementById('monthlyBillTotal').textContent = formatRp(nearestBill);
+    document.getElementById('monthlyFriendReceivable').textContent = formatRp(totalFriendReceivable);
 
-    // Render Wallets
-    const walletContainer = document.getElementById('walletList');
-    walletContainer.innerHTML = state.wallets.map((w) => `
-      <div class="wallet-card" onclick="openWalletModal('${w.id}')">
-        <div class="wallet-name">${esc(w.name)}</div>
-        <div class="wallet-bal">${formatRp(w.balance)}</div>
+    // Render Grid 2 Kolom Bank & E-Wallet
+    const digitalWallets = state.wallets.filter((w) => {
+      if (w.id === 'wallet-cash') return false;
+      if (accountFilter === 'bank') return w.group === 'bank';
+      if (accountFilter === 'ewallet') return w.group === 'ewallet';
+      return true;
+    });
+
+    document.getElementById('digitalAccountsGrid').innerHTML = digitalWallets.map((w) => `
+      <div class="acc-card" onclick="openWalletModal('${w.id}')">
+        <div class="acc-header">
+          <span class="acc-name">${w.icon} ${esc(w.name)}</span>
+          <span class="acc-tag">${esc(w.tag || '')}</span>
+        </div>
+        <div class="acc-bal">${formatRp(w.balance)}</div>
       </div>
     `).join('');
 
     // Render Jatuh Tempo Terdekat
     const upcomingBox = document.getElementById('upcomingLoanBox');
     if (!nearestInstallment) {
-      upcomingBox.innerHTML = `<div class="card" style="color:var(--muted);font-size:0.82rem;">Tidak ada tagihan aktif saat ini.</div>`;
+      upcomingBox.innerHTML = `<div class="card" style="color:var(--muted);font-size:0.8rem;">Tidak ada tagihan aktif saat ini.</div>`;
     } else {
       const { loan, inst } = nearestInstallment;
       const totalInst = Number(inst.personalAmount) + Number(inst.friendAmount);
+      const dueStr = inst.billingMonthLabel ? `${loan.dueDay} ${inst.billingMonthLabel}` : `Tgl ${loan.dueDay}`;
       const friendStatus = inst.friendAmount > 0
         ? `<span class="pill ${inst.friendPaid ? 'pill-ok' : 'pill-wait'}">${esc(loan.friendName)}: ${inst.friendPaid ? 'Sudah Setor ✅' : 'Belum Setor ⏳'}</span>`
         : '';
       upcomingBox.innerHTML = `
         <div class="card" onclick="switchTab('loans')" style="cursor:pointer;">
-          <div class="row-between" style="margin-bottom:6px;">
-            <strong style="font-size:0.9rem;">${esc(loan.provider)} • Ke-${inst.monthIndex}/${loan.tenor}</strong>
-            <span class="pill pill-info">Tgl ${loan.dueDay}</span>
+          <div class="row-between" style="margin-bottom:5px;">
+            <strong style="font-size:0.88rem;">${esc(loan.provider)} • ${esc(loan.title)}</strong>
+            <span class="pill pill-info">${esc(dueStr)}</span>
           </div>
-          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">
-            ${esc(loan.title)} • Tagihan: <strong style="color:var(--text)">${formatRp(totalInst)}</strong>
+          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:7px;">
+            Tagihan Bln ${inst.monthIndex}/${loan.tenor}: <strong style="color:var(--text)">${formatRp(totalInst)}</strong>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
             ${friendStatus}
@@ -653,28 +865,37 @@
       `;
     }
 
-    // Render Transaksi Terbaru
+    // Render Mutasi Terakhir
+    const filteredTx = state.transactions.filter((t) => {
+      if (txFilter === 'cash') return t.walletId === 'wallet-cash' || t.targetWalletId === 'wallet-cash';
+      return true;
+    });
+
     const txList = document.getElementById('recentTxList');
-    document.getElementById('txCountLabel').textContent = `${state.transactions.length} catatan`;
-    if (state.transactions.length === 0) {
-      txList.innerHTML = `<div style="padding:14px 0;color:var(--muted);font-size:0.82rem;text-align:center;">Belum ada transaksi. Tekan <b>+ Uang Tip</b> untuk mulai mencatat.</div>`;
+    if (filteredTx.length === 0) {
+      txList.innerHTML = `<div style="padding:14px 0;color:var(--muted);font-size:0.8rem;text-align:center;">Belum ada mutasi pada filter ini.</div>`;
     } else {
-      txList.innerHTML = state.transactions.slice(0, 15).map((t) => {
+      txList.innerHTML = filteredTx.slice(0, 18).map((t) => {
         const w = state.wallets.find((x) => x.id === t.walletId);
-        const isPlus = t.type === 'income' || t.type === 'receivable_in';
-        const sign = isPlus ? '+' : '-';
-        const cls = t.type === 'receivable_in' ? 'neutral' : (isPlus ? 'plus' : 'minus');
-        const dateStr = new Date(t.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        let accountLabel = w ? `${w.icon} ${w.name}` : (t.walletLabel || '');
+        if (t.paymentMethod && t.paymentMethod !== 'Tunai') {
+          accountLabel += ` • ${t.paymentMethod}`;
+        }
+        const isPaylater = t.type === 'paylater_expense';
+        const isPlus = t.type === 'income' || t.type === 'receivable_in' || (t.type === 'reconcile' && t.amount > 0);
+        const sign = isPaylater ? '' : (isPlus ? '+' : '-');
+        const cls = isPaylater ? 'paylater-txt' : (t.type === 'receivable_in' || t.type === 'transfer' ? 'neutral' : (isPlus ? 'plus' : 'minus'));
+        const dateStr = new Date(t.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
         return `
           <div class="tx-item">
             <div>
               <div class="tx-title">${esc(t.note || t.category)}</div>
-              <div class="tx-meta">${esc(t.category)} • ${esc(w ? w.name : '')} • ${dateStr}</div>
+              <div class="tx-meta">${esc(t.category)} • ${esc(accountLabel)} • ${dateStr}</div>
             </div>
             <div>
-              <div class="tx-amt ${cls}">${sign}${formatRp(t.amount)}</div>
+              <div class="tx-amt ${cls}">${sign}${formatRp(Math.abs(t.amount))}</div>
               <div style="text-align:right;margin-top:2px;">
-                <span onclick="deleteTransaction('${t.id}')" style="font-size:0.68rem;color:var(--muted);cursor:pointer;">Hapus</span>
+                <span onclick="deleteTransaction('${t.id}')" style="font-size:0.67rem;color:var(--muted);cursor:pointer;">Hapus</span>
               </div>
             </div>
           </div>
@@ -683,52 +904,89 @@
     }
   }
 
+  function setAccountFilter(filter) {
+    accountFilter = filter;
+    document.getElementById('filterAccAll').classList.toggle('active', filter === 'all');
+    document.getElementById('filterAccBank').classList.toggle('active', filter === 'bank');
+    document.getElementById('filterAccEwallet').classList.toggle('active', filter === 'ewallet');
+    renderDashboard();
+  }
+
+  function setTxFilter(filter) {
+    txFilter = filter;
+    document.getElementById('filterTxAll').classList.toggle('active', filter === 'all');
+    document.getElementById('filterTxCash').classList.toggle('active', filter === 'cash');
+    renderDashboard();
+  }
+
   function renderLoans() {
+    let totalRemPersonal = 0;
+    let totalRemFriend = 0;
+
+    state.loans.forEach((loan) => {
+      loan.installments.forEach((inst) => {
+        if (!inst.paidToProvider) totalRemPersonal += Number(inst.personalAmount || 0);
+        if (!inst.friendPaid) totalRemFriend += Number(inst.friendAmount || 0);
+      });
+    });
+
+    document.getElementById('loanSummaryPersonal').textContent = formatRp(totalRemPersonal);
+    document.getElementById('loanSummaryFriend').textContent = formatRp(totalRemFriend);
+
     const container = document.getElementById('loansContainer');
     if (state.loans.length === 0) {
-      container.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:0.84rem;padding:24px 14px;">Belum ada kontrak cicilan.<br/>Tekan <b>+ Kontrak</b> untuk mencatat SPayLater, SPinjam, atau SeaBank Pinjam.</div>`;
+      container.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:0.82rem;padding:24px 14px;">Belum ada tagihan PayLater atau cicilan.<br/>Belanja pakai SPayLater/GoPayLater akan otomatis muncul di sini.</div>`;
       return;
     }
 
     container.innerHTML = state.loans.map((loan) => {
-      const unpaidList = loan.installments.filter((i) => !i.paidToProvider);
-      const remPersonal = unpaidList.reduce((s, i) => s + Number(i.personalAmount), 0);
+      const isSplit = loan.friendName && loan.installments.some((i) => i.friendAmount > 0);
+      const remPersonal = loan.installments.filter((i) => !i.paidToProvider).reduce((s, i) => s + Number(i.personalAmount), 0);
       const remFriend = loan.installments.filter((i) => !i.friendPaid).reduce((s, i) => s + Number(i.friendAmount), 0);
 
       const instHtml = loan.installments.map((inst) => {
         const totalBulan = Number(inst.personalAmount) + Number(inst.friendAmount);
+        const periodLabel = inst.billingMonthLabel ? ` (${inst.billingMonthLabel})` : '';
+        const itemsHtml = (inst.items && inst.items.length > 0)
+          ? `<div style="margin:6px 0;padding:6px 8px;background:rgba(255,255,255,0.03);border-radius:7px;font-size:0.72rem;color:var(--muted);">
+              ${inst.items.map((it) => `<div class="row-between"><span>• ${esc(it.note)} (${it.date.slice(5)})</span><span>${formatRp(it.amount)}</span></div>`).join('')}
+            </div>`
+          : '';
+
         if (inst.paidToProvider) {
           return `
-            <div class="row-between" style="padding:8px 0;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);">
-              <span>Bulan ${inst.monthIndex} (Tgl ${loan.dueDay}) • ${formatRp(totalBulan)}</span>
+            <div class="row-between" style="padding:8px 0;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted);">
+              <span>Bln ${inst.monthIndex}${periodLabel} • ${formatRp(totalBulan)}</span>
               <span class="pill pill-ok">LUNAS ✅</span>
             </div>
           `;
         }
+
         return `
           <div style="padding:10px;margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;">
-            <div class="row-between" style="margin-bottom:6px;">
-              <strong style="font-size:0.84rem;">Bulan ${inst.monthIndex}/${loan.tenor} (Jatuh Tempo Tgl ${loan.dueDay})</strong>
+            <div class="row-between" style="margin-bottom:5px;">
+              <strong style="font-size:0.82rem;">Bln ${inst.monthIndex}/${loan.tenor}${periodLabel} • Tgl ${loan.dueDay}</strong>
               <strong style="font-size:0.86rem;">${formatRp(totalBulan)}</strong>
             </div>
+            ${itemsHtml}
             ${inst.friendAmount > 0 ? `
-              <div class="row-between" style="font-size:0.78rem;margin-bottom:4px;">
+              <div class="row-between" style="font-size:0.77rem;margin-bottom:4px;">
                 <span>1. Porsi ${esc(loan.friendName)}: <b>${formatRp(inst.friendAmount)}</b></span>
                 <span class="pill ${inst.friendPaid ? 'pill-ok' : 'pill-wait'}">${inst.friendPaid ? 'Sudah Setor ✅' : 'Belum Setor ⏳'}</span>
               </div>
             ` : ''}
-            <div class="row-between" style="font-size:0.78rem;margin-bottom:8px;">
+            <div class="row-between" style="font-size:0.77rem;margin-bottom:8px;">
               <span>${inst.friendAmount > 0 ? '2. ' : ''}Porsi Pribadi: <b>${formatRp(inst.personalAmount)}</b></span>
-              <span class="pill pill-wait">Tagihan Aplikasi ⏳</span>
+              <span class="pill pill-wait">Tagihan Aktif ⏳</span>
             </div>
             <div style="display:grid;gap:6px;">
               ${(inst.friendAmount > 0 && !inst.friendPaid) ? `
-                <button class="btn btn-secondary btn-sm btn-block" onclick="receiveFriendPayment('${loan.id}', ${inst.monthIndex})">
+                <button class="btn btn-secondary btn-sm btn-block" onclick="openPayActionModal('friend', '${loan.id}', ${inst.monthIndex})">
                   + Terima Setoran ${esc(loan.friendName)} (${formatRp(inst.friendAmount)})
                 </button>
               ` : ''}
-              <button class="btn btn-primary btn-sm btn-block" onclick="payProviderInstallment('${loan.id}', ${inst.monthIndex})">
-                ✔ Tandai Tagihan Bln ${inst.monthIndex} Lunas ke ${esc(loan.provider)}
+              <button class="btn btn-primary btn-sm btn-block" onclick="openPayActionModal('provider', '${loan.id}', ${inst.monthIndex})">
+                ✔ Bayar Tagihan Bln ${inst.monthIndex} ke ${esc(loan.provider)}
               </button>
             </div>
           </div>
@@ -739,21 +997,24 @@
         <div class="card">
           <div class="row-between" style="margin-bottom:6px;">
             <div>
-              <span class="pill pill-info">${esc(loan.provider)}</span>
-              <strong style="font-size:0.95rem;margin-left:4px;">${esc(loan.title)}</strong>
+              <span class="pill ${isSplit ? 'pill-info' : 'pill-pl'}">${esc(loan.provider)}</span>
+              <span class="pill ${isSplit ? 'pill-wait' : 'pill-ok'}" style="margin-left:3px;">${isSplit ? 'Split Teman' : 'Pribadi'}</span>
+              <div style="font-weight:700;font-size:0.93rem;margin-top:4px;">${esc(loan.title)}</div>
             </div>
-            <span onclick="deleteLoan('${loan.id}')" style="font-size:0.72rem;color:var(--muted);cursor:pointer;">Hapus</span>
+            <span onclick="deleteLoan('${loan.id}')" style="font-size:0.71rem;color:var(--muted);cursor:pointer;">Hapus</span>
           </div>
-          <div class="stat-grid" style="margin:8px 0;">
-            <div class="stat-box" style="padding:8px;">
-              <small>Sisa Utang Pribadi</small>
-              <strong>${formatRp(remPersonal)}</strong>
+          ${isSplit ? `
+            <div class="stat-grid" style="margin:8px 0;">
+              <div class="stat-box" style="padding:8px;">
+                <small>Sisa Utang Pribadi</small>
+                <strong>${formatRp(remPersonal)}</strong>
+              </div>
+              <div class="stat-box" style="padding:8px;">
+                <small>Sisa Piutang ${esc(loan.friendName)}</small>
+                <strong style="color:#6ee7b7">${formatRp(remFriend)}</strong>
+              </div>
             </div>
-            <div class="stat-box" style="padding:8px;">
-              <small>Sisa Piutang ${esc(loan.friendName || 'Teman')}</small>
-              <strong style="color:#6ee7b7">${formatRp(remFriend)}</strong>
-            </div>
-          </div>
+          ` : ''}
           ${instHtml}
         </div>
       `;
@@ -761,25 +1022,25 @@
   }
 
   function renderRekap() {
-    let tipCash = 0, tipDigital = 0, salary = 0, ops = 0;
+    let tipCash = 0, tipBank = 0, salary = 0, ops = 0;
     state.transactions.forEach((t) => {
       const amt = Number(t.amount || 0);
       if (t.category === 'Uang Tip Kurir') {
         if (t.walletId === 'wallet-cash') tipCash += amt;
-        else tipDigital += amt;
+        else tipBank += amt;
       } else if (t.category === 'Gaji / Insentif Kurir') {
         salary += amt;
-      } else if (t.type === 'expense' && ['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir'].includes(t.category)) {
+      } else if (['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir'].includes(t.category)) {
         ops += amt;
       }
     });
     document.getElementById('statTipCash').textContent = formatRp(tipCash);
-    document.getElementById('statTipDigital').textContent = formatRp(tipDigital);
+    document.getElementById('statTipBank').textContent = formatRp(tipBank);
     document.getElementById('statSalary').textContent = formatRp(salary);
     document.getElementById('statOps').textContent = formatRp(ops);
   }
 
-  // --- 5. QUICK TIP & TRANSAKSI (DENGAN AUTO-SAVE DRAFT) ---
+  // --- 6. QUICK-ADD TIP (3 PILIHAN: TUNAI, SEABANK, BCA) ---
   function openTipModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tip') || '{}');
     document.getElementById('tipAmount').value = draft.amount || '';
@@ -796,7 +1057,8 @@
   function selectTipWallet(walletId) {
     activeTipWallet = walletId;
     document.getElementById('tipOptCash').classList.toggle('active', walletId === 'wallet-cash');
-    document.getElementById('tipOptBank').classList.toggle('active', walletId !== 'wallet-cash');
+    document.getElementById('tipOptSea').classList.toggle('active', walletId === 'wallet-seabank');
+    document.getElementById('tipOptBca').classList.toggle('active', walletId === 'wallet-bca');
     saveTipDraft();
   }
 
@@ -811,8 +1073,9 @@
   async function submitTip() {
     const amount = Number(document.getElementById('tipAmount').value);
     if (!amount || amount <= 0) return showToast('Masukkan nominal tip');
-    const note = document.getElementById('tipNote').value.trim() || 'Uang Tip Customer';
     const wallet = state.wallets.find((w) => w.id === activeTipWallet) || state.wallets[0];
+    const defaultNote = wallet.id === 'wallet-cash' ? 'Tip Tunai Customer' : `Tip Transfer Customer (${wallet.name})`;
+    const note = document.getElementById('tipNote').value.trim() || defaultNote;
 
     wallet.balance = Number(wallet.balance) + amount;
     await idbPut('wallets', wallet);
@@ -822,45 +1085,110 @@
       category: 'Uang Tip Kurir',
       amount,
       walletId: wallet.id,
+      paymentMethod: wallet.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
       note,
       date: new Date().toISOString()
     });
 
     localStorage.removeItem('cashflow_draft_tip');
     closeModal('tipModal');
-    showToast(`+${formatRp(amount)} dicatat!`);
+    showToast(`+${formatRp(amount)} masuk ${wallet.name}`);
     await refreshAll();
   }
 
+  // --- 7. CATAT ARUS KAS (KELOMPOK A QRIS/TRANSFER & KELOMPOK B PAYLATER) ---
   function openTxModal() {
-    const walletSelect = document.getElementById('txWallet');
-    walletSelect.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tx') || '{}');
-    setTxType(draft.type || 'expense');
+    document.getElementById('txDate').value = draft.date || getLocalTodayStr();
+    setTxType(draft.type || 'expense', draft.wallet);
     document.getElementById('txAmount').value = draft.amount || '';
-    if (draft.wallet) walletSelect.value = draft.wallet;
     if (draft.category) document.getElementById('txCategory').value = draft.category;
     document.getElementById('txNote').value = draft.note || '';
+    selectPaymentChannel(draft.channel || 'QRIS');
     document.getElementById('txModal').classList.add('open');
   }
 
-  function setTxType(type) {
+  function setTxType(type, preferredWallet) {
     activeTxType = type;
     document.getElementById('txTypeOut').className = 'toggle-opt' + (type === 'expense' ? ' active-danger' : '');
     document.getElementById('txTypeIn').className = 'toggle-opt' + (type === 'income' ? ' active' : '');
+
+    const walletSelect = document.getElementById('txWallet');
+    const walletOpts = state.wallets.map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
+
+    if (type === 'expense') {
+      document.getElementById('txSourceLabel').textContent = 'Bayar Pakai Apa?';
+      walletSelect.innerHTML = `
+        <optgroup label="Kelompok A — Potong Saldo Langsung">
+          ${walletOpts}
+        </optgroup>
+        <optgroup label="Kelompok B — PayLater (Minimarket / Online)">
+          <option value="paylater-SPayLater">🟠 SPayLater (Cut-off Tgl 20)</option>
+          <option value="paylater-GoPayLater">🟢 GoPayLater</option>
+        </optgroup>
+      `;
+      walletSelect.value = preferredWallet || 'wallet-seabank';
+    } else {
+      document.getElementById('txSourceLabel').textContent = 'Masuk ke Akun / Dompet';
+      walletSelect.innerHTML = walletOpts;
+      walletSelect.value = preferredWallet || 'wallet-seabank';
+    }
+
     const catSelect = document.getElementById('txCategory');
     const cats = type === 'expense'
-      ? ['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir', 'Kebutuhan Pribadi', 'Belanja Harian']
+      ? ['Makan & Minum Jalan', 'Bensin & Servis', 'Minimarket (Indomaret/Alfamart)', 'Operasional Kurir', 'Kebutuhan Pribadi', 'Belanja Online']
       : ['Gaji / Insentif Kurir', 'Uang Tip Kurir', 'Bonus / Lainnya'];
     catSelect.innerHTML = cats.map((c) => `<option value="${c}">${c}</option>`).join('');
+
+    onTxSourceOrDateChange();
+  }
+
+  function selectPaymentChannel(ch) {
+    activePaymentChannel = ch;
+    document.getElementById('methodQris').className = 'toggle-opt' + (ch === 'QRIS' ? ' active-info' : '');
+    document.getElementById('methodTransfer').className = 'toggle-opt' + (ch === 'Transfer' ? ' active-info' : '');
     saveTxDraft();
+  }
+
+  function onTxSourceOrDateChange() {
+    const val = document.getElementById('txWallet').value;
+    const isPaylater = val.startsWith('paylater-');
+    const isCash = val === 'wallet-cash';
+
+    document.getElementById('digitalMethodBox').style.display = (!isPaylater && !isCash && activeTxType === 'expense') ? 'block' : 'none';
+    document.getElementById('paylaterOptionsBox').style.display = (isPaylater && activeTxType === 'expense') ? 'block' : 'none';
+
+    if (isPaylater) updatePaylaterPreview();
+    saveTxDraft();
+  }
+
+  function updatePaylaterPreview() {
+    const val = document.getElementById('txWallet').value;
+    const provider = val.replace('paylater-', '');
+    const dateStr = document.getElementById('txDate').value || getLocalTodayStr();
+    const tenor = Number(document.getElementById('paylaterTenor').value || 1);
+    const target = calculatePaylaterTarget(provider, dateStr, 0);
+    const day = Number(dateStr.split('-')[2]);
+
+    let ruleNote = '';
+    if (provider === 'SPayLater') {
+      ruleNote = day > 20
+        ? `Karena transaksi tgl <b>${day} (di atas tgl 20)</b>, tagihan melompat 2 bulan ke siklus <b>${target.label}</b>.`
+        : `Karena transaksi tgl <b>${day} (1–20)</b>, tagihan masuk bulan depan siklus <b>${target.label}</b>.`;
+    } else {
+      ruleNote = `Tagihan GoPayLater masuk siklus <b>${target.label}</b>.`;
+    }
+    if (tenor > 1) ruleNote += ` Dicicil <b>${tenor}x</b> mulai ${target.label}.`;
+    document.getElementById('paylaterCyclePreview').innerHTML = ruleNote;
   }
 
   function saveTxDraft() {
     localStorage.setItem('cashflow_draft_tx', JSON.stringify({
       type: activeTxType,
       amount: document.getElementById('txAmount').value,
+      date: document.getElementById('txDate').value,
       wallet: document.getElementById('txWallet').value,
+      channel: activePaymentChannel,
       category: document.getElementById('txCategory').value,
       note: document.getElementById('txNote').value
     }));
@@ -869,14 +1197,101 @@
   async function submitTx() {
     const amount = Number(document.getElementById('txAmount').value);
     if (!amount || amount <= 0) return showToast('Nominal tidak valid');
-    const walletId = document.getElementById('txWallet').value;
+    const dateStr = document.getElementById('txDate').value || getLocalTodayStr();
+    const walletVal = document.getElementById('txWallet').value;
     const category = document.getElementById('txCategory').value;
     const note = document.getElementById('txNote').value.trim() || category;
-    const wallet = state.wallets.find((w) => w.id === walletId);
+    const txIsoDate = new Date(`${dateStr}T${new Date().toTimeString().slice(0, 8)}`).toISOString();
 
+    // KASUS KELOMPOK B: PAYLATER (SPayLater / GoPayLater)
+    if (activeTxType === 'expense' && walletVal.startsWith('paylater-')) {
+      const provider = walletVal.replace('paylater-', '');
+      const tenor = Number(document.getElementById('paylaterTenor').value || 1);
+      const target0 = calculatePaylaterTarget(provider, dateStr, 0);
+
+      if (tenor === 1) {
+        // Gabungkan ke tagihan bulanan siklus yang sama (1x Bayar)
+        let existingBill = state.loans.find((l) => l.billingKey === target0.key);
+        if (existingBill && !existingBill.installments[0].paidToProvider) {
+          const inst = existingBill.installments[0];
+          inst.personalAmount = Number(inst.personalAmount) + amount;
+          inst.items = inst.items || [];
+          inst.items.push({ date: dateStr, note, amount });
+          await idbPut('loans', existingBill);
+        } else {
+          await idbPut('loans', {
+            id: uuid(),
+            provider,
+            title: `Tagihan ${provider} • ${target0.label}`,
+            billingKey: target0.key,
+            friendName: '',
+            tenor: 1,
+            dueDay: target0.dueDay,
+            installments: [{
+              monthIndex: 1,
+              billingMonthLabel: target0.label,
+              personalAmount: amount,
+              friendAmount: 0,
+              friendPaid: true,
+              paidToProvider: false,
+              items: [{ date: dateStr, note, amount }]
+            }]
+          });
+        }
+      } else {
+        // Cicilan bertenor (3x / 6x) mulai bulan target
+        const perMonth = Math.ceil(amount / tenor);
+        const installments = [];
+        for (let m = 0; m < tenor; m++) {
+          const tInfo = calculatePaylaterTarget(provider, dateStr, m);
+          installments.push({
+            monthIndex: m + 1,
+            billingMonthLabel: tInfo.label,
+            personalAmount: perMonth,
+            friendAmount: 0,
+            friendPaid: true,
+            paidToProvider: false,
+            items: m === 0 ? [{ date: dateStr, note: `${note} (${tenor}x)`, amount }] : []
+          });
+        }
+        await idbPut('loans', {
+          id: uuid(),
+          provider,
+          title: `${note} (${tenor}x)`,
+          billingKey: null,
+          friendName: '',
+          tenor,
+          dueDay: target0.dueDay,
+          installments
+        });
+      }
+
+      await idbPut('transactions', {
+        id: uuid(),
+        type: 'paylater_expense',
+        category,
+        amount,
+        walletId: walletVal,
+        walletLabel: `${provider} (Tagihan ${target0.label})`,
+        paymentMethod: 'QRIS PayLater',
+        note,
+        date: txIsoDate
+      });
+
+      localStorage.removeItem('cashflow_draft_tx');
+      closeModal('txModal');
+      showToast(`Masuk tagihan ${provider} (${target0.label})`);
+      await refreshAll();
+      return;
+    }
+
+    // KASUS KELOMPOK A: POTONG / TAMBAH SALDO LANGSUNG
+    const wallet = state.wallets.find((w) => w.id === walletVal);
     wallet.balance = activeTxType === 'income'
       ? Number(wallet.balance) + amount
       : Number(wallet.balance) - amount;
+
+    const method = wallet.id === 'wallet-cash' ? 'Tunai' : activePaymentChannel;
 
     await idbPut('wallets', wallet);
     await idbPut('transactions', {
@@ -884,9 +1299,10 @@
       type: activeTxType,
       category,
       amount,
-      walletId,
+      walletId: wallet.id,
+      paymentMethod: method,
       note,
-      date: new Date().toISOString()
+      date: txIsoDate
     });
 
     localStorage.removeItem('cashflow_draft_tx');
@@ -898,27 +1314,85 @@
   async function deleteTransaction(id) {
     const tx = state.transactions.find((t) => t.id === id);
     if (!tx) return;
-    const wallet = state.wallets.find((w) => w.id === tx.walletId);
-    if (wallet) {
-      const wasIn = tx.type === 'income' || tx.type === 'receivable_in';
-      wallet.balance = wasIn ? Number(wallet.balance) - Number(tx.amount) : Number(wallet.balance) + Number(tx.amount);
-      await idbPut('wallets', wallet);
+    if (tx.type !== 'paylater_expense') {
+      const wallet = state.wallets.find((w) => w.id === tx.walletId);
+      if (wallet) {
+        const wasIn = tx.type === 'income' || tx.type === 'receivable_in' || (tx.type === 'reconcile' && tx.amount > 0);
+        const absAmt = Math.abs(Number(tx.amount));
+        wallet.balance = wasIn ? Number(wallet.balance) - absAmt : Number(wallet.balance) + absAmt;
+        await idbPut('wallets', wallet);
+      }
     }
     await idbDelete('transactions', id);
     showToast('Catatan dihapus & saldo dipulihkan');
     await refreshAll();
   }
 
-  // --- 6. KELOLA DOMPET & TRANSFER ---
+  // --- 8. COCOKKAN UANG FISIK DOMPET TUNAI ---
+  function openReconcileModal() {
+    const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash');
+    document.getElementById('recAppBal').textContent = formatRp(cashWallet.balance);
+    document.getElementById('recActualBal').value = '';
+    document.getElementById('recDiffPreview').style.display = 'none';
+    document.getElementById('reconcileModal').classList.add('open');
+  }
+
+  function previewReconcileDiff() {
+    const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash');
+    const raw = document.getElementById('recActualBal').value;
+    const box = document.getElementById('recDiffPreview');
+    if (raw === '') { box.style.display = 'none'; return; }
+    const actual = Number(raw);
+    const diff = actual - Number(cashWallet.balance);
+    box.style.display = 'block';
+    if (diff === 0) {
+      box.textContent = 'Saldo fisik sudah sama persis dengan catatan aplikasi.';
+    } else if (diff < 0) {
+      box.innerHTML = `Selisih kurang <b>${formatRp(Math.abs(diff))}</b> akan dicatat otomatis sebagai <b>Pengeluaran Tunai Tak Tercatat</b>.`;
+    } else {
+      box.innerHTML = `Selisih lebih <b>+${formatRp(diff)}</b> akan dicatat otomatis sebagai <b>Pemasukan Tunai Tak Tercatat</b>.`;
+    }
+  }
+
+  async function submitReconcile() {
+    const raw = document.getElementById('recActualBal').value;
+    if (raw === '' || Number(raw) < 0) return showToast('Masukkan jumlah uang fisik');
+    const actual = Number(raw);
+    const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash');
+    const diff = actual - Number(cashWallet.balance);
+
+    cashWallet.balance = actual;
+    cashWallet.lastChecked = new Date().toISOString();
+    await idbPut('wallets', cashWallet);
+
+    if (diff !== 0) {
+      await idbPut('transactions', {
+        id: uuid(),
+        type: 'reconcile',
+        category: diff < 0 ? 'Pengeluaran Tunai Tak Tercatat' : 'Pemasukan Tunai Tak Tercatat',
+        amount: diff,
+        walletId: 'wallet-cash',
+        paymentMethod: 'Tunai',
+        note: 'Penyesuaian Cocokkan Dompet Fisik',
+        date: new Date().toISOString()
+      });
+    }
+
+    closeModal('reconcileModal');
+    showToast('Saldo dompet fisik cocok!');
+    await refreshAll();
+  }
+
+  // --- 9. KELOLA AKUN & TRANSFER / TARIK TUNAI ---
   function openWalletModal(walletId) {
     selectedWalletId = walletId;
     const w = state.wallets.find((x) => x.id === walletId);
-    document.getElementById('walletModalTitle').textContent = w.name;
+    document.getElementById('walletModalTitle').textContent = `${w.icon} ${w.name}`;
     document.getElementById('editWalletBalance').value = w.balance;
     document.getElementById('transferAmount').value = '';
     document.getElementById('transferTarget').innerHTML = state.wallets
       .filter((x) => x.id !== walletId)
-      .map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
+      .map((x) => `<option value="${x.id}">${x.icon} ${esc(x.name)}</option>`).join('');
     document.getElementById('walletModal').classList.add('open');
   }
 
@@ -938,14 +1412,27 @@
     const dst = state.wallets.find((x) => x.id === document.getElementById('transferTarget').value);
     src.balance = Number(src.balance) - amt;
     dst.balance = Number(dst.balance) + amt;
+
     await idbPut('wallets', src);
     await idbPut('wallets', dst);
+    await idbPut('transactions', {
+      id: uuid(),
+      type: 'transfer',
+      category: dst.id === 'wallet-cash' ? 'Tarik Tunai' : 'Transfer Antar Akun',
+      amount: amt,
+      walletId: src.id,
+      targetWalletId: dst.id,
+      paymentMethod: 'Transfer',
+      note: `${src.name} ➔ ${dst.name}`,
+      date: new Date().toISOString()
+    });
+
     closeModal('walletModal');
-    showToast(`Transfer ${formatRp(amt)} berhasil`);
+    showToast(`${src.name} ➔ ${dst.name} berhasil`);
     await refreshAll();
   }
 
-  // --- 7. CICILAN & PIUTANG TEMAN (2 TAHAP) ---
+  // --- 10. CICILAN & PEMBAYARAN DUA TAHAP ---
   function openNewLoanModal() {
     toggleFriendFields();
     document.getElementById('loanModal').classList.add('open');
@@ -953,24 +1440,29 @@
 
   function toggleFriendFields() {
     const provider = document.getElementById('loanProvider').value;
-    document.getElementById('friendLoanSection').style.display = provider === 'SPayLater' ? 'none' : 'block';
+    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
+    document.getElementById('friendLoanSection').style.display = isPaylater ? 'none' : 'block';
   }
 
   async function createLoanContract() {
     const provider = document.getElementById('loanProvider').value;
+    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
     const title = document.getElementById('loanTitle').value.trim() || provider;
     const personalMonthly = Number(document.getElementById('loanPersonalMonthly').value || 0);
-    const friendName = provider === 'SPayLater' ? '' : document.getElementById('loanFriendName').value.trim();
-    const friendMonthly = (provider === 'SPayLater' || !friendName) ? 0 : Number(document.getElementById('loanFriendMonthly').value || 0);
+    const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
+    const friendMonthly = (isPaylater || !friendName) ? 0 : Number(document.getElementById('loanFriendMonthly').value || 0);
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
     const dueDay = Math.min(31, Math.max(1, Number(document.getElementById('loanDueDay').value || 25)));
 
     if (personalMonthly + friendMonthly <= 0) return showToast('Isi nominal cicilan bulanan');
 
+    const now = new Date();
     const installments = [];
     for (let m = 1; m <= tenor; m++) {
+      const d = new Date(now.getFullYear(), now.getMonth() + m, 1);
       installments.push({
         monthIndex: m,
+        billingMonthLabel: `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`,
         personalAmount: personalMonthly,
         friendAmount: friendMonthly,
         friendPaid: friendMonthly === 0,
@@ -982,6 +1474,7 @@
       id: uuid(),
       provider,
       title,
+      billingKey: null,
       friendName,
       tenor,
       dueDay,
@@ -993,64 +1486,78 @@
     await refreshAll();
   }
 
-  async function receiveFriendPayment(loanId, monthIndex) {
+  function openPayActionModal(mode, loanId, monthIndex) {
     const loan = state.loans.find((l) => l.id === loanId);
     const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
-    if (!inst || inst.friendPaid) return;
+    const walletSel = document.getElementById('payActionWallet');
+    walletSel.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
 
-    inst.friendPaid = true;
-    const targetWallet = state.wallets.find((w) => w.id === 'wallet-seabank') || state.wallets[0];
-    targetWallet.balance = Number(targetWallet.balance) + Number(inst.friendAmount);
+    if (mode === 'friend') {
+      document.getElementById('payActionTitle').textContent = `Terima Setoran ${loan.friendName}`;
+      document.getElementById('payActionDesc').textContent = `Nominal setoran ${formatRp(inst.friendAmount)} untuk ${loan.provider} (Bln ${monthIndex}).`;
+      document.getElementById('payActionWalletLabel').textContent = 'Masuk ke Rekening / Dompet Mana?';
+      walletSel.value = 'wallet-seabank';
+    } else {
+      const total = Number(inst.personalAmount) + Number(inst.friendAmount);
+      document.getElementById('payActionTitle').textContent = `Bayar Tagihan ${loan.provider}`;
+      document.getElementById('payActionDesc').textContent = `Total tagihan Bln ${monthIndex}: ${formatRp(total)}. Saldo akun yang dipilih akan langsung terpotong.`;
+      document.getElementById('payActionWalletLabel').textContent = 'Bayar Menggunakan Saldo Apa?';
+      walletSel.value = loan.provider === 'GoPayLater' ? 'wallet-gopay' : 'wallet-seabank';
+    }
 
-    await idbPut('wallets', targetWallet);
-    await idbPut('loans', loan);
-    await idbPut('transactions', {
-      id: uuid(),
-      type: 'receivable_in',
-      category: 'Pelunasan Piutang Teman',
-      amount: Number(inst.friendAmount),
-      walletId: targetWallet.id,
-      note: `Setoran ${loan.friendName} (${loan.provider} Bln ${monthIndex})`,
-      date: new Date().toISOString()
-    });
+    document.getElementById('payActionConfirmBtn').onclick = async () => {
+      const chosenWalletId = walletSel.value;
+      const w = state.wallets.find((x) => x.id === chosenWalletId);
 
-    showToast(`Setoran ${loan.friendName} masuk ke ${targetWallet.name}`);
-    await refreshAll();
-  }
+      if (mode === 'friend') {
+        inst.friendPaid = true;
+        w.balance = Number(w.balance) + Number(inst.friendAmount);
+        await idbPut('wallets', w);
+        await idbPut('loans', loan);
+        await idbPut('transactions', {
+          id: uuid(),
+          type: 'receivable_in',
+          category: 'Pelunasan Piutang Teman',
+          amount: Number(inst.friendAmount),
+          walletId: w.id,
+          paymentMethod: w.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
+          note: `Setoran ${loan.friendName} (${loan.provider} Bln ${monthIndex})`,
+          date: new Date().toISOString()
+        });
+        showToast(`Setoran ${loan.friendName} masuk ke ${w.name}`);
+      } else {
+        const total = Number(inst.personalAmount) + Number(inst.friendAmount);
+        inst.paidToProvider = true;
+        w.balance = Number(w.balance) - total;
+        await idbPut('wallets', w);
+        await idbPut('loans', loan);
+        await idbPut('transactions', {
+          id: uuid(),
+          type: 'debt_payment',
+          category: `Bayar Tagihan ${loan.provider}`,
+          amount: total,
+          walletId: w.id,
+          paymentMethod: w.id === 'wallet-cash' ? 'Tunai' : 'Transfer',
+          note: `Lunas ${loan.title} (Bln ${monthIndex}/${loan.tenor})`,
+          date: new Date().toISOString()
+        });
+        showToast(`Tagihan ${loan.provider} Lunas!`);
+      }
 
-  async function payProviderInstallment(loanId, monthIndex) {
-    const loan = state.loans.find((l) => l.id === loanId);
-    const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
-    if (!inst || inst.paidToProvider) return;
+      closeModal('payActionModal');
+      await refreshAll();
+    };
 
-    const totalBayar = Number(inst.personalAmount) + Number(inst.friendAmount);
-    const payWallet = state.wallets.find((w) => w.id === 'wallet-seabank') || state.wallets[0];
-    payWallet.balance = Number(payWallet.balance) - totalBayar;
-    inst.paidToProvider = true;
-
-    await idbPut('wallets', payWallet);
-    await idbPut('loans', loan);
-    await idbPut('transactions', {
-      id: uuid(),
-      type: 'debt_payment',
-      category: `Bayar Cicilan ${loan.provider}`,
-      amount: totalBayar,
-      walletId: payWallet.id,
-      note: `Lunas ${loan.title} (Bln ${monthIndex}/${loan.tenor})`,
-      date: new Date().toISOString()
-    });
-
-    showToast(`Tagihan ${loan.provider} Bln ${monthIndex} Lunas!`);
-    await refreshAll();
+    document.getElementById('payActionModal').classList.add('open');
   }
 
   async function deleteLoan(id) {
     await idbDelete('loans', id);
-    showToast('Kontrak cicilan dihapus');
+    showToast('Tagihan dihapus');
     await refreshAll();
   }
 
-  // --- 8. BACKUP JSON & DEMO DATA ---
+  // --- 11. BACKUP JSON & DEMO DATA ---
   function exportJSON() {
     const payload = {
       app: 'Cash Flow',
@@ -1063,7 +1570,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cashflow-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `cashflow-backup-${getLocalTodayStr()}.json`;
     a.click();
     URL.revokeObjectURL(url);
     localStorage.setItem('cashflow_last_backup', Date.now().toString());
@@ -1079,7 +1586,7 @@
       try {
         const data = JSON.parse(e.target.result);
         if (!Array.isArray(data.wallets) || !Array.isArray(data.transactions) || !Array.isArray(data.loans)) {
-          throw new Error('Format JSON tidak cocok');
+          throw new Error('Format tidak valid');
         }
         await idbClear('wallets');
         await idbClear('transactions');
@@ -1087,6 +1594,7 @@
         for (const w of data.wallets) await idbPut('wallets', w);
         for (const t of data.transactions) await idbPut('transactions', t);
         for (const l of data.loans) await idbPut('loans', l);
+        await ensureDefaultWallets();
         showToast('Data berhasil dipulihkan!');
         await refreshAll();
       } catch (err) {
@@ -1109,35 +1617,50 @@
     await idbClear('transactions');
     await idbClear('loans');
 
-    await idbPut('wallets', { id: 'wallet-cash', name: '💵 Tunai (Tip/Ops)', balance: 145000 });
-    await idbPut('wallets', { id: 'wallet-seabank', name: '🏦 SeaBank', balance: 2350000 });
-    await idbPut('wallets', { id: 'wallet-shopeepay', name: '📱 ShopeePay', balance: 120000 });
+    const demoWallets = [
+      { id: 'wallet-cash', name: 'Dompet Tunai', group: 'cash', icon: '💵', tag: 'Fisik', balance: 135000, lastChecked: new Date().toISOString() },
+      { id: 'wallet-seabank', name: 'SeaBank', group: 'bank', icon: '🏦', tag: 'QRIS Utama', balance: 2250000 },
+      { id: 'wallet-bca', name: 'BCA', group: 'bank', icon: '🏦', tag: 'Bank', balance: 680000 },
+      { id: 'wallet-dana', name: 'DANA', group: 'ewallet', icon: '💙', tag: 'E-Wallet', balance: 75000 },
+      { id: 'wallet-gopay', name: 'GoPay', group: 'ewallet', icon: '💚', tag: 'E-Wallet', balance: 60000 },
+      { id: 'wallet-shopeepay', name: 'ShopeePay', group: 'ewallet', icon: '🧡', tag: 'E-Wallet', balance: 45000 },
+      { id: 'wallet-ovo', name: 'OVO', group: 'ewallet', icon: '💜', tag: 'E-Wallet', balance: 30000 }
+    ];
+    for (const w of demoWallets) await idbPut('wallets', w);
 
     await idbPut('transactions', {
       id: uuid(), type: 'income', category: 'Uang Tip Kurir', amount: 15000,
-      walletId: 'wallet-cash', note: 'Tip paket COD perumahan', date: new Date().toISOString()
+      walletId: 'wallet-cash', paymentMethod: 'Tunai', note: 'Tip Tunai Customer COD', date: new Date().toISOString()
     });
     await idbPut('transactions', {
-      id: uuid(), type: 'expense', category: 'Bensin & Servis', amount: 30000,
-      walletId: 'wallet-cash', note: 'Isi Pertalite motor', date: new Date(Date.now() - 3600000).toISOString()
+      id: uuid(), type: 'expense', category: 'Makan & Minum Jalan', amount: 18000,
+      walletId: 'wallet-seabank', paymentMethod: 'QRIS', note: 'Warung Makan Siang', date: new Date(Date.now() - 3600000).toISOString()
+    });
+    await idbPut('transactions', {
+      id: uuid(), type: 'paylater_expense', category: 'Minimarket (Indomaret/Alfamart)', amount: 24000,
+      walletId: 'paylater-SPayLater', walletLabel: 'SPayLater (Tagihan Des 2026)', paymentMethod: 'QRIS PayLater',
+      note: 'Kopi & Roti Indomaret', date: new Date(Date.now() - 7200000).toISOString()
     });
 
     await idbPut('loans', {
       id: uuid(), provider: 'SeaBank Pinjam', title: 'Pinjaman Okt (Split Andi)',
-      friendName: 'Andi', tenor: 3, dueDay: 25,
+      billingKey: null, friendName: 'Andi', tenor: 3, dueDay: 25,
       installments: [
-        { monthIndex: 1, personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: true },
-        { monthIndex: 2, personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: false },
-        { monthIndex: 3, personalAmount: 600000, friendAmount: 400000, friendPaid: false, paidToProvider: false }
+        { monthIndex: 1, billingMonthLabel: 'Okt 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: true },
+        { monthIndex: 2, billingMonthLabel: 'Nov 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: false },
+        { monthIndex: 3, billingMonthLabel: 'Des 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: false, paidToProvider: false }
       ]
     });
 
     await idbPut('loans', {
-      id: uuid(), provider: 'SPayLater', title: 'Helm & Jas Hujan Kurir',
-      friendName: '', tenor: 2, dueDay: 11,
+      id: uuid(), provider: 'SPayLater', title: 'Tagihan SPayLater • Des 2026',
+      billingKey: 'SPayLater-2026-12', friendName: '', tenor: 1, dueDay: 22,
       installments: [
-        { monthIndex: 1, personalAmount: 225000, friendAmount: 0, friendPaid: true, paidToProvider: false },
-        { monthIndex: 2, personalAmount: 225000, friendAmount: 0, friendPaid: true, paidToProvider: false }
+        {
+          monthIndex: 1, billingMonthLabel: 'Des 2026', personalAmount: 24000, friendAmount: 0,
+          friendPaid: true, paidToProvider: false,
+          items: [{ date: getLocalTodayStr(), note: 'Kopi & Roti Indomaret', amount: 24000 }]
+        }
       ]
     });
 
@@ -1154,7 +1677,7 @@
     await refreshAll();
   }
 
-  // --- 9. NAVIGATION & MODAL UTILS ---
+  // --- 12. NAVIGATION & MODAL UTILS ---
   function switchTab(tab) {
     ['home', 'loans', 'rekap'].forEach((t) => {
       document.getElementById('view-' + t).classList.toggle('active', t === tab);
@@ -1165,7 +1688,6 @@
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
   function closeModalOnBackdrop(e, id) { if (e.target.id === id) closeModal(id); }
 
-  // Boot App
   (async function init() {
     await openDB();
     await ensureDefaultWallets();
