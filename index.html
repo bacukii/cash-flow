@@ -107,6 +107,12 @@
     .btn-primary { background: var(--primary); color: #022c22; }
     .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
     .btn-danger { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.35); }
+    .btn-ghost-muted {
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-weight: 600;
+    }
     .btn-sm { padding: 7px 10px; font-size: 0.76rem; border-radius: 9px; }
     .btn-block { width: 100%; }
 
@@ -210,6 +216,15 @@
       color: var(--text); padding: 11px 12px; border-radius: 10px; font-size: 0.93rem;
     }
     input:focus, select:focus { outline: none; border-color: var(--primary); }
+    .checkbox-row {
+      display: flex; align-items: center; gap: 9px;
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 10px 11px; border-radius: 10px;
+      font-size: 0.78rem; color: var(--text); cursor: pointer;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 17px; height: 17px; accent-color: var(--primary); flex-shrink: 0;
+    }
     .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .toggle-row-3 { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 7px; }
     .toggle-opt {
@@ -227,6 +242,13 @@
       color: #fed7aa;
       padding: 9px 11px; border-radius: 10px;
       font-size: 0.76rem; margin-bottom: 12px;
+    }
+    .info-banner-blue {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      color: #bae6fd;
+      padding: 9px 11px; border-radius: 10px;
+      font-size: 0.75rem; margin-top: 10px;
     }
 
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
@@ -552,7 +574,7 @@
     </div>
   </div>
 
-  <!-- MODAL 5: TAMBAH KONTRAK CICILAN MANUAL -->
+  <!-- MODAL 5: TAMBAH KONTRAK CICILAN (BARU MAUPUN SUDAH BERJALAN) -->
   <div class="modal-backdrop" id="loanModal" onclick="closeModalOnBackdrop(event, 'loanModal')">
     <div class="sheet">
       <div class="sheet-handle"></div>
@@ -563,10 +585,10 @@
       <div class="form-group">
         <label>Penyedia Pinjaman / PayLater</label>
         <select id="loanProvider" onchange="toggleFriendFields()">
-          <option value="SPayLater">SPayLater (100% Pribadi)</option>
-          <option value="GoPayLater">GoPayLater (100% Pribadi)</option>
           <option value="SPinjam">SPinjam (Pribadi / Split Teman)</option>
           <option value="SeaBank Pinjam">SeaBank Pinjam (Pribadi / Split Teman)</option>
+          <option value="SPayLater">SPayLater (100% Pribadi)</option>
+          <option value="GoPayLater">GoPayLater (100% Pribadi)</option>
         </select>
       </div>
       <div class="form-group">
@@ -577,26 +599,49 @@
         <label>Cicilan Porsi Pribadi per Bulan (Rp)</label>
         <input type="number" id="loanPersonalMonthly" inputmode="numeric" placeholder="350000" />
       </div>
-      <div id="friendLoanSection" style="display:none;">
+      <div id="friendLoanSection">
         <div class="form-group">
           <label>Nama Teman (Kosongkan jika 100% pribadi)</label>
-          <input type="text" id="loanFriendName" placeholder="Contoh: Andi" />
+          <input type="text" id="loanFriendName" placeholder="Contoh: Andi" oninput="updateLoanModalPreview()" />
         </div>
         <div class="form-group">
           <label>Cicilan Porsi Teman per Bulan (Rp)</label>
-          <input type="number" id="loanFriendMonthly" inputmode="numeric" placeholder="400000" />
+          <input type="number" id="loanFriendMonthly" inputmode="numeric" placeholder="400000" oninput="updateLoanModalPreview()" />
+        </div>
+        <div class="form-group" id="initialFriendPaidBox" style="display:none;">
+          <label class="checkbox-row">
+            <input type="checkbox" id="loanInitialFriendPaid" />
+            <span>Porsi teman untuk tagihan aktif pertama sudah diterima sebelumnya (tidak menambah saldo sekarang)</span>
+          </label>
         </div>
       </div>
-      <div class="stat-grid">
+
+      <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
-          <label>Tenor (Bulan)</label>
-          <input type="number" id="loanTenor" inputmode="numeric" value="3" min="1" max="24" />
+          <label>Total Tenor (Bulan)</label>
+          <input type="number" id="loanTenor" inputmode="numeric" value="6" min="1" max="36" oninput="updateLoanModalPreview()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Sudah Terbayar (Bulan)</label>
+          <input type="number" id="loanPaidCount" inputmode="numeric" value="0" min="0" max="35" oninput="updateLoanModalPreview()" />
+        </div>
+      </div>
+
+      <div class="stat-grid" style="margin-bottom:4px;">
+        <div class="form-group" style="margin:0;">
+          <label>Bulan Tagihan Aktif Berikutnya</label>
+          <input type="month" id="loanNextBillMonth" onchange="updateLoanModalPreview()" />
         </div>
         <div class="form-group" style="margin:0;">
           <label>Tanggal Jatuh Tempo</label>
           <input type="number" id="loanDueDay" inputmode="numeric" value="25" min="1" max="31" />
         </div>
       </div>
+
+      <div class="info-banner-blue" id="loanSetupPreview">
+        Simulasi jadwal cicilan akan muncul di sini.
+      </div>
+
       <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="createLoanContract()">Simpan Kontrak Cicilan</button>
     </div>
   </div>
@@ -730,6 +775,11 @@
     return `${y}-${m}-${day}`;
   }
 
+  function getLocalCurrentMonthStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg;
@@ -769,17 +819,17 @@
   function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0) {
     const parts = (dateStr || getLocalTodayStr()).split('-').map(Number);
     const year = parts[0];
-    const month = parts[1]; // 1..12
+    const month = parts[1];
     const day = parts[2];
 
     let baseOffset = 1;
     if (provider === 'SPayLater' && day > 20) {
-      baseOffset = 2; // Transaksi > tgl 20 masuk 2 bulan berikutnya (misal 22 Nov -> 22 Jan)
+      baseOffset = 2;
     }
     const totalOffset = baseOffset + monthAddExtra;
     const targetDate = new Date(year, (month - 1) + totalOffset, 1);
     const tYear = targetDate.getFullYear();
-    const tMonth = targetDate.getMonth(); // 0..11
+    const tMonth = targetDate.getMonth();
     const key = `${provider}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
     const label = `${MONTHS_ID[tMonth]} ${tYear}`;
     const dueDay = provider === 'SPayLater' ? 22 : 1;
@@ -935,7 +985,7 @@
 
     const container = document.getElementById('loansContainer');
     if (state.loans.length === 0) {
-      container.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:0.82rem;padding:24px 14px;">Belum ada tagihan PayLater atau cicilan.<br/>Belanja pakai SPayLater/GoPayLater akan otomatis muncul di sini.</div>`;
+      container.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:0.82rem;padding:24px 14px;">Belum ada tagihan PayLater atau cicilan.<br/>Tekan <b>+ Kontrak</b> untuk mencatat cicilan baru maupun yang sudah berjalan.</div>`;
       return;
     }
 
@@ -954,10 +1004,11 @@
           : '';
 
         if (inst.paidToProvider) {
+          const lunasLabel = inst.isHistorical ? 'LUNAS (Historis) ✅' : 'LUNAS ✅';
           return `
             <div class="row-between" style="padding:8px 0;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted);">
               <span>Bln ${inst.monthIndex}${periodLabel} • ${formatRp(totalBulan)}</span>
-              <span class="pill pill-ok">LUNAS ✅</span>
+              <span class="pill pill-ok">${lunasLabel}</span>
             </div>
           `;
         }
@@ -987,6 +1038,9 @@
               ` : ''}
               <button class="btn btn-primary btn-sm btn-block" onclick="openPayActionModal('provider', '${loan.id}', ${inst.monthIndex})">
                 ✔ Bayar Tagihan Bln ${inst.monthIndex} ke ${esc(loan.provider)}
+              </button>
+              <button class="btn btn-ghost-muted btn-sm btn-block" onclick="markInstallmentPaidNoBalance('${loan.id}', ${inst.monthIndex})">
+                Tandai Sudah Lunas (Tanpa Potong Saldo)
               </button>
             </div>
           </div>
@@ -1030,7 +1084,7 @@
         else tipBank += amt;
       } else if (t.category === 'Gaji / Insentif Kurir') {
         salary += amt;
-      } else if (['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir'].includes(t.category)) {
+      } else if (t.type === 'expense' && ['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir'].includes(t.category)) {
         ops += amt;
       }
     });
@@ -1210,7 +1264,6 @@
       const target0 = calculatePaylaterTarget(provider, dateStr, 0);
 
       if (tenor === 1) {
-        // Gabungkan ke tagihan bulanan siklus yang sama (1x Bayar)
         let existingBill = state.loans.find((l) => l.billingKey === target0.key);
         if (existingBill && !existingBill.installments[0].paidToProvider) {
           const inst = existingBill.installments[0];
@@ -1234,12 +1287,12 @@
               friendAmount: 0,
               friendPaid: true,
               paidToProvider: false,
+              isHistorical: false,
               items: [{ date: dateStr, note, amount }]
             }]
           });
         }
       } else {
-        // Cicilan bertenor (3x / 6x) mulai bulan target
         const perMonth = Math.ceil(amount / tenor);
         const installments = [];
         for (let m = 0; m < tenor; m++) {
@@ -1251,6 +1304,7 @@
             friendAmount: 0,
             friendPaid: true,
             paidToProvider: false,
+            isHistorical: false,
             items: m === 0 ? [{ date: dateStr, note: `${note} (${tenor}x)`, amount }] : []
           });
         }
@@ -1432,9 +1486,19 @@
     await refreshAll();
   }
 
-  // --- 10. CICILAN & PEMBAYARAN DUA TAHAP ---
+  // --- 10. CICILAN (BARU & BERJALAN) + PEMBAYARAN DUA TAHAP ---
   function openNewLoanModal() {
+    document.getElementById('loanTitle').value = '';
+    document.getElementById('loanPersonalMonthly').value = '';
+    document.getElementById('loanFriendName').value = '';
+    document.getElementById('loanFriendMonthly').value = '';
+    document.getElementById('loanInitialFriendPaid').checked = false;
+    document.getElementById('loanTenor').value = 6;
+    document.getElementById('loanPaidCount').value = 0;
+    document.getElementById('loanNextBillMonth').value = getLocalCurrentMonthStr();
+    document.getElementById('loanDueDay').value = 25;
     toggleFriendFields();
+    updateLoanModalPreview();
     document.getElementById('loanModal').classList.add('open');
   }
 
@@ -1442,6 +1506,40 @@
     const provider = document.getElementById('loanProvider').value;
     const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
     document.getElementById('friendLoanSection').style.display = isPaylater ? 'none' : 'block';
+    updateLoanModalPreview();
+  }
+
+  function updateLoanModalPreview() {
+    const provider = document.getElementById('loanProvider').value;
+    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
+    const friendName = document.getElementById('loanFriendName').value.trim();
+    const friendMonthly = Number(document.getElementById('loanFriendMonthly').value || 0);
+
+    // Tampilkan checkbox setoran awal teman hanya jika ada split teman
+    const showFriendCheck = !isPaylater && friendName.length > 0 && friendMonthly > 0;
+    document.getElementById('initialFriendPaidBox').style.display = showFriendCheck ? 'block' : 'none';
+
+    const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
+    let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
+    if (paidCount >= tenor) paidCount = tenor - 1;
+
+    const monthVal = document.getElementById('loanNextBillMonth').value || getLocalCurrentMonthStr();
+    const [yStr, mStr] = monthVal.split('-');
+    const startYear = Number(yStr);
+    const startMonth = Number(mStr); // 1..12
+
+    const firstActiveIdx = paidCount + 1;
+    const lastDate = new Date(startYear, (startMonth - 1) + (tenor - firstActiveIdx), 1);
+    const firstLabel = `${MONTHS_ID[startMonth - 1]} ${startYear}`;
+    const lastLabel = `${MONTHS_ID[lastDate.getMonth()]} ${lastDate.getFullYear()}`;
+    const remainingCount = tenor - paidCount;
+
+    const previewBox = document.getElementById('loanSetupPreview');
+    if (paidCount > 0) {
+      previewBox.innerHTML = `Bulan <b>1–${paidCount}</b> ditandai <b>Lunas (Historis)</b> tanpa memotong saldo. Sisa <b>${remainingCount} tagihan aktif</b> dimulai dari <b>Bulan ${firstActiveIdx} (${firstLabel})</b> s.d. <b>Bulan ${tenor} (${lastLabel})</b>.`;
+    } else {
+      previewBox.innerHTML = `Kontrak baru <b>${tenor} bulan</b> dimulai dari <b>Bulan 1 (${firstLabel})</b> s.d. <b>Bulan ${tenor} (${lastLabel})</b>.`;
+    }
   }
 
   async function createLoanContract() {
@@ -1451,22 +1549,36 @@
     const personalMonthly = Number(document.getElementById('loanPersonalMonthly').value || 0);
     const friendName = isPaylater ? '' : document.getElementById('loanFriendName').value.trim();
     const friendMonthly = (isPaylater || !friendName) ? 0 : Number(document.getElementById('loanFriendMonthly').value || 0);
+    const initialFriendPaid = !isPaylater && document.getElementById('loanInitialFriendPaid').checked;
+
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
+    let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
+    if (paidCount >= tenor) paidCount = tenor - 1;
+
     const dueDay = Math.min(31, Math.max(1, Number(document.getElementById('loanDueDay').value || 25)));
+    const monthVal = document.getElementById('loanNextBillMonth').value || getLocalCurrentMonthStr();
+    const [startYear, startMonth] = monthVal.split('-').map(Number);
 
     if (personalMonthly + friendMonthly <= 0) return showToast('Isi nominal cicilan bulanan');
 
-    const now = new Date();
+    const firstActiveIdx = paidCount + 1;
     const installments = [];
+
     for (let m = 1; m <= tenor; m++) {
-      const d = new Date(now.getFullYear(), now.getMonth() + m, 1);
+      const isHistorical = m <= paidCount;
+      const relOffset = m - firstActiveIdx;
+      const d = new Date(startYear, (startMonth - 1) + relOffset, 1);
+      const billingMonthLabel = `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`;
+      const isFirstActive = m === firstActiveIdx;
+
       installments.push({
         monthIndex: m,
-        billingMonthLabel: `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`,
+        billingMonthLabel,
         personalAmount: personalMonthly,
         friendAmount: friendMonthly,
-        friendPaid: friendMonthly === 0,
-        paidToProvider: false
+        friendPaid: isHistorical || friendMonthly === 0 || (isFirstActive && initialFriendPaid),
+        paidToProvider: isHistorical,
+        isHistorical
       });
     }
 
@@ -1482,7 +1594,21 @@
     });
 
     closeModal('loanModal');
-    showToast('Kontrak cicilan ditambahkan');
+    showToast(paidCount > 0 ? `Kontrak ditambahkan (${paidCount} bln historis)` : 'Kontrak cicilan ditambahkan');
+    await refreshAll();
+  }
+
+  async function markInstallmentPaidNoBalance(loanId, monthIndex) {
+    const loan = state.loans.find((l) => l.id === loanId);
+    const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
+    if (!inst || inst.paidToProvider) return;
+
+    inst.paidToProvider = true;
+    inst.friendPaid = true;
+    inst.isHistorical = true;
+
+    await idbPut('loans', loan);
+    showToast(`Bln ${monthIndex} ditandai lunas tanpa potong saldo`);
     await refreshAll();
   }
 
@@ -1528,6 +1654,7 @@
       } else {
         const total = Number(inst.personalAmount) + Number(inst.friendAmount);
         inst.paidToProvider = true;
+        inst.isHistorical = false;
         w.balance = Number(w.balance) - total;
         await idbPut('wallets', w);
         await idbPut('loans', loan);
@@ -1646,9 +1773,9 @@
       id: uuid(), provider: 'SeaBank Pinjam', title: 'Pinjaman Okt (Split Andi)',
       billingKey: null, friendName: 'Andi', tenor: 3, dueDay: 25,
       installments: [
-        { monthIndex: 1, billingMonthLabel: 'Okt 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: true },
-        { monthIndex: 2, billingMonthLabel: 'Nov 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: false },
-        { monthIndex: 3, billingMonthLabel: 'Des 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: false, paidToProvider: false }
+        { monthIndex: 1, billingMonthLabel: 'Okt 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: true, isHistorical: true },
+        { monthIndex: 2, billingMonthLabel: 'Nov 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: false, isHistorical: false },
+        { monthIndex: 3, billingMonthLabel: 'Des 2026', personalAmount: 600000, friendAmount: 400000, friendPaid: false, paidToProvider: false, isHistorical: false }
       ]
     });
 
@@ -1658,7 +1785,7 @@
       installments: [
         {
           monthIndex: 1, billingMonthLabel: 'Des 2026', personalAmount: 24000, friendAmount: 0,
-          friendPaid: true, paidToProvider: false,
+          friendPaid: true, paidToProvider: false, isHistorical: false,
           items: [{ date: getLocalTodayStr(), note: 'Kopi & Roti Indomaret', amount: 24000 }]
         }
       ]
