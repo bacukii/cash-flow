@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cash-flow-v1.0.3';
+const CACHE_NAME = 'cash-flow-v1.0.4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -7,7 +7,7 @@ const APP_SHELL = [
   './icons/icon-512.png'
 ];
 
-// 1. Install: Cache seluruh App Shell (~30KB) dan langsung aktifkan SW
+// 1. Install: Cache seluruh App Shell dan langsung aktifkan SW baru
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -16,7 +16,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2. Activate: Bersihkan cache versi lama dan ambil alih kontrol halaman seketika
+// 2. Activate: Bersihkan cache versi lama khusus prefix cash-flow- dan ambil alih kontrol
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
@@ -29,7 +29,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Fetch: Cache-First untuk App Shell, bypass untuk mutasi/API eksternal
+// 3. Fetch: Navigation Fallback + Cache-First untuk App Shell, bypass mutasi & origin eksternal
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
@@ -38,22 +38,41 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  // Hanya cache aset dari origin yang sama (GitHub Pages / localhost)
+  // Hanya tangani aset dari origin yang sama (GitHub Pages / localhost)
   if (url.origin !== self.location.origin) return;
 
+  // Navigation request (HTML): utamakan cache dengan ignoreSearch dan fallback ke ./index.html
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      caches.match(request, { ignoreSearch: true })
+        .then((cachedPage) => cachedPage || fetch(request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copy));
+          }
+          return networkResponse;
+        }))
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  // Aset statis App Shell (Cache-First + Network Fallback aman saat offline)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+      return fetch(request)
+        .then((networkResponse) => {
+          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            return networkResponse;
+          }
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
           return networkResponse;
-        }
-        const responseClone = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
-        return networkResponse;
-      });
+        })
+        .catch(() => Response.error());
     })
   );
 });
