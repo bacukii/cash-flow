@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Cash Flow</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./icons/icon-192.png" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-2: #273549;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --danger: #f43f5e;
+      --warning: #f59e0b;
+      --info: #38bdf8;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      padding-bottom: 84px;
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+    header {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 14px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.1rem; }
+    .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+    .badges { display: flex; gap: 6px; align-items: center; }
+    .badge {
+      font-size: 0.72rem; padding: 4px 8px; border-radius: 99px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+      font-weight: 600;
+    }
+    .badge.ok { color: var(--primary); border-color: rgba(16, 185, 129, 0.35); }
+    .badge.warn { color: var(--warning); border-color: rgba(245, 158, 11, 0.4); cursor: pointer; }
+
+    main { padding: 14px 16px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .hero-card {
+      background: linear-gradient(135deg, #065f46 0%, #0f172a 100%);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .hero-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a7f3d0; }
+    .hero-amount { font-size: 1.75rem; font-weight: 800; margin: 4px 0 12px; letter-spacing: -0.02em; }
+    .hero-sub {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.78rem;
+    }
+    .hero-sub span { display: block; color: #cbd5e1; font-size: 0.7rem; }
+
+    .section-title {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 8px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .wallets-scroll {
+      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .wallets-scroll::-webkit-scrollbar { display: none; }
+    .wallet-card {
+      min-width: 148px; flex: 1;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px; cursor: pointer;
+    }
+    .wallet-card:active { transform: scale(0.98); }
+    .wallet-name { font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+    .wallet-bal { font-size: 1rem; font-weight: 700; }
+
+    .quick-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 10px; margin-top: 12px; }
+    .btn {
+      border: none; border-radius: 12px; padding: 13px 14px;
+      font-weight: 700; font-size: 0.88rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      transition: transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--primary); color: #022c22; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: rgba(244, 63, 94, 0.15); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.35); }
+    .btn-sm { padding: 8px 11px; font-size: 0.78rem; border-radius: 9px; }
+    .btn-block { width: 100%; }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 13px; margin-bottom: 10px;
+    }
+    .row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .pill {
+      font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    }
+    .pill-ok { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+    .pill-wait { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+    .pill-info { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
+
+    .tx-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 0; border-bottom: 1px solid var(--border);
+    }
+    .tx-item:last-child { border-bottom: none; }
+    .tx-title { font-size: 0.88rem; font-weight: 600; }
+    .tx-meta { font-size: 0.73rem; color: var(--muted); margin-top: 2px; }
+    .tx-amt { font-weight: 700; font-size: 0.9rem; text-align: right; }
+    .plus { color: var(--primary); }
+    .minus { color: #fda4af; }
+    .neutral { color: var(--info); }
+
+    /* Bottom Navigation */
+    nav.bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      max-width: 480px; margin: 0 auto;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      padding: 8px 6px 10px; z-index: 25;
+    }
+    .nav-btn {
+      background: none; border: none; color: var(--muted);
+      font-size: 0.72rem; font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; padding: 4px;
+    }
+    .nav-btn.active { color: var(--primary); }
+
+    /* Bottom Sheet Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78);
+      display: none; align-items: flex-end; justify-content: center; z-index: 50;
+    }
+    .modal-backdrop.open { display: flex; }
+    .sheet {
+      background: var(--surface); width: 100%; max-width: 480px;
+      border-radius: 20px 20px 0 0; border-top: 1px solid var(--border);
+      padding: 14px 16px 24px; max-height: 90vh; overflow-y: auto;
+      animation: slideUp 0.18s ease-out;
+    }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
+    .sheet-handle { width: 38px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 12px; }
+    .preset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+    .preset-btn {
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+      padding: 10px 4px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer;
+    }
+    .preset-btn:active { background: var(--primary); color: #022c22; }
+
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    input, select {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); padding: 11px 12px; border-radius: 10px; font-size: 0.95rem;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+    .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .toggle-opt {
+      padding: 10px; text-align: center; border-radius: 10px;
+      background: var(--bg); border: 1px solid var(--border);
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; color: var(--muted);
+    }
+    .toggle-opt.active { background: rgba(16, 185, 129, 0.15); border-color: var(--primary); color: var(--primary); }
+    .toggle-opt.active-danger { background: rgba(244, 63, 94, 0.15); border-color: var(--danger); color: #fda4af; }
+
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px; }
+    .stat-box small { color: var(--muted); font-size: 0.72rem; display: block; }
+    .stat-box strong { font-size: 0.98rem; margin-top: 3px; display: block; }
+
+    .toast {
+      position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
+      background: #065f46; color: #ecfdf5; border: 1px solid var(--primary);
+      padding: 8px 14px; border-radius: 99px; font-size: 0.8rem; font-weight: 600;
+      z-index: 60; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="brand-dot" id="netDot"></span>
+      <span>Cash Flow</span>
+    </div>
+    <div class="badges">
+      <span class="badge ok" id="swBadge">Offline Ready</span>
+      <span class="badge warn" id="backupBadge" onclick="switchTab('rekap')">Backup</span>
+    </div>
+  </header>
+
+  <div class="toast" id="toast">Tersimpan</div>
+
+  <main>
+    <!-- TAB 1: BERANDA -->
+    <section id="view-home" class="view active">
+      <div class="hero-card">
+        <div class="hero-label">Saldo Bersih Tersedia</div>
+        <div class="hero-amount" id="totalBalance">Rp 0</div>
+        <div class="hero-sub">
+          <div>
+            <span>Tagihan Aktif Bln Ini</span>
+            <strong id="monthlyBillTotal">Rp 0</strong>
+          </div>
+          <div>
+            <span>Piutang Teman Bln Ini</span>
+            <strong id="monthlyFriendReceivable" style="color:#6ee7b7">Rp 0</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <span>Dompet & Rekening</span>
+        <span style="font-size:0.7rem;font-weight:500;">Ketuk untuk transfer/edit</span>
+      </div>
+      <div class="wallets-scroll" id="walletList"></div>
+
+      <div class="quick-grid">
+        <button class="btn btn-primary" onclick="openTipModal()">⚡ + Uang Tip</button>
+        <button class="btn btn-secondary" onclick="openTxModal()">💸 Catat Arus Kas</button>
+      </div>
+
+      <div class="section-title"><span>Jatuh Tempo Terdekat</span></div>
+      <div id="upcomingLoanBox"></div>
+
+      <div class="section-title">
+        <span>Transaksi Terbaru</span>
+        <span id="txCountLabel" style="font-size:0.7rem;">0 catatan</span>
+      </div>
+      <div class="card" id="recentTxList" style="padding: 4px 13px;"></div>
+    </section>
+
+    <!-- TAB 2: CICILAN & PIUTANG -->
+    <section id="view-loans" class="view">
+      <div class="row-between" style="margin-bottom: 12px;">
+        <div>
+          <h2 style="font-size:1.05rem;">Cicilan & Talangan</h2>
+          <p style="font-size:0.76rem;color:var(--muted);">SPayLater, SPinjam & SeaBank Pinjam</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openNewLoanModal()">+ Kontrak</button>
+      </div>
+      <div id="loansContainer"></div>
+    </section>
+
+    <!-- TAB 3: REKAP KURIR & DATA -->
+    <section id="view-rekap" class="view">
+      <h2 style="font-size:1.05rem;margin-bottom:10px;">Rekap Arus Kas Kurir</h2>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <small>Total Tip (Tunai)</small>
+          <strong class="plus" id="statTipCash">Rp 0</strong>
+        </div>
+        <div class="stat-box">
+          <small>Total Tip (Digital/QRIS)</small>
+          <strong class="plus" id="statTipDigital">Rp 0</strong>
+        </div>
+        <div class="stat-box">
+          <small>Gaji / Insentif Kurir</small>
+          <strong class="plus" id="statSalary">Rp 0</strong>
+        </div>
+        <div class="stat-box">
+          <small>Operasional (Bensin/Makan)</small>
+          <strong class="minus" id="statOps">Rp 0</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row-between" style="margin-bottom:8px;">
+          <strong style="font-size:0.9rem;">Cadangan & Penyimpanan Lokal</strong>
+          <span class="pill pill-ok" id="persistBadge">IndexedDB</span>
+        </div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
+          Data tersimpan 100% offline di HP kamu dengan UUID siap sinkronisasi. Unduh file JSON secara berkala sebagai cadangan aman.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <button class="btn btn-primary btn-sm" onclick="exportJSON()">⬇ Export JSON</button>
+          <label class="btn btn-secondary btn-sm" style="margin:0;cursor:pointer;">
+            ⬆ Import JSON
+            <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;" />
+          </label>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="seedDemoData()">Muat Data Contoh</button>
+          <button class="btn btn-danger btn-sm" onclick="resetAllData()">Kosongkan Data</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
+      <span>Beranda</span>
+    </button>
+    <button class="nav-btn" id="nav-loans" onclick="switchTab('loans')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M7 15h4"/></svg>
+      <span>Cicilan</span>
+    </button>
+    <button class="nav-btn" id="nav-rekap" onclick="switchTab('rekap')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19h16M7 15V9m5 6V5m5 10v-4"/></svg>
+      <span>Rekap & Data</span>
+    </button>
+  </nav>
+
+  <!-- MODAL 1: QUICK-ADD TIP -->
+  <div class="modal-backdrop" id="tipModal" onclick="closeModalOnBackdrop(event, 'tipModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong style="font-size:1rem;">⚡ Tambah Uang Tip</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('tipModal')">Tutup</button>
+      </div>
+      <div class="preset-grid">
+        <button type="button" class="preset-btn" onclick="setTipAmount(5000)">+5.000</button>
+        <button type="button" class="preset-btn" onclick="setTipAmount(10000)">+10.000</button>
+        <button type="button" class="preset-btn" onclick="setTipAmount(20000)">+20.000</button>
+        <button type="button" class="preset-btn" onclick="setTipAmount(50000)">+50.000</button>
+      </div>
+      <div class="form-group">
+        <label>Nominal Tip (Rp)</label>
+        <input type="number" id="tipAmount" inputmode="numeric" placeholder="10000" oninput="saveTipDraft()" />
+      </div>
+      <div class="form-group">
+        <label>Masuk ke Dompet</label>
+        <div class="toggle-row">
+          <div class="toggle-opt active" id="tipOptCash" onclick="selectTipWallet('wallet-cash')">💵 Tunai (Saku)</div>
+          <div class="toggle-opt" id="tipOptBank" onclick="selectTipWallet('wallet-seabank')">🏦 SeaBank / QRIS</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Catatan Singkat (Opsional — Auto-Save)</label>
+        <input type="text" id="tipNote" placeholder="Contoh: Paket COD Perumahan Griya" oninput="saveTipDraft()" />
+      </div>
+      <button class="btn btn-primary btn-block" onclick="submitTip()">Simpan Uang Tip</button>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CATAT ARUS KAS UMUM -->
+  <div class="modal-backdrop" id="txModal" onclick="closeModalOnBackdrop(event, 'txModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong style="font-size:1rem;">Catat Pemasukan / Pengeluaran</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('txModal')">Tutup</button>
+      </div>
+      <div class="form-group">
+        <div class="toggle-row">
+          <div class="toggle-opt active-danger" id="txTypeOut" onclick="setTxType('expense')">💸 Pengeluaran</div>
+          <div class="toggle-opt" id="txTypeIn" onclick="setTxType('income')">💰 Pemasukan</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Nominal (Rp)</label>
+        <input type="number" id="txAmount" inputmode="numeric" placeholder="25000" oninput="saveTxDraft()" />
+      </div>
+      <div class="form-group">
+        <label>Dompet / Rekening</label>
+        <select id="txWallet" onchange="saveTxDraft()"></select>
+      </div>
+      <div class="form-group">
+        <label>Kategori</label>
+        <select id="txCategory" onchange="saveTxDraft()"></select>
+      </div>
+      <div class="form-group">
+        <label>Keterangan</label>
+        <input type="text" id="txNote" placeholder="Contoh: Pertalite / Gaji Mingguan" oninput="saveTxDraft()" />
+      </div>
+      <button class="btn btn-primary btn-block" onclick="submitTx()">Simpan Transaksi</button>
+    </div>
+  </div>
+
+  <!-- MODAL 3: TRANSFER / EDIT SALDO DOMPET -->
+  <div class="modal-backdrop" id="walletModal" onclick="closeModalOnBackdrop(event, 'walletModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong id="walletModalTitle">Kelola Dompet</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('walletModal')">Tutup</button>
+      </div>
+      <div class="form-group">
+        <label>Koreksi Saldo Saat Ini (Rp)</label>
+        <input type="number" id="editWalletBalance" inputmode="numeric" />
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-bottom:14px;" onclick="saveWalletBalance()">Simpan Saldo Baru</button>
+      <hr style="border:none;border-top:1px solid var(--border);margin-bottom:12px;" />
+      <div class="form-group">
+        <label>Atau Transfer ke Dompet Lain (Rp)</label>
+        <input type="number" id="transferAmount" inputmode="numeric" placeholder="Nominal transfer" />
+      </div>
+      <div class="form-group">
+        <label>Tujuan Dompet</label>
+        <select id="transferTarget"></select>
+      </div>
+      <button class="btn btn-secondary btn-block" onclick="executeTransfer()">Transfer Dana</button>
+    </div>
+  </div>
+
+  <!-- MODAL 4: TAMBAH KONTRAK CICILAN -->
+  <div class="modal-backdrop" id="loanModal" onclick="closeModalOnBackdrop(event, 'loanModal')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="row-between" style="margin-bottom:10px;">
+        <strong>Tambah Kontrak Cicilan</strong>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('loanModal')">Tutup</button>
+      </div>
+      <div class="form-group">
+        <label>Penyedia Pinjaman</label>
+        <select id="loanProvider" onchange="toggleFriendFields()">
+          <option value="SPayLater">SPayLater (100% Pribadi)</option>
+          <option value="SPinjam">SPinjam (Pribadi / Campuran Teman)</option>
+          <option value="SeaBank Pinjam">SeaBank Pinjam (Pribadi / Campuran Teman)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Judul / Keperluan</label>
+        <input type="text" id="loanTitle" placeholder="Contoh: Pinjaman Okt / Beli Ban Motor" />
+      </div>
+      <div class="form-group">
+        <label>Cicilan Porsi Pribadi per Bulan (Rp)</label>
+        <input type="number" id="loanPersonalMonthly" inputmode="numeric" placeholder="350000" />
+      </div>
+      <div id="friendLoanSection" style="display:none;">
+        <div class="form-group">
+          <label>Nama Teman (Kosongkan jika 100% pribadi)</label>
+          <input type="text" id="loanFriendName" placeholder="Contoh: Andi" />
+        </div>
+        <div class="form-group">
+          <label>Cicilan Porsi Teman per Bulan (Rp)</label>
+          <input type="number" id="loanFriendMonthly" inputmode="numeric" placeholder="400000" />
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="form-group" style="margin:0;">
+          <label>Tenor (Bulan)</label>
+          <input type="number" id="loanTenor" inputmode="numeric" value="3" min="1" max="24" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Tanggal Jatuh Tempo</label>
+          <input type="number" id="loanDueDay" inputmode="numeric" value="25" min="1" max="31" />
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="createLoanContract()">Simpan Kontrak Cicilan</button>
+    </div>
+  </div>
+
+<script>
+  // --- 1. SERVICE WORKER & PERSISTENT STORAGE ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => { document.getElementById('swBadge').textContent = 'PWA Offline Aktif'; })
+        .catch(() => { document.getElementById('swBadge').textContent = 'Mode Lokal'; });
+    });
+  }
+
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().then((granted) => {
+      if (granted) document.getElementById('persistBadge').textContent = 'Storage Terkunci';
+    });
+  }
+
+  function updateOnlineStatus() {
+    const dot = document.getElementById('netDot');
+    dot.style.background = navigator.onLine ? '#10b981' : '#f59e0b';
+  }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // --- 2. INDEXEDDB ENGINE (CashFlowDB) ---
+  const DB_NAME = 'CashFlowDB';
+  const DB_VERSION = 1;
+  let db = null;
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const database = e.target.result;
+        if (!database.objectStoreNames.contains('wallets')) {
+          database.createObjectStore('wallets', { keyPath: 'id' });
+        }
+        if (!database.objectStoreNames.contains('transactions')) {
+          database.createObjectStore('transactions', { keyPath: 'id' });
+        }
+        if (!database.objectStoreNames.contains('loans')) {
+          database.createObjectStore('loans', { keyPath: 'id' });
+        }
+      };
+      req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+      req.onerror = (e) => reject(e.target.error);
+    });
+  }
+
+  function idbAll(storeName) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readonly');
+      const req = tx.objectStore(storeName).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function idbPut(storeName, item) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).put({ ...item, updated_at: new Date().toISOString(), synced: false });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  function idbDelete(storeName, id) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).delete(id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  function idbClear(storeName) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  // --- 3. STATE & HELPERS ---
+  let state = { wallets: [], transactions: [], loans: [] };
+  let activeTipWallet = 'wallet-cash';
+  let activeTxType = 'expense';
+  let selectedWalletId = null;
+
+  const formatRp = (num) => 'Rp ' + Math.round(Number(num) || 0).toLocaleString('id-ID');
+  const esc = (str) => String(str || '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+  const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.style.display = 'block';
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2200);
+  }
+
+  async function ensureDefaultWallets() {
+    const existing = await idbAll('wallets');
+    if (existing.length === 0) {
+      await idbPut('wallets', { id: 'wallet-cash', name: '💵 Tunai (Tip/Ops)', balance: 0 });
+      await idbPut('wallets', { id: 'wallet-seabank', name: '🏦 SeaBank', balance: 0 });
+      await idbPut('wallets', { id: 'wallet-shopeepay', name: '📱 ShopeePay', balance: 0 });
+    }
+  }
+
+  async function refreshAll() {
+    state.wallets = await idbAll('wallets');
+    state.transactions = (await idbAll('transactions')).sort((a, b) => new Date(b.date) - new Date(a.date));
+    state.loans = await idbAll('loans');
+    renderDashboard();
+    renderLoans();
+    renderRekap();
+    checkBackupReminder();
+  }
+
+  // --- 4. RENDERING UI ---
+  function renderDashboard() {
+    const totalBal = state.wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0);
+    document.getElementById('totalBalance').textContent = formatRp(totalBal);
+
+    // Hitung tagihan bulan aktif terdekat per kontrak
+    let monthlyBill = 0;
+    let monthlyReceivable = 0;
+    let nearestInstallment = null;
+
+    state.loans.forEach((loan) => {
+      const nextInst = loan.installments.find((i) => !i.paidToProvider);
+      if (nextInst) {
+        monthlyBill += Number(nextInst.personalAmount || 0) + Number(nextInst.friendAmount || 0);
+        if (nextInst.friendAmount > 0 && !nextInst.friendPaid) {
+          monthlyReceivable += Number(nextInst.friendAmount || 0);
+        }
+        if (!nearestInstallment) {
+          nearestInstallment = { loan, inst: nextInst };
+        }
+      }
+    });
+
+    document.getElementById('monthlyBillTotal').textContent = formatRp(monthlyBill);
+    document.getElementById('monthlyFriendReceivable').textContent = formatRp(monthlyReceivable);
+
+    // Render Wallets
+    const walletContainer = document.getElementById('walletList');
+    walletContainer.innerHTML = state.wallets.map((w) => `
+      <div class="wallet-card" onclick="openWalletModal('${w.id}')">
+        <div class="wallet-name">${esc(w.name)}</div>
+        <div class="wallet-bal">${formatRp(w.balance)}</div>
+      </div>
+    `).join('');
+
+    // Render Jatuh Tempo Terdekat
+    const upcomingBox = document.getElementById('upcomingLoanBox');
+    if (!nearestInstallment) {
+      upcomingBox.innerHTML = `<div class="card" style="color:var(--muted);font-size:0.82rem;">Tidak ada tagihan aktif saat ini.</div>`;
+    } else {
+      const { loan, inst } = nearestInstallment;
+      const totalInst = Number(inst.personalAmount) + Number(inst.friendAmount);
+      const friendStatus = inst.friendAmount > 0
+        ? `<span class="pill ${inst.friendPaid ? 'pill-ok' : 'pill-wait'}">${esc(loan.friendName)}: ${inst.friendPaid ? 'Sudah Setor ✅' : 'Belum Setor ⏳'}</span>`
+        : '';
+      upcomingBox.innerHTML = `
+        <div class="card" onclick="switchTab('loans')" style="cursor:pointer;">
+          <div class="row-between" style="margin-bottom:6px;">
+            <strong style="font-size:0.9rem;">${esc(loan.provider)} • Ke-${inst.monthIndex}/${loan.tenor}</strong>
+            <span class="pill pill-info">Tgl ${loan.dueDay}</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;">
+            ${esc(loan.title)} • Tagihan: <strong style="color:var(--text)">${formatRp(totalInst)}</strong>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${friendStatus}
+            <span class="pill pill-wait">Pribadi: ${formatRp(inst.personalAmount)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render Transaksi Terbaru
+    const txList = document.getElementById('recentTxList');
+    document.getElementById('txCountLabel').textContent = `${state.transactions.length} catatan`;
+    if (state.transactions.length === 0) {
+      txList.innerHTML = `<div style="padding:14px 0;color:var(--muted);font-size:0.82rem;text-align:center;">Belum ada transaksi. Tekan <b>+ Uang Tip</b> untuk mulai mencatat.</div>`;
+    } else {
+      txList.innerHTML = state.transactions.slice(0, 15).map((t) => {
+        const w = state.wallets.find((x) => x.id === t.walletId);
+        const isPlus = t.type === 'income' || t.type === 'receivable_in';
+        const sign = isPlus ? '+' : '-';
+        const cls = t.type === 'receivable_in' ? 'neutral' : (isPlus ? 'plus' : 'minus');
+        const dateStr = new Date(t.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        return `
+          <div class="tx-item">
+            <div>
+              <div class="tx-title">${esc(t.note || t.category)}</div>
+              <div class="tx-meta">${esc(t.category)} • ${esc(w ? w.name : '')} • ${dateStr}</div>
+            </div>
+            <div>
+              <div class="tx-amt ${cls}">${sign}${formatRp(t.amount)}</div>
+              <div style="text-align:right;margin-top:2px;">
+                <span onclick="deleteTransaction('${t.id}')" style="font-size:0.68rem;color:var(--muted);cursor:pointer;">Hapus</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  function renderLoans() {
+    const container = document.getElementById('loansContainer');
+    if (state.loans.length === 0) {
+      container.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);font-size:0.84rem;padding:24px 14px;">Belum ada kontrak cicilan.<br/>Tekan <b>+ Kontrak</b> untuk mencatat SPayLater, SPinjam, atau SeaBank Pinjam.</div>`;
+      return;
+    }
+
+    container.innerHTML = state.loans.map((loan) => {
+      const unpaidList = loan.installments.filter((i) => !i.paidToProvider);
+      const remPersonal = unpaidList.reduce((s, i) => s + Number(i.personalAmount), 0);
+      const remFriend = loan.installments.filter((i) => !i.friendPaid).reduce((s, i) => s + Number(i.friendAmount), 0);
+
+      const instHtml = loan.installments.map((inst) => {
+        const totalBulan = Number(inst.personalAmount) + Number(inst.friendAmount);
+        if (inst.paidToProvider) {
+          return `
+            <div class="row-between" style="padding:8px 0;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);">
+              <span>Bulan ${inst.monthIndex} (Tgl ${loan.dueDay}) • ${formatRp(totalBulan)}</span>
+              <span class="pill pill-ok">LUNAS ✅</span>
+            </div>
+          `;
+        }
+        return `
+          <div style="padding:10px;margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;">
+            <div class="row-between" style="margin-bottom:6px;">
+              <strong style="font-size:0.84rem;">Bulan ${inst.monthIndex}/${loan.tenor} (Jatuh Tempo Tgl ${loan.dueDay})</strong>
+              <strong style="font-size:0.86rem;">${formatRp(totalBulan)}</strong>
+            </div>
+            ${inst.friendAmount > 0 ? `
+              <div class="row-between" style="font-size:0.78rem;margin-bottom:4px;">
+                <span>1. Porsi ${esc(loan.friendName)}: <b>${formatRp(inst.friendAmount)}</b></span>
+                <span class="pill ${inst.friendPaid ? 'pill-ok' : 'pill-wait'}">${inst.friendPaid ? 'Sudah Setor ✅' : 'Belum Setor ⏳'}</span>
+              </div>
+            ` : ''}
+            <div class="row-between" style="font-size:0.78rem;margin-bottom:8px;">
+              <span>${inst.friendAmount > 0 ? '2. ' : ''}Porsi Pribadi: <b>${formatRp(inst.personalAmount)}</b></span>
+              <span class="pill pill-wait">Tagihan Aplikasi ⏳</span>
+            </div>
+            <div style="display:grid;gap:6px;">
+              ${(inst.friendAmount > 0 && !inst.friendPaid) ? `
+                <button class="btn btn-secondary btn-sm btn-block" onclick="receiveFriendPayment('${loan.id}', ${inst.monthIndex})">
+                  + Terima Setoran ${esc(loan.friendName)} (${formatRp(inst.friendAmount)})
+                </button>
+              ` : ''}
+              <button class="btn btn-primary btn-sm btn-block" onclick="payProviderInstallment('${loan.id}', ${inst.monthIndex})">
+                ✔ Tandai Tagihan Bln ${inst.monthIndex} Lunas ke ${esc(loan.provider)}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="card">
+          <div class="row-between" style="margin-bottom:6px;">
+            <div>
+              <span class="pill pill-info">${esc(loan.provider)}</span>
+              <strong style="font-size:0.95rem;margin-left:4px;">${esc(loan.title)}</strong>
+            </div>
+            <span onclick="deleteLoan('${loan.id}')" style="font-size:0.72rem;color:var(--muted);cursor:pointer;">Hapus</span>
+          </div>
+          <div class="stat-grid" style="margin:8px 0;">
+            <div class="stat-box" style="padding:8px;">
+              <small>Sisa Utang Pribadi</small>
+              <strong>${formatRp(remPersonal)}</strong>
+            </div>
+            <div class="stat-box" style="padding:8px;">
+              <small>Sisa Piutang ${esc(loan.friendName || 'Teman')}</small>
+              <strong style="color:#6ee7b7">${formatRp(remFriend)}</strong>
+            </div>
+          </div>
+          ${instHtml}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderRekap() {
+    let tipCash = 0, tipDigital = 0, salary = 0, ops = 0;
+    state.transactions.forEach((t) => {
+      const amt = Number(t.amount || 0);
+      if (t.category === 'Uang Tip Kurir') {
+        if (t.walletId === 'wallet-cash') tipCash += amt;
+        else tipDigital += amt;
+      } else if (t.category === 'Gaji / Insentif Kurir') {
+        salary += amt;
+      } else if (t.type === 'expense' && ['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir'].includes(t.category)) {
+        ops += amt;
+      }
+    });
+    document.getElementById('statTipCash').textContent = formatRp(tipCash);
+    document.getElementById('statTipDigital').textContent = formatRp(tipDigital);
+    document.getElementById('statSalary').textContent = formatRp(salary);
+    document.getElementById('statOps').textContent = formatRp(ops);
+  }
+
+  // --- 5. QUICK TIP & TRANSAKSI (DENGAN AUTO-SAVE DRAFT) ---
+  function openTipModal() {
+    const draft = JSON.parse(localStorage.getItem('cashflow_draft_tip') || '{}');
+    document.getElementById('tipAmount').value = draft.amount || '';
+    document.getElementById('tipNote').value = draft.note || '';
+    selectTipWallet(draft.wallet || 'wallet-cash');
+    document.getElementById('tipModal').classList.add('open');
+  }
+
+  function setTipAmount(val) {
+    document.getElementById('tipAmount').value = val;
+    saveTipDraft();
+  }
+
+  function selectTipWallet(walletId) {
+    activeTipWallet = walletId;
+    document.getElementById('tipOptCash').classList.toggle('active', walletId === 'wallet-cash');
+    document.getElementById('tipOptBank').classList.toggle('active', walletId !== 'wallet-cash');
+    saveTipDraft();
+  }
+
+  function saveTipDraft() {
+    localStorage.setItem('cashflow_draft_tip', JSON.stringify({
+      amount: document.getElementById('tipAmount').value,
+      note: document.getElementById('tipNote').value,
+      wallet: activeTipWallet
+    }));
+  }
+
+  async function submitTip() {
+    const amount = Number(document.getElementById('tipAmount').value);
+    if (!amount || amount <= 0) return showToast('Masukkan nominal tip');
+    const note = document.getElementById('tipNote').value.trim() || 'Uang Tip Customer';
+    const wallet = state.wallets.find((w) => w.id === activeTipWallet) || state.wallets[0];
+
+    wallet.balance = Number(wallet.balance) + amount;
+    await idbPut('wallets', wallet);
+    await idbPut('transactions', {
+      id: uuid(),
+      type: 'income',
+      category: 'Uang Tip Kurir',
+      amount,
+      walletId: wallet.id,
+      note,
+      date: new Date().toISOString()
+    });
+
+    localStorage.removeItem('cashflow_draft_tip');
+    closeModal('tipModal');
+    showToast(`+${formatRp(amount)} dicatat!`);
+    await refreshAll();
+  }
+
+  function openTxModal() {
+    const walletSelect = document.getElementById('txWallet');
+    walletSelect.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
+    const draft = JSON.parse(localStorage.getItem('cashflow_draft_tx') || '{}');
+    setTxType(draft.type || 'expense');
+    document.getElementById('txAmount').value = draft.amount || '';
+    if (draft.wallet) walletSelect.value = draft.wallet;
+    if (draft.category) document.getElementById('txCategory').value = draft.category;
+    document.getElementById('txNote').value = draft.note || '';
+    document.getElementById('txModal').classList.add('open');
+  }
+
+  function setTxType(type) {
+    activeTxType = type;
+    document.getElementById('txTypeOut').className = 'toggle-opt' + (type === 'expense' ? ' active-danger' : '');
+    document.getElementById('txTypeIn').className = 'toggle-opt' + (type === 'income' ? ' active' : '');
+    const catSelect = document.getElementById('txCategory');
+    const cats = type === 'expense'
+      ? ['Bensin & Servis', 'Makan & Minum Jalan', 'Operasional Kurir', 'Kebutuhan Pribadi', 'Belanja Harian']
+      : ['Gaji / Insentif Kurir', 'Uang Tip Kurir', 'Bonus / Lainnya'];
+    catSelect.innerHTML = cats.map((c) => `<option value="${c}">${c}</option>`).join('');
+    saveTxDraft();
+  }
+
+  function saveTxDraft() {
+    localStorage.setItem('cashflow_draft_tx', JSON.stringify({
+      type: activeTxType,
+      amount: document.getElementById('txAmount').value,
+      wallet: document.getElementById('txWallet').value,
+      category: document.getElementById('txCategory').value,
+      note: document.getElementById('txNote').value
+    }));
+  }
+
+  async function submitTx() {
+    const amount = Number(document.getElementById('txAmount').value);
+    if (!amount || amount <= 0) return showToast('Nominal tidak valid');
+    const walletId = document.getElementById('txWallet').value;
+    const category = document.getElementById('txCategory').value;
+    const note = document.getElementById('txNote').value.trim() || category;
+    const wallet = state.wallets.find((w) => w.id === walletId);
+
+    wallet.balance = activeTxType === 'income'
+      ? Number(wallet.balance) + amount
+      : Number(wallet.balance) - amount;
+
+    await idbPut('wallets', wallet);
+    await idbPut('transactions', {
+      id: uuid(),
+      type: activeTxType,
+      category,
+      amount,
+      walletId,
+      note,
+      date: new Date().toISOString()
+    });
+
+    localStorage.removeItem('cashflow_draft_tx');
+    closeModal('txModal');
+    showToast('Transaksi tersimpan');
+    await refreshAll();
+  }
+
+  async function deleteTransaction(id) {
+    const tx = state.transactions.find((t) => t.id === id);
+    if (!tx) return;
+    const wallet = state.wallets.find((w) => w.id === tx.walletId);
+    if (wallet) {
+      const wasIn = tx.type === 'income' || tx.type === 'receivable_in';
+      wallet.balance = wasIn ? Number(wallet.balance) - Number(tx.amount) : Number(wallet.balance) + Number(tx.amount);
+      await idbPut('wallets', wallet);
+    }
+    await idbDelete('transactions', id);
+    showToast('Catatan dihapus & saldo dipulihkan');
+    await refreshAll();
+  }
+
+  // --- 6. KELOLA DOMPET & TRANSFER ---
+  function openWalletModal(walletId) {
+    selectedWalletId = walletId;
+    const w = state.wallets.find((x) => x.id === walletId);
+    document.getElementById('walletModalTitle').textContent = w.name;
+    document.getElementById('editWalletBalance').value = w.balance;
+    document.getElementById('transferAmount').value = '';
+    document.getElementById('transferTarget').innerHTML = state.wallets
+      .filter((x) => x.id !== walletId)
+      .map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
+    document.getElementById('walletModal').classList.add('open');
+  }
+
+  async function saveWalletBalance() {
+    const w = state.wallets.find((x) => x.id === selectedWalletId);
+    w.balance = Number(document.getElementById('editWalletBalance').value || 0);
+    await idbPut('wallets', w);
+    closeModal('walletModal');
+    showToast('Saldo diperbarui');
+    await refreshAll();
+  }
+
+  async function executeTransfer() {
+    const amt = Number(document.getElementById('transferAmount').value);
+    if (!amt || amt <= 0) return showToast('Masukkan nominal transfer');
+    const src = state.wallets.find((x) => x.id === selectedWalletId);
+    const dst = state.wallets.find((x) => x.id === document.getElementById('transferTarget').value);
+    src.balance = Number(src.balance) - amt;
+    dst.balance = Number(dst.balance) + amt;
+    await idbPut('wallets', src);
+    await idbPut('wallets', dst);
+    closeModal('walletModal');
+    showToast(`Transfer ${formatRp(amt)} berhasil`);
+    await refreshAll();
+  }
+
+  // --- 7. CICILAN & PIUTANG TEMAN (2 TAHAP) ---
+  function openNewLoanModal() {
+    toggleFriendFields();
+    document.getElementById('loanModal').classList.add('open');
+  }
+
+  function toggleFriendFields() {
+    const provider = document.getElementById('loanProvider').value;
+    document.getElementById('friendLoanSection').style.display = provider === 'SPayLater' ? 'none' : 'block';
+  }
+
+  async function createLoanContract() {
+    const provider = document.getElementById('loanProvider').value;
+    const title = document.getElementById('loanTitle').value.trim() || provider;
+    const personalMonthly = Number(document.getElementById('loanPersonalMonthly').value || 0);
+    const friendName = provider === 'SPayLater' ? '' : document.getElementById('loanFriendName').value.trim();
+    const friendMonthly = (provider === 'SPayLater' || !friendName) ? 0 : Number(document.getElementById('loanFriendMonthly').value || 0);
+    const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
+    const dueDay = Math.min(31, Math.max(1, Number(document.getElementById('loanDueDay').value || 25)));
+
+    if (personalMonthly + friendMonthly <= 0) return showToast('Isi nominal cicilan bulanan');
+
+    const installments = [];
+    for (let m = 1; m <= tenor; m++) {
+      installments.push({
+        monthIndex: m,
+        personalAmount: personalMonthly,
+        friendAmount: friendMonthly,
+        friendPaid: friendMonthly === 0,
+        paidToProvider: false
+      });
+    }
+
+    await idbPut('loans', {
+      id: uuid(),
+      provider,
+      title,
+      friendName,
+      tenor,
+      dueDay,
+      installments
+    });
+
+    closeModal('loanModal');
+    showToast('Kontrak cicilan ditambahkan');
+    await refreshAll();
+  }
+
+  async function receiveFriendPayment(loanId, monthIndex) {
+    const loan = state.loans.find((l) => l.id === loanId);
+    const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
+    if (!inst || inst.friendPaid) return;
+
+    inst.friendPaid = true;
+    const targetWallet = state.wallets.find((w) => w.id === 'wallet-seabank') || state.wallets[0];
+    targetWallet.balance = Number(targetWallet.balance) + Number(inst.friendAmount);
+
+    await idbPut('wallets', targetWallet);
+    await idbPut('loans', loan);
+    await idbPut('transactions', {
+      id: uuid(),
+      type: 'receivable_in',
+      category: 'Pelunasan Piutang Teman',
+      amount: Number(inst.friendAmount),
+      walletId: targetWallet.id,
+      note: `Setoran ${loan.friendName} (${loan.provider} Bln ${monthIndex})`,
+      date: new Date().toISOString()
+    });
+
+    showToast(`Setoran ${loan.friendName} masuk ke ${targetWallet.name}`);
+    await refreshAll();
+  }
+
+  async function payProviderInstallment(loanId, monthIndex) {
+    const loan = state.loans.find((l) => l.id === loanId);
+    const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
+    if (!inst || inst.paidToProvider) return;
+
+    const totalBayar = Number(inst.personalAmount) + Number(inst.friendAmount);
+    const payWallet = state.wallets.find((w) => w.id === 'wallet-seabank') || state.wallets[0];
+    payWallet.balance = Number(payWallet.balance) - totalBayar;
+    inst.paidToProvider = true;
+
+    await idbPut('wallets', payWallet);
+    await idbPut('loans', loan);
+    await idbPut('transactions', {
+      id: uuid(),
+      type: 'debt_payment',
+      category: `Bayar Cicilan ${loan.provider}`,
+      amount: totalBayar,
+      walletId: payWallet.id,
+      note: `Lunas ${loan.title} (Bln ${monthIndex}/${loan.tenor})`,
+      date: new Date().toISOString()
+    });
+
+    showToast(`Tagihan ${loan.provider} Bln ${monthIndex} Lunas!`);
+    await refreshAll();
+  }
+
+  async function deleteLoan(id) {
+    await idbDelete('loans', id);
+    showToast('Kontrak cicilan dihapus');
+    await refreshAll();
+  }
+
+  // --- 8. BACKUP JSON & DEMO DATA ---
+  function exportJSON() {
+    const payload = {
+      app: 'Cash Flow',
+      exported_at: new Date().toISOString(),
+      wallets: state.wallets,
+      transactions: state.transactions,
+      loans: state.loans
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cashflow-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    localStorage.setItem('cashflow_last_backup', Date.now().toString());
+    checkBackupReminder();
+    showToast('File backup JSON diunduh');
+  }
+
+  function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!Array.isArray(data.wallets) || !Array.isArray(data.transactions) || !Array.isArray(data.loans)) {
+          throw new Error('Format JSON tidak cocok');
+        }
+        await idbClear('wallets');
+        await idbClear('transactions');
+        await idbClear('loans');
+        for (const w of data.wallets) await idbPut('wallets', w);
+        for (const t of data.transactions) await idbPut('transactions', t);
+        for (const l of data.loans) await idbPut('loans', l);
+        showToast('Data berhasil dipulihkan!');
+        await refreshAll();
+      } catch (err) {
+        showToast('Gagal import: file tidak valid');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function checkBackupReminder() {
+    const last = Number(localStorage.getItem('cashflow_last_backup') || 0);
+    const days = (Date.now() - last) / (1000 * 60 * 60 * 24);
+    const badge = document.getElementById('backupBadge');
+    badge.className = days > 7 ? 'badge warn' : 'badge ok';
+    badge.textContent = days > 7 ? 'Perlu Backup' : 'Backup OK';
+  }
+
+  async function seedDemoData() {
+    await idbClear('wallets');
+    await idbClear('transactions');
+    await idbClear('loans');
+
+    await idbPut('wallets', { id: 'wallet-cash', name: '💵 Tunai (Tip/Ops)', balance: 145000 });
+    await idbPut('wallets', { id: 'wallet-seabank', name: '🏦 SeaBank', balance: 2350000 });
+    await idbPut('wallets', { id: 'wallet-shopeepay', name: '📱 ShopeePay', balance: 120000 });
+
+    await idbPut('transactions', {
+      id: uuid(), type: 'income', category: 'Uang Tip Kurir', amount: 15000,
+      walletId: 'wallet-cash', note: 'Tip paket COD perumahan', date: new Date().toISOString()
+    });
+    await idbPut('transactions', {
+      id: uuid(), type: 'expense', category: 'Bensin & Servis', amount: 30000,
+      walletId: 'wallet-cash', note: 'Isi Pertalite motor', date: new Date(Date.now() - 3600000).toISOString()
+    });
+
+    await idbPut('loans', {
+      id: uuid(), provider: 'SeaBank Pinjam', title: 'Pinjaman Okt (Split Andi)',
+      friendName: 'Andi', tenor: 3, dueDay: 25,
+      installments: [
+        { monthIndex: 1, personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: true },
+        { monthIndex: 2, personalAmount: 600000, friendAmount: 400000, friendPaid: true, paidToProvider: false },
+        { monthIndex: 3, personalAmount: 600000, friendAmount: 400000, friendPaid: false, paidToProvider: false }
+      ]
+    });
+
+    await idbPut('loans', {
+      id: uuid(), provider: 'SPayLater', title: 'Helm & Jas Hujan Kurir',
+      friendName: '', tenor: 2, dueDay: 11,
+      installments: [
+        { monthIndex: 1, personalAmount: 225000, friendAmount: 0, friendPaid: true, paidToProvider: false },
+        { monthIndex: 2, personalAmount: 225000, friendAmount: 0, friendPaid: true, paidToProvider: false }
+      ]
+    });
+
+    showToast('Data contoh dimuat');
+    await refreshAll();
+  }
+
+  async function resetAllData() {
+    await idbClear('wallets');
+    await idbClear('transactions');
+    await idbClear('loans');
+    await ensureDefaultWallets();
+    showToast('Semua data dikosongkan');
+    await refreshAll();
+  }
+
+  // --- 9. NAVIGATION & MODAL UTILS ---
+  function switchTab(tab) {
+    ['home', 'loans', 'rekap'].forEach((t) => {
+      document.getElementById('view-' + t).classList.toggle('active', t === tab);
+      document.getElementById('nav-' + t).classList.toggle('active', t === tab);
+    });
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function closeModalOnBackdrop(e, id) { if (e.target.id === id) closeModal(id); }
+
+  // Boot App
+  (async function init() {
+    await openDB();
+    await ensureDefaultWallets();
+    await refreshAll();
+  })();
+</script>
+</body>
+</html>
