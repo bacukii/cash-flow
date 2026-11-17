@@ -125,6 +125,12 @@
       color: var(--muted);
       font-weight: 600;
     }
+    .btn-accordion {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      font-weight: 700;
+    }
     .btn-sm { padding: 7px 10px; font-size: 0.76rem; border-radius: 9px; }
     .btn-block { width: 100%; }
 
@@ -169,6 +175,10 @@
     .card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 13px; margin-bottom: 10px;
+      scroll-margin-top: 66px;
+    }
+    .card.loan-expanded {
+      border-color: rgba(56, 189, 248, 0.45);
     }
     .row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .pill {
@@ -416,7 +426,10 @@
       </div>
       <div class="accounts-grid" id="creditLimitsGrid" style="margin-bottom:14px;"></div>
 
-      <div class="section-title"><span>Daftar Tagihan & Pinjaman</span></div>
+      <div class="section-title">
+        <span>Daftar Tagihan & Pinjaman</span>
+        <span style="font-size:0.68rem;font-weight:500;">Auto-collapsed</span>
+      </div>
       <div id="loansContainer"></div>
     </section>
 
@@ -1130,6 +1143,7 @@
   let activeFriendLoanId = null;
   let editingTxId = null;
   let editingLoanId = null;
+  let expandedLoanId = null;
 
   const esc = (str) => String(str || '').replace(/[&<>"']/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
   const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
@@ -1207,6 +1221,10 @@
     state.transactions = (await idbAll('transactions')).sort((a, b) => new Date(b.date) - new Date(a.date));
     state.loans = await idbAll('loans');
 
+    if (expandedLoanId && !state.loans.some((l) => l.id === expandedLoanId)) {
+      expandedLoanId = null;
+    }
+
     renderDashboard();
     renderLoans();
     renderRekap();
@@ -1260,14 +1278,12 @@
     const totalBal = round2(state.wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0));
     document.getElementById('totalBalance').textContent = formatRp(totalBal);
 
-    // Spotlight Dompet Tunai
     const cashWallet = state.wallets.find((w) => w.id === 'wallet-cash') || { balance: 0 };
     document.getElementById('cashWalletBal').textContent = formatRp(cashWallet.balance);
     document.getElementById('cashLastChecked').textContent = cashWallet.lastChecked
       ? `Terakhir dicocokkan: ${new Date(cashWallet.lastChecked).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}`
       : 'Tip tunai otomatis masuk ke sini • Ketuk Cocokkan jika selisih';
 
-    // Hitung tagihan aktif terdekat & total piutang teman
     let nearestBill = 0;
     let totalFriendReceivable = 0;
     let nearestInstallment = null;
@@ -1290,7 +1306,6 @@
     document.getElementById('monthlyBillTotal').textContent = formatRp(nearestBill);
     document.getElementById('monthlyFriendReceivable').textContent = formatRp(totalFriendReceivable);
 
-    // Grid 2 Kolom Bank & E-Wallet
     const digitalWallets = state.wallets.filter((w) => {
       if (w.id === 'wallet-cash') return false;
       if (accountFilter === 'bank') return w.group === 'bank';
@@ -1308,7 +1323,6 @@
       </div>
     `).join('');
 
-    // Jatuh Tempo Terdekat
     const upcomingBox = document.getElementById('upcomingLoanBox');
     if (!nearestInstallment) {
       upcomingBox.innerHTML = `<div class="card" style="color:var(--muted);font-size:0.8rem;">Tidak ada tagihan aktif saat ini.</div>`;
@@ -1320,7 +1334,7 @@
         ? `<span class="pill pill-ok">Sisa Piutang ${esc(loan.friendName)}: ${formatRp(remFriend)}</span>`
         : '';
       upcomingBox.innerHTML = `
-        <div class="card" onclick="switchTab('loans')" style="cursor:pointer;">
+        <div class="card" onclick="openLoanFromDashboard('${loan.id}')" style="cursor:pointer;">
           <div class="row-between" style="margin-bottom:5px;">
             <strong style="font-size:0.88rem;">${esc(loan.provider)} • ${esc(loan.title)}</strong>
             <span class="pill pill-info">${esc(dueStr)}</span>
@@ -1333,7 +1347,6 @@
       `;
     }
 
-    // Filter Mutasi (Waktu + Akun)
     const todayStr = getLocalTodayStr();
     const targetDateVal = document.getElementById('txFilterDateVal').value || todayStr;
     const targetMonthVal = document.getElementById('txFilterMonthVal').value || getLocalCurrentMonthStr();
@@ -1434,7 +1447,29 @@
     renderDashboard();
   }
 
-  // --- 7. RENDERING CICILAN & LIMIT KREDIT ---
+  function openLoanFromDashboard(loanId) {
+    expandedLoanId = loanId;
+    switchTab('loans');
+    renderLoans();
+    requestAnimationFrame(() => {
+      const cardEl = document.getElementById('loan-card-' + loanId);
+      if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  // --- 7. RENDERING CICILAN (SINGLE-OPEN ACCORDION + AUTO-SCROLL) & LIMIT KREDIT ---
+  function toggleLoanAccordion(loanId) {
+    const isClosing = expandedLoanId === loanId;
+    expandedLoanId = isClosing ? null : loanId;
+    renderLoans();
+    requestAnimationFrame(() => {
+      const cardEl = document.getElementById('loan-card-' + loanId);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+
   function renderLoans() {
     document.getElementById('creditLimitsGrid').innerHTML = state.limits.map((lim) => {
       const ceiling = getTotalCeiling(lim);
@@ -1475,74 +1510,121 @@
     }
 
     container.innerHTML = state.loans.map((loan) => {
+      const isExpanded = expandedLoanId === loan.id;
       const hasFriend = Boolean(loan.friendName && Number(loan.friendTotalAmount) > 0);
-      const remBank = round2(loan.installments.filter((i) => !i.paidToProvider).reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
+      const unpaidInsts = loan.installments.filter((i) => !i.paidToProvider);
+      const remBank = round2(unpaidInsts.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
       const remFriend = getLoanRemainingFriend(loan);
       const remFriendMonths = (hasFriend && Number(loan.friendMonthly) > 0) ? Math.ceil(remFriend / Number(loan.friendMonthly)) : 0;
+      const nextInst = unpaidInsts[0] || null;
+      const nextAmt = nextInst ? round2(Number(nextInst.amount ?? ((nextInst.personalAmount || 0) + (nextInst.friendAmount || 0)))) : 0;
 
-      const instHtml = loan.installments.map((inst) => {
-        const instAmt = round2(Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
-        const periodLabel = inst.billingMonthLabel ? ` (${inst.billingMonthLabel})` : '';
-        const itemsHtml = (inst.items && inst.items.length > 0)
-          ? `<div style="margin:6px 0;padding:6px 8px;background:rgba(255,255,255,0.03);border-radius:7px;font-size:0.72rem;color:var(--muted);">
-              ${inst.items.map((it) => `<div class="row-between"><span>• ${esc(it.note)} (${it.date.slice(5)})</span><span>${formatRp(it.amount)}</span></div>`).join('')}
-            </div>`
-          : '';
-
-        if (inst.paidToProvider) {
-          return `
-            <div class="row-between" style="padding:8px 0;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted);">
-              <span>Bln ${inst.monthIndex}/${loan.tenor}${periodLabel} • ${formatRp(instAmt)}</span>
-              <span class="pill pill-ok">LUNAS ✅</span>
+      // Tampilan Collapsed: Aksi Cepat untuk 1 Tagihan Terdekat Bulan Ini
+      let collapsedQuickAction = '';
+      if (!isExpanded) {
+        if (nextInst) {
+          const periodLabel = nextInst.billingMonthLabel ? ` (${nextInst.billingMonthLabel})` : '';
+          collapsedQuickAction = `
+            <div style="padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">
+              <div class="row-between" style="margin-bottom:6px;">
+                <span style="font-size:0.78rem;color:var(--muted);">Tagihan Terdekat: <strong style="color:var(--text)">Bln ${nextInst.monthIndex}/${loan.tenor}${periodLabel}</strong></span>
+                <strong style="font-size:0.86rem;">${formatRp(nextAmt)}</strong>
+              </div>
+              <button class="btn btn-primary btn-sm btn-block" onclick="openPayBillModal('${loan.id}', ${nextInst.monthIndex})">
+                ✔ Bayar Tagihan Bln ${nextInst.monthIndex} ke ${esc(loan.provider)}
+              </button>
+            </div>
+          `;
+        } else {
+          collapsedQuickAction = `
+            <div style="padding:8px 10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.28);border-radius:10px;margin-bottom:8px;text-align:center;">
+              <span class="pill pill-ok">SEMUA TENOR LUNAS ✅</span>
             </div>
           `;
         }
+      }
 
-        return `
-          <div style="padding:10px;margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;">
-            <div class="row-between" style="margin-bottom:6px;">
-              <strong style="font-size:0.82rem;">Bln ${inst.monthIndex}/${loan.tenor}${periodLabel} • Tgl ${loan.dueDay}</strong>
-              <strong style="font-size:0.88rem;">${formatRp(instAmt)}</strong>
+      // Tampilan Expanded: Daftar Lengkap Semua Bulan + Tombol Tutup Rincian di Bawah
+      let expandedBody = '';
+      if (isExpanded) {
+        const instHtml = loan.installments.map((inst) => {
+          const instAmt = round2(Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
+          const periodLabel = inst.billingMonthLabel ? ` (${inst.billingMonthLabel})` : '';
+          const itemsHtml = (inst.items && inst.items.length > 0)
+            ? `<div style="margin:6px 0;padding:6px 8px;background:rgba(255,255,255,0.03);border-radius:7px;font-size:0.72rem;color:var(--muted);">
+                ${inst.items.map((it) => `<div class="row-between"><span>• ${esc(it.note)} (${it.date.slice(5)})</span><span>${formatRp(it.amount)}</span></div>`).join('')}
+              </div>`
+            : '';
+
+          if (inst.paidToProvider) {
+            return `
+              <div class="row-between" style="padding:8px 0;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted);">
+                <span>Bln ${inst.monthIndex}/${loan.tenor}${periodLabel} • ${formatRp(instAmt)}</span>
+                <span class="pill pill-ok">LUNAS ✅</span>
+              </div>
+            `;
+          }
+
+          return `
+            <div style="padding:10px;margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;">
+              <div class="row-between" style="margin-bottom:6px;">
+                <strong style="font-size:0.82rem;">Bln ${inst.monthIndex}/${loan.tenor}${periodLabel} • Tgl ${loan.dueDay}</strong>
+                <strong style="font-size:0.88rem;">${formatRp(instAmt)}</strong>
+              </div>
+              ${itemsHtml}
+              <div style="display:grid;gap:6px;margin-top:6px;">
+                <button class="btn btn-primary btn-sm btn-block" onclick="openPayBillModal('${loan.id}', ${inst.monthIndex})">
+                  ✔ Bayar Tagihan Bln ${inst.monthIndex} ke ${esc(loan.provider)}
+                </button>
+                <button class="btn btn-ghost-muted btn-sm btn-block" onclick="markInstallmentPaidNoBalance('${loan.id}', ${inst.monthIndex})">
+                  Tandai LUNAS (Tanpa Potong Saldo)
+                </button>
+              </div>
             </div>
-            ${itemsHtml}
-            <div style="display:grid;gap:6px;margin-top:6px;">
-              <button class="btn btn-primary btn-sm btn-block" onclick="openPayBillModal('${loan.id}', ${inst.monthIndex})">
-                ✔ Bayar Tagihan Bln ${inst.monthIndex} ke ${esc(loan.provider)}
-              </button>
-              <button class="btn btn-ghost-muted btn-sm btn-block" onclick="markInstallmentPaidNoBalance('${loan.id}', ${inst.monthIndex})">
-                Tandai LUNAS (Tanpa Potong Saldo)
-              </button>
-            </div>
+          `;
+        }).join('');
+
+        expandedBody = `
+          <div style="margin-top:4px;">
+            ${instHtml}
+            <button class="btn btn-accordion btn-sm btn-block" style="margin-top:10px;" onclick="toggleLoanAccordion('${loan.id}')">
+              ▲ Tutup Rincian
+            </button>
           </div>
         `;
-      }).join('');
+      }
+
+      const toggleBtnLabel = isExpanded
+        ? '▲ Tutup Rincian'
+        : `▼ Lihat Semua ${loan.tenor} Bulan (Sisa ${unpaidInsts.length} bln)`;
 
       return `
-        <div class="card">
+        <div class="card ${isExpanded ? 'loan-expanded' : ''}" id="loan-card-${loan.id}">
           <div class="row-between" style="margin-bottom:6px;">
-            <div>
+            <div onclick="toggleLoanAccordion('${loan.id}')" style="cursor:pointer;flex:1;">
               <span class="pill ${hasFriend ? 'pill-info' : 'pill-pl'}">${esc(loan.provider)}${loan.paylaterBucket ? ' • ' + esc(loan.paylaterBucket) : ''}</span>
               <span class="pill ${hasFriend ? 'pill-wait' : 'pill-ok'}" style="margin-left:3px;">${hasFriend ? 'Split ' + esc(loan.friendName) : 'Pribadi'}</span>
-              <div style="font-weight:700;font-size:0.93rem;margin-top:4px;">${esc(loan.title)}</div>
+              <span class="pill" style="background:var(--bg);color:var(--muted);margin-left:3px;">Sisa ${unpaidInsts.length}/${loan.tenor} bln</span>
+              <div style="font-weight:700;font-size:0.93rem;margin-top:5px;">${esc(loan.title)}</div>
             </div>
-            <div style="display:flex;gap:10px;font-size:0.72rem;">
+            <div style="display:flex;gap:10px;font-size:0.72rem;align-self:flex-start;">
               <span onclick="openEditLoanModal('${loan.id}')" style="color:var(--info);cursor:pointer;">Edit</span>
               <span onclick="deleteLoan('${loan.id}')" style="color:var(--muted);cursor:pointer;">Hapus</span>
             </div>
           </div>
 
-          <div class="stat-grid" style="margin:8px 0;">
-            <div class="stat-box" style="padding:8px;">
+          <div class="stat-grid" style="margin:8px 0;" onclick="toggleLoanAccordion('${loan.id}')">
+            <div class="stat-box" style="padding:8px;cursor:pointer;">
               <small>Sisa Tagihan ke ${esc(loan.provider)}</small>
               <strong>${formatRp(remBank)}</strong>
             </div>
             ${hasFriend ? `
-              <div class="stat-box" style="padding:8px;">
+              <div class="stat-box" style="padding:8px;cursor:pointer;">
                 <small>Sisa Piutang ${esc(loan.friendName)} (${remFriendMonths} bln)</small>
                 <strong style="color:#6ee7b7">${formatRp(remFriend)}</strong>
               </div>
             ` : `
-              <div class="stat-box" style="padding:8px;">
+              <div class="stat-box" style="padding:8px;cursor:pointer;">
                 <small>Jatuh Tempo</small>
                 <strong>Tanggal ${loan.dueDay}</strong>
               </div>
@@ -1555,7 +1637,15 @@
             </button>
           ` : ''}
 
-          ${instHtml}
+          ${collapsedQuickAction}
+
+          ${!isExpanded ? `
+            <button class="btn btn-accordion btn-sm btn-block" onclick="toggleLoanAccordion('${loan.id}')">
+              ${toggleBtnLabel}
+            </button>
+          ` : ''}
+
+          ${expandedBody}
         </div>
       `;
     }).join('');
@@ -2326,8 +2416,9 @@
       });
     }
 
+    const newId = uuid();
     await idbPut('loans', {
-      id: uuid(),
+      id: newId,
       provider,
       paylaterBucket: provider === 'GoPayLater' ? 'QRIS' : null,
       title,
@@ -2341,6 +2432,7 @@
       installments
     });
 
+    expandedLoanId = null;
     closeModal('loanModal');
     showToast('Kontrak cicilan disimpan');
     await refreshAll();
@@ -2494,6 +2586,7 @@
   }
 
   async function deleteLoan(id) {
+    if (expandedLoanId === id) expandedLoanId = null;
     await idbDelete('loans', id);
     showToast('Kontrak cicilan dihapus');
     await refreshAll();
@@ -2541,6 +2634,7 @@
           await idbClear('limits');
           for (const lim of data.limits) await idbPut('limits', lim);
         }
+        expandedLoanId = null;
         await ensureDefaults();
         showToast('Data berhasil dipulihkan!');
         await refreshAll();
@@ -2614,6 +2708,7 @@
       installments: demoInstallments
     });
 
+    expandedLoanId = null;
     showToast('Data contoh dimuat');
     await refreshAll();
   }
@@ -2623,6 +2718,7 @@
     await idbClear('transactions');
     await idbClear('loans');
     await idbClear('limits');
+    expandedLoanId = null;
     await ensureDefaults();
     showToast('Semua data dikosongkan');
     await refreshAll();
@@ -2630,10 +2726,12 @@
 
   // --- 15. NAVIGATION & MODAL UTILS ---
   function switchTab(tab) {
+    if (tab !== 'loans') expandedLoanId = null;
     ['home', 'loans', 'rekap'].forEach((t) => {
       document.getElementById('view-' + t).classList.toggle('active', t === tab);
       document.getElementById('nav-' + t).classList.toggle('active', t === tab);
     });
+    if (tab === 'loans') renderLoans();
   }
 
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
