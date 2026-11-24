@@ -260,6 +260,16 @@
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
     input[readonly] { opacity: 0.72; background: rgba(15, 23, 42, 0.55); }
     .money-input { font-weight: 700; letter-spacing: 0.01em; }
+    .checkbox-row {
+      display: flex; align-items: center; gap: 9px;
+      background: rgba(15, 23, 42, 0.55); border: 1px solid var(--border);
+      padding: 9px 11px; border-radius: 10px; cursor: pointer;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 17px; height: 17px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0;
+    }
+    .checkbox-row span { font-size: 0.76rem; color: #cbd5e1; line-height: 1.35; }
+
     .toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .toggle-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
     .toggle-opt {
@@ -638,12 +648,7 @@
         </div>
         <div class="form-group">
           <label for="paylaterTenor">Tenor PayLater</label>
-          <select id="paylaterTenor" onchange="updatePaylaterPreview(); saveTxDraft();">
-            <option value="1">1x Bayar (Gabung Tagihan Siklus)</option>
-            <option value="3">Cicilan 3 Bulan</option>
-            <option value="6">Cicilan 6 Bulan</option>
-            <option value="12">Cicilan 12 Bulan</option>
-          </select>
+          <select id="paylaterTenor" onchange="updatePaylaterPreview(); saveTxDraft();"></select>
         </div>
         <div class="info-banner" id="paylaterCyclePreview"></div>
       </div>
@@ -760,16 +765,16 @@
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
           <label for="editLimitPerm">Limit Permanen (Rp)</label>
-          <input type="text" class="money-input" id="editLimitPerm" inputmode="decimal" placeholder="17.250.000" oninput="previewCreditLimitCalc()" />
+          <input type="text" class="money-input" id="editLimitPerm" inputmode="decimal" placeholder="17.250.000" oninput="onLimitCeilingInput()" />
         </div>
         <div class="form-group" style="margin:0;">
           <label for="editLimitTemp">Limit Sementara (Rp)</label>
-          <input type="text" class="money-input" id="editLimitTemp" inputmode="decimal" placeholder="3.000.000" oninput="previewCreditLimitCalc()" />
+          <input type="text" class="money-input" id="editLimitTemp" inputmode="decimal" placeholder="3.000.000" oninput="onLimitCeilingInput()" />
         </div>
       </div>
       <div class="form-group">
         <label for="editLimitRem">Sisa Limit Tersedia Saat Ini (Rp)</label>
-        <input type="text" class="money-input" id="editLimitRem" inputmode="decimal" placeholder="20.131.192" oninput="previewCreditLimitCalc()" />
+        <input type="text" class="money-input" id="editLimitRem" inputmode="decimal" placeholder="20.131.192" oninput="onLimitRemInput()" />
       </div>
       <div class="info-banner-blue" id="limitCalcPreview" style="margin-bottom:10px;"></div>
       <button type="button" class="btn btn-warning btn-sm btn-block" id="expireTempLimitBtn" style="margin-bottom:10px;" onclick="expireTemporaryLimit()">
@@ -820,37 +825,38 @@
         <input type="text" id="loanTitle" placeholder="Contoh: HP Budi / Pinjaman 3jt" oninput="saveLoanDraft()" />
       </div>
 
+      <div class="form-group">
+        <label for="loanTotalMonthly">Cicilan Total ke Aplikasi / Bln (Rp)</label>
+        <input type="text" class="money-input" id="loanTotalMonthly" inputmode="decimal" placeholder="311.511" oninput="syncFriendModeValues(); updateLoanModalPreview(); saveLoanDraft();" />
+      </div>
+
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
-          <label for="loanTotalMonthly">Cicilan Total ke Aplikasi / Bln</label>
-          <input type="text" class="money-input" id="loanTotalMonthly" inputmode="decimal" placeholder="311.511" oninput="syncFriendModeValues(); updateLoanModalPreview(); saveLoanDraft();" />
+          <label for="loanTenor">Total Tenor (Bln)</label>
+          <select id="loanTenor" onchange="onLoanTenorChange(); saveLoanDraft();"></select>
         </div>
         <div class="form-group" style="margin:0;">
-          <label id="loanPrincipalLabel" for="loanPrincipalMonthly">Pokok / Bln (Opsional)</label>
-          <input type="text" class="money-input" id="loanPrincipalMonthly" inputmode="decimal" placeholder="Sama dgn cicilan" oninput="updateLoanModalPreview(); saveLoanDraft();" />
+          <label for="loanPaidCount">Sudah Dibayar ke App (Bln)</label>
+          <input type="number" id="loanPaidCount" inputmode="numeric" value="0" min="0" max="11" oninput="updateLoanModalPreview(); saveLoanDraft();" />
         </div>
       </div>
 
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
-          <label for="loanTenor">Total Tenor Bank (Bln)</label>
-          <input type="number" id="loanTenor" inputmode="numeric" value="12" min="1" max="36" oninput="syncFriendModeValues(); updateLoanModalPreview(); saveLoanDraft();" />
+          <label for="loanContractDate">Tanggal Kontrak Dibuat</label>
+          <input type="date" id="loanContractDate" onchange="updateLoanModalPreview(); saveLoanDraft();" />
         </div>
         <div class="form-group" style="margin:0;">
-          <label for="loanPaidCount">Sudah Dibayar ke Bank (Bln)</label>
-          <input type="number" id="loanPaidCount" inputmode="numeric" value="0" min="0" max="35" oninput="updateLoanModalPreview(); saveLoanDraft();" />
+          <label for="loanAutoDueDisplay">Jatuh Tempo Otomatis</label>
+          <input type="text" id="loanAutoDueDisplay" readonly value="Tgl 25" />
         </div>
       </div>
 
-      <div class="stat-grid" style="margin-bottom:10px;">
-        <div class="form-group" style="margin:0;">
-          <label for="loanNextBillMonth">Bulan Tagihan Aktif Berikutnya</label>
-          <input type="month" id="loanNextBillMonth" onchange="updateLoanModalPreview(); saveLoanDraft();" />
-        </div>
-        <div class="form-group" style="margin:0;">
-          <label for="loanDueDay">Tanggal Jatuh Tempo</label>
-          <input type="number" id="loanDueDay" inputmode="numeric" value="25" min="1" max="31" oninput="saveLoanDraft()" />
-        </div>
+      <div class="form-group">
+        <label class="checkbox-row">
+          <input type="checkbox" id="loanDeductLimitNow" checked onchange="updateLoanModalPreview(); saveLoanDraft();" />
+          <span>Potong sisa limit kredit saat ini (hapus centang jika kontrak lama yang limitnya sudah terpotong di aplikasi)</span>
+        </label>
       </div>
 
       <div id="friendLoanSection" style="display:none;padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
@@ -906,17 +912,13 @@
       </div>
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="form-group" style="margin:0;">
-          <label for="editLoanMonthly">Cicilan Belum Lunas / Bln</label>
+          <label for="editLoanMonthly">Cicilan Belum Lunas / Bln (Rp)</label>
           <input type="text" class="money-input" id="editLoanMonthly" inputmode="decimal" oninput="syncEditFriendModeValues()" />
         </div>
         <div class="form-group" style="margin:0;">
-          <label for="editLoanPrincipal">Pokok / Bln (Opsional)</label>
-          <input type="text" class="money-input" id="editLoanPrincipal" inputmode="decimal" placeholder="Sama dgn cicilan" />
+          <label for="editLoanDueDay">Tanggal Jatuh Tempo</label>
+          <input type="number" id="editLoanDueDay" inputmode="numeric" min="1" max="31" />
         </div>
-      </div>
-      <div class="form-group">
-        <label for="editLoanDueDay">Tanggal Jatuh Tempo</label>
-        <input type="number" id="editLoanDueDay" inputmode="numeric" min="1" max="31" />
       </div>
 
       <div id="editLoanFriendWrap" style="padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
@@ -1058,25 +1060,17 @@
 
   // --- 2. FORMATTER & PARSER ANGKA INDONESIA (TITIK RIBUAN & KOMA DESIMAL) ---
   function formatMoneyInputStr(raw) {
-    let s = String(raw || '').trim();
+    const s = String(raw || '').trim();
     if (!s) return '';
-    if (!s.includes(',')) {
-      if (s.endsWith('.')) {
-        s = s.slice(0, -1) + ',';
-      } else {
-        const dotParts = s.split('.');
-        if (dotParts.length === 2 && dotParts[1].length > 0 && dotParts[1].length <= 2) {
-          s = dotParts[0] + ',' + dotParts[1];
-        }
-      }
-    }
     const hasComma = s.includes(',');
     const parts = s.split(',');
     let intDigits = parts[0].replace(/\D/g, '');
     if (intDigits.length > 1) {
       intDigits = intDigits.replace(/^0+/, '') || '0';
     }
-    const formattedInt = intDigits ? intDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : (hasComma ? '0' : '');
+    const formattedInt = intDigits
+      ? intDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      : (hasComma ? '0' : '');
     if (hasComma) {
       const decDigits = parts.slice(1).join('').replace(/\D/g, '').slice(0, 2);
       return `${formattedInt},${decDigits}`;
@@ -1125,13 +1119,19 @@
     if (!e.target.classList || !e.target.classList.contains('money-input')) return;
     const el = e.target;
     const oldVal = el.value;
-    const selStart = el.selectionStart || oldVal.length;
-    const charsFromEnd = oldVal.length - selStart;
+    const selStart = el.selectionStart ?? oldVal.length;
+    const rightPart = oldVal.slice(selStart);
+    const sigCharsRight = rightPart.replace(/[^0-9,]/g, '').length;
     const formatted = formatMoneyInputStr(oldVal);
     if (formatted !== oldVal) {
       el.value = formatted;
-      const newPos = Math.max(0, formatted.length - charsFromEnd);
-      el.setSelectionRange(newPos, newPos);
+      let pos = formatted.length;
+      let count = 0;
+      while (pos > 0 && count < sigCharsRight) {
+        pos--;
+        if (/[0-9,]/.test(formatted[pos])) count++;
+      }
+      el.setSelectionRange(pos, pos);
     }
   });
 
@@ -1182,7 +1182,7 @@
     });
   }
 
-  // --- 4. DEFAULT AKUN, LIMIT & HELPERS ---
+  // --- 4. DEFAULT AKUN, LIMIT, TENOR PENYEDIA & HELPERS ---
   const DEFAULT_WALLETS = [
     { id: 'wallet-cash', name: 'Dompet Tunai', group: 'cash', icon: '💵', tag: 'Fisik', balance: 0, lastChecked: null },
     { id: 'wallet-seabank', name: 'SeaBank', group: 'bank', icon: '🏦', tag: 'QRIS Utama', balance: 0 },
@@ -1201,6 +1201,13 @@
     { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', permanentLimit: 0, temporaryLimit: 0, remainingLimit: 0 }
   ];
 
+  const PROVIDER_TENORS = {
+    'SPinjam': [3, 6, 9, 12],
+    'SeaBank Pinjam': [3, 6, 12],
+    'SPayLater': [1, 3, 6, 12],
+    'GoPayLater': [1]
+  };
+
   const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   const ROAD_OPS_CATS = ['Makan & Minum Jalan', 'Bensin & Servis', 'Operasional Kurir'];
 
@@ -1218,6 +1225,7 @@
   let rekapAllTime = false;
   let selectedWalletId = null;
   let selectedLimitId = null;
+  let limitModalLastCeiling = 0;
   let activeFriendLoanId = null;
   let editingTxId = null;
   let editingLoanId = null;
@@ -1315,7 +1323,8 @@
   function calculatePaylaterTarget(provider, dateStr, monthAddExtra = 0, bucket = null, friendSlug = '') {
     const parts = (dateStr || getLocalTodayStr()).split('-').map(Number);
     const year = parts[0], month = parts[1], day = parts[2];
-    const baseOffset = (provider === 'SPayLater' && day > 20) ? 2 : 1;
+    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
+    const baseOffset = (isPaylater && day > 20) ? 2 : 1;
     const targetDate = new Date(year, (month - 1) + baseOffset + monthAddExtra, 1);
     const tYear = targetDate.getFullYear();
     const tMonth = targetDate.getMonth();
@@ -1323,7 +1332,7 @@
     const ownerSuffix = friendSlug ? `-friend-${friendSlug}` : '';
     const key = `${provider}${bucketSuffix}${ownerSuffix}-${tYear}-${String(tMonth + 1).padStart(2, '0')}`;
     const label = `${MONTHS_ID[tMonth]} ${tYear}`;
-    const dueDay = 1;
+    const dueDay = isPaylater ? 1 : day;
     return { key, label, dueDay, baseOffset };
   }
 
@@ -1349,12 +1358,11 @@
     await idbPut('limits', lim);
   }
 
-  function getLoanTotalPrincipal(loan) {
+  function getLoanTotalAmount(loan) {
     return round2(
       loan.installments.reduce((sum, item) => {
         const itemAmt = round2(Number(item.amount ?? ((item.personalAmount || 0) + (item.friendAmount || 0))));
-        const p = (loan.principalMonthly && Number(loan.principalMonthly) > 0) ? Number(loan.principalMonthly) : itemAmt;
-        return round2(sum + p);
+        return round2(sum + itemAmt);
       }, 0)
     );
   }
@@ -1362,7 +1370,7 @@
   function getLoanOwnershipType(loan) {
     if (loan.ownershipType) return loan.ownershipType;
     if (loan.friendName && Number(loan.friendTotalAmount) > 0) {
-      const totalContract = round2(loan.installments.reduce((s, i) => s + Number(i.amount ?? ((i.personalAmount || 0) + (i.friendAmount || 0))), 0));
+      const totalContract = getLoanTotalAmount(loan);
       if (Math.abs(Number(loan.friendTotalAmount) - totalContract) < 1) return 'friend';
       return 'split';
     }
@@ -2018,19 +2026,18 @@
   function openTxModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tx') || '{}');
     document.getElementById('txDate').value = draft.date || getLocalTodayStr();
-    setTxType(draft.type || 'expense', draft.wallet);
+    setTxType(draft.type || 'expense', draft.wallet, draft.tenor);
     setMoneyInputValue('txAmount', draft.amount ? parseMoneyInput(draft.amount) : 0, false);
     if (draft.category) document.getElementById('txCategory').value = draft.category;
     document.getElementById('txNote').value = draft.note || '';
     document.getElementById('paylaterFriendName').value = draft.plFriendName || '';
-    document.getElementById('paylaterTenor').value = draft.tenor || '1';
     selectPaymentChannel(draft.channel || 'QRIS');
     selectGplBucket(draft.gplBucket || 'QRIS');
     selectPaylaterOwner(draft.plOwner || 'personal');
     document.getElementById('txModal').classList.add('open');
   }
 
-  function setTxType(type, preferredWallet) {
+  function setTxType(type, preferredWallet, preferredTenor) {
     activeTxType = type;
     document.getElementById('txTypeOut').className = 'toggle-opt' + (type === 'expense' ? ' active-danger' : '');
     document.getElementById('txTypeIn').className = 'toggle-opt' + (type === 'income' ? ' active' : '');
@@ -2045,8 +2052,8 @@
           ${walletOpts}
         </optgroup>
         <optgroup label="Kelompok B — PayLater (Minimarket / Online)">
-          <option value="paylater-SPayLater">🟠 SPayLater (Cut-off Tgl 20)</option>
-          <option value="paylater-GoPayLater">🟢 GoPayLater (QRIS / Utama)</option>
+          <option value="paylater-SPayLater">🟠 SPayLater (Tenor 1, 3, 6, 12)</option>
+          <option value="paylater-GoPayLater">🟢 GoPayLater (Flat 1 Bln)</option>
         </optgroup>
       `;
       walletSelect.value = preferredWallet || 'wallet-seabank';
@@ -2062,7 +2069,23 @@
       : ['Gaji Bulanan', 'Uang Tip', 'Pemasukan Lainnya'];
     catSelect.innerHTML = cats.map((c) => `<option value="${c}">${c}</option>`).join('');
 
-    onTxSourceOrDateChange();
+    onTxSourceOrDateChange(preferredTenor);
+  }
+
+  function populatePaylaterTenorSelect(provider, preferredTenor) {
+    const sel = document.getElementById('paylaterTenor');
+    const tenors = PROVIDER_TENORS[provider] || [1];
+    sel.innerHTML = tenors.map((t) => {
+      if (t === 1) {
+        return `<option value="1">${provider === 'GoPayLater' ? '1x Bayar (Flat 1 Bulan)' : '1x Bayar (Gabung Tagihan Siklus)'}</option>`;
+      }
+      return `<option value="${t}">Cicilan ${t} Bulan</option>`;
+    }).join('');
+    if (preferredTenor && tenors.includes(Number(preferredTenor))) {
+      sel.value = String(preferredTenor);
+    } else {
+      sel.value = String(tenors[0]);
+    }
   }
 
   function selectPaymentChannel(ch) {
@@ -2089,7 +2112,7 @@
     saveTxDraft();
   }
 
-  function onTxSourceOrDateChange() {
+  function onTxSourceOrDateChange(preferredTenor) {
     const val = document.getElementById('txWallet').value;
     const isPaylater = val.startsWith('paylater-');
     const isCash = val === 'wallet-cash';
@@ -2098,7 +2121,12 @@
     document.getElementById('paylaterOptionsBox').style.display = (isPaylater && activeTxType === 'expense') ? 'block' : 'none';
     document.getElementById('gopaylaterBucketBox').style.display = (val === 'paylater-GoPayLater' && activeTxType === 'expense') ? 'block' : 'none';
 
-    if (isPaylater) updatePaylaterPreview();
+    if (isPaylater) {
+      const provider = val.replace('paylater-', '');
+      const currentTenor = preferredTenor || document.getElementById('paylaterTenor').value;
+      populatePaylaterTenorSelect(provider, currentTenor);
+      updatePaylaterPreview();
+    }
     saveTxDraft();
   }
 
@@ -2111,14 +2139,11 @@
     const target = calculatePaylaterTarget(provider, dateStr, 0, bucket);
     const day = Number(dateStr.split('-')[2]);
 
-    let ruleNote = '';
-    if (provider === 'SPayLater') {
-      ruleNote = day > 20
-        ? `Karena transaksi tgl <b>${day} (di atas tgl 20)</b>, tagihan melompat 2 bulan ke siklus <b>${target.label}</b>.`
-        : `Karena transaksi tgl <b>${day} (1–20)</b>, tagihan masuk bulan depan siklus <b>${target.label}</b>.`;
-    } else {
-      ruleNote = `Memotong <b>GoPayLater Limit ${bucket}</b> dan masuk tagihan siklus <b>${target.label}</b>.`;
-    }
+    const bucketInfo = provider === 'GoPayLater' ? ` (Limit ${bucket})` : '';
+    let ruleNote = day > 20
+      ? `Transaksi tgl <b>${day} (21–31)</b> pada <b>${provider}${bucketInfo}</b> melompat 2 bulan ke siklus <b>${target.label}</b> (jatuh tempo <b>tgl 1</b>).`
+      : `Transaksi tgl <b>${day} (1–20)</b> pada <b>${provider}${bucketInfo}</b> masuk 1 bulan berikutnya siklus <b>${target.label}</b> (jatuh tempo <b>tgl 1</b>).`;
+
     if (tenor > 1) ruleNote += ` Dicicil <b>${tenor}x</b> mulai ${target.label}.`;
     if (activePaylaterOwner === 'friend') {
       const fName = document.getElementById('paylaterFriendName').value.trim() || 'Teman';
@@ -2155,7 +2180,7 @@
     if (activeTxType === 'expense' && walletVal.startsWith('paylater-')) {
       const provider = walletVal.replace('paylater-', '');
       const bucket = provider === 'GoPayLater' ? activeGplBucket : null;
-      const tenor = Number(document.getElementById('paylaterTenor').value || 1);
+      const tenor = provider === 'GoPayLater' ? 1 : Number(document.getElementById('paylaterTenor').value || 1);
       const isFriendOrder = activePaylaterOwner === 'friend';
       const friendName = isFriendOrder ? document.getElementById('paylaterFriendName').value.trim() : '';
 
@@ -2200,7 +2225,7 @@
             friendTotalAmount: isFriendOrder ? amount : 0,
             friendPaidAmount: 0,
             tenor: 1,
-            dueDay: target0.dueDay,
+            dueDay: 1,
             installments: [{
               monthIndex: 1,
               billingMonthLabel: target0.label,
@@ -2237,7 +2262,7 @@
           friendTotalAmount: isFriendOrder ? round2(perMonth * tenor) : 0,
           friendPaidAmount: 0,
           tenor,
-          dueDay: target0.dueDay,
+          dueDay: 1,
           installments
         });
       }
@@ -2523,7 +2548,7 @@
     await refreshAll();
   }
 
-  // --- 12. KELOLA AKUN & LIMIT KREDIT (PERMANEN + SEMENTARA) ---
+  // --- 12. KELOLA AKUN & LIMIT KREDIT (PERMANEN + SEMENTARA AUTO-RECALCULATE) ---
   function openWalletModal(walletId) {
     selectedWalletId = walletId;
     const w = state.wallets.find((x) => x.id === walletId);
@@ -2575,12 +2600,34 @@
   function openLimitModal(limitId) {
     selectedLimitId = limitId;
     const lim = state.limits.find((x) => x.id === limitId);
+    const perm = Number(lim.permanentLimit ?? lim.maxLimit ?? 0);
+    const temp = Number(lim.temporaryLimit ?? 0);
+    const rem = Number(lim.remainingLimit ?? 0);
+
     document.getElementById('limitModalTitle').textContent = `Atur ${lim.label}`;
-    setMoneyInputValue('editLimitPerm', lim.permanentLimit ?? lim.maxLimit ?? 0, true);
-    setMoneyInputValue('editLimitTemp', lim.temporaryLimit ?? 0, true);
-    setMoneyInputValue('editLimitRem', lim.remainingLimit ?? 0, true);
+    setMoneyInputValue('editLimitPerm', perm, true);
+    setMoneyInputValue('editLimitTemp', temp, true);
+    setMoneyInputValue('editLimitRem', rem, true);
+    limitModalLastCeiling = round2(perm + temp);
     previewCreditLimitCalc();
     document.getElementById('limitModal').classList.add('open');
+  }
+
+  function onLimitCeilingInput() {
+    const perm = parseMoneyInput(document.getElementById('editLimitPerm').value);
+    const temp = parseMoneyInput(document.getElementById('editLimitTemp').value);
+    const currentRem = parseMoneyInput(document.getElementById('editLimitRem').value);
+    const used = round2(Math.max(0, limitModalLastCeiling - currentRem));
+    const newCeiling = round2(perm + temp);
+    const newRem = round2(Math.max(0, newCeiling - used));
+
+    setMoneyInputValue('editLimitRem', newRem, true);
+    limitModalLastCeiling = newCeiling;
+    previewCreditLimitCalc();
+  }
+
+  function onLimitRemInput() {
+    previewCreditLimitCalc();
   }
 
   function previewCreditLimitCalc() {
@@ -2594,16 +2641,9 @@
   }
 
   function expireTemporaryLimit() {
-    const perm = parseMoneyInput(document.getElementById('editLimitPerm').value);
-    const temp = parseMoneyInput(document.getElementById('editLimitTemp').value);
-    const rem = parseMoneyInput(document.getElementById('editLimitRem').value);
-    const used = round2(Math.max(0, (perm + temp) - rem));
-    const newRem = round2(Math.max(0, perm - used));
-
     setMoneyInputValue('editLimitTemp', 0, true);
-    setMoneyInputValue('editLimitRem', newRem, true);
-    previewCreditLimitCalc();
-    showToast('Limit sementara di-nolkan! Klik Simpan');
+    onLimitCeilingInput();
+    showToast('Limit sementara di-nolkan & sisa limit disesuaikan! Klik Simpan');
   }
 
   async function saveCreditLimit() {
@@ -2625,11 +2665,10 @@
       gplBucket: document.getElementById('loanGplBucket').value,
       title: document.getElementById('loanTitle').value,
       totalMonthly: document.getElementById('loanTotalMonthly').value,
-      principalMonthly: document.getElementById('loanPrincipalMonthly').value,
       tenor: document.getElementById('loanTenor').value,
       paidCount: document.getElementById('loanPaidCount').value,
-      nextBillMonth: document.getElementById('loanNextBillMonth').value,
-      dueDay: document.getElementById('loanDueDay').value,
+      contractDate: document.getElementById('loanContractDate').value,
+      deductLimitNow: document.getElementById('loanDeductLimitNow').checked,
       friendName: document.getElementById('loanFriendName').value,
       friendMonthly: document.getElementById('loanFriendMonthly').value,
       friendTenor: document.getElementById('loanFriendTenor').value,
@@ -2637,15 +2676,40 @@
     }));
   }
 
-  function onLoanProviderChange() {
+  function populateLoanTenorSelect(provider, preferredTenor) {
+    const sel = document.getElementById('loanTenor');
+    const tenors = PROVIDER_TENORS[provider] || [3, 6, 9, 12];
+    sel.innerHTML = tenors.map((t) => {
+      const label = (provider === 'GoPayLater' && t === 1) ? '1 Bulan (Flat)' : `${t} Bulan`;
+      return `<option value="${t}">${label}</option>`;
+    }).join('');
+    if (preferredTenor && tenors.includes(Number(preferredTenor))) {
+      sel.value = String(preferredTenor);
+    } else {
+      sel.value = String(tenors[0]);
+    }
+    const maxPaid = Math.max(0, Number(sel.value) - 1);
+    const paidEl = document.getElementById('loanPaidCount');
+    paidEl.max = maxPaid;
+    if (Number(paidEl.value) > maxPaid) paidEl.value = maxPaid;
+  }
+
+  function onLoanProviderChange(preferredTenor) {
     const provider = document.getElementById('loanProvider').value;
     document.getElementById('loanGplBucketBox').style.display = provider === 'GoPayLater' ? 'block' : 'none';
-    const pLabel = document.getElementById('loanPrincipalLabel');
-    if (provider === 'SeaBank Pinjam') {
-      pLabel.textContent = 'Pokok / Bln (Penting u/ Limit)';
-    } else {
-      pLabel.textContent = 'Pokok / Bln (Opsional)';
-    }
+    const curTenor = preferredTenor || document.getElementById('loanTenor').value;
+    populateLoanTenorSelect(provider, curTenor);
+    syncFriendModeValues();
+    updateLoanModalPreview();
+  }
+
+  function onLoanTenorChange() {
+    const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
+    const paidEl = document.getElementById('loanPaidCount');
+    const maxPaid = Math.max(0, tenor - 1);
+    paidEl.max = maxPaid;
+    if (Number(paidEl.value) > maxPaid) paidEl.value = maxPaid;
+    syncFriendModeValues();
     updateLoanModalPreview();
   }
 
@@ -2655,17 +2719,15 @@
     document.getElementById('loanGplBucket').value = draft.gplBucket || 'QRIS';
     document.getElementById('loanTitle').value = draft.title || '';
     setMoneyInputValue('loanTotalMonthly', draft.totalMonthly ? parseMoneyInput(draft.totalMonthly) : 0, false);
-    setMoneyInputValue('loanPrincipalMonthly', draft.principalMonthly ? parseMoneyInput(draft.principalMonthly) : 0, false);
-    document.getElementById('loanTenor').value = draft.tenor || 12;
     document.getElementById('loanPaidCount').value = draft.paidCount || 0;
-    document.getElementById('loanNextBillMonth').value = draft.nextBillMonth || getLocalCurrentMonthStr();
-    document.getElementById('loanDueDay').value = draft.dueDay || 25;
+    document.getElementById('loanContractDate').value = draft.contractDate || getLocalTodayStr();
+    document.getElementById('loanDeductLimitNow').checked = draft.deductLimitNow !== undefined ? Boolean(draft.deductLimitNow) : true;
     document.getElementById('loanFriendName').value = draft.friendName || '';
     setMoneyInputValue('loanFriendMonthly', draft.friendMonthly ? parseMoneyInput(draft.friendMonthly) : 0, false);
     document.getElementById('loanFriendTenor').value = draft.friendTenor || 12;
     document.getElementById('loanFriendPaidCount').value = draft.friendPaidCount || 0;
+    onLoanProviderChange(draft.tenor);
     setLoanOwnership(draft.ownership || 'personal', true);
-    onLoanProviderChange();
     document.getElementById('loanModal').classList.add('open');
   }
 
@@ -2708,23 +2770,40 @@
     document.getElementById('loanFriendTenor').value = tenor;
   }
 
+  function getScheduleMetaFromContractDate(provider, contractDateStr, tenor, paidCount) {
+    const parts = (contractDateStr || getLocalTodayStr()).split('-').map(Number);
+    const cYear = parts[0], cMonth = parts[1], cDay = parts[2];
+    const isPaylater = provider === 'SPayLater' || provider === 'GoPayLater';
+    const dueDay = isPaylater ? 1 : cDay;
+    const baseOffset = (isPaylater && cDay > 20) ? 2 : 1;
+
+    const firstInstDate = new Date(cYear, (cMonth - 1) + baseOffset, 1);
+    const firstBillLabel = `${MONTHS_ID[firstInstDate.getMonth()]} ${firstInstDate.getFullYear()}`;
+
+    const activeIdx = paidCount + 1;
+    const activeInstDate = new Date(cYear, (cMonth - 1) + baseOffset + paidCount, 1);
+    const activeBillLabel = `${MONTHS_ID[activeInstDate.getMonth()]} ${activeInstDate.getFullYear()}`;
+
+    return { cYear, cMonth, cDay, isPaylater, dueDay, baseOffset, firstBillLabel, activeIdx, activeBillLabel };
+  }
+
   function updateLoanModalPreview() {
     const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
-    const principalMonthly = parseMoneyInput(document.getElementById('loanPrincipalMonthly').value);
-    const effPrincipalMonthly = principalMonthly > 0 ? principalMonthly : totalMonthly;
+    const provider = document.getElementById('loanProvider').value;
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
     let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
     if (paidCount >= tenor) paidCount = tenor - 1;
 
-    const monthVal = document.getElementById('loanNextBillMonth').value || getLocalCurrentMonthStr();
-    const [startYear, startMonth] = monthVal.split('-').map(Number);
-    const firstActiveIdx = paidCount + 1;
-    const firstLabel = `${MONTHS_ID[startMonth - 1]} ${startYear}`;
+    const contractDate = document.getElementById('loanContractDate').value || getLocalTodayStr();
+    const deductLimitNow = document.getElementById('loanDeductLimitNow').checked;
+    const meta = getScheduleMetaFromContractDate(provider, contractDate, tenor, paidCount);
+
+    document.getElementById('loanAutoDueDisplay').value = `Tgl ${meta.dueDay} • Mulai ${meta.firstBillLabel}`;
+
     const remBankMonths = tenor - paidCount;
     const remBankTotal = round2(remBankMonths * totalMonthly);
-    const totalContractPrincipal = round2(tenor * effPrincipalMonthly);
+    const totalContractAmt = round2(tenor * totalMonthly);
 
-    const provider = document.getElementById('loanProvider').value;
     const gplBucket = provider === 'GoPayLater' ? ` (${document.getElementById('loanGplBucket').value})` : '';
     const friendName = document.getElementById('loanFriendName').value.trim() || 'Teman';
     const friendMonthly = activeLoanOwnership === 'friend'
@@ -2735,16 +2814,26 @@
       : Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
     const fPaid = Math.min(fTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
 
-    const limitDeductedNow = provider === 'SeaBank Pinjam'
-      ? totalContractPrincipal
-      : round2(remBankMonths * effPrincipalMonthly);
-
-    let html = `Tagihan ke <b>${esc(provider)}${esc(gplBucket)}</b>: Bulan 1–${paidCount || 0} <b>LUNAS</b>, sisa <b>${remBankMonths} bulan aktif</b> (${formatRp(remBankTotal)}) mulai Bln ${firstActiveIdx} (${firstLabel}).`;
-
-    if (provider === 'SeaBank Pinjam') {
-      html += `<br/>Limit terpotong: <b>-${formatRp(limitDeductedNow)}</b>. Khusus <b>SeaBank Pinjam</b>, seluruh limit pokok (+${formatRp(totalContractPrincipal)}) baru pulih setelah <b>semua ${tenor} bulan lunas penuh</b>.`;
+    let cycleRuleText = '';
+    if (meta.isPaylater) {
+      cycleRuleText = meta.cDay > 20
+        ? `Kontrak tgl <b>${meta.cDay} (21–31)</b> $\\rightarrow$ tagihan ke-1 lompat 2 bulan ke <b>${meta.firstBillLabel}</b>, jatuh tempo tiap <b>tgl 1</b>.`
+        : `Kontrak tgl <b>${meta.cDay} (1–20)</b> $\\rightarrow$ tagihan ke-1 masuk <b>${meta.firstBillLabel}</b>, jatuh tempo tiap <b>tgl 1</b>.`;
     } else {
-      html += `<br/>Limit terpotong: <b>-${formatRp(limitDeductedNow)}</b> (pulih bertahap +${formatRp(effPrincipalMonthly)} setiap bulan dibayar).`;
+      cycleRuleText = `Kontrak tgl <b>${meta.cDay}</b> $\\rightarrow$ tagihan ke-1 mulai <b>${meta.firstBillLabel}</b>, jatuh tempo tiap <b>tgl ${meta.dueDay}</b>.`;
+    }
+
+    let html = `${cycleRuleText}<br/>Sisa <b>${remBankMonths} bulan aktif</b> (${formatRp(remBankTotal)}) mulai Bln ${meta.activeIdx} (${meta.activeBillLabel}).`;
+
+    const limitToDeduct = provider === 'SeaBank Pinjam' ? totalContractAmt : remBankTotal;
+    if (deductLimitNow) {
+      if (provider === 'SeaBank Pinjam') {
+        html += `<br/>Limit terpotong: <b>-${formatRp(limitToDeduct)}</b> (pulih penuh +${formatRp(totalContractAmt)} setelah <b>semua ${tenor} bulan lunas</b>).`;
+      } else {
+        html += `<br/>Limit terpotong: <b>-${formatRp(limitToDeduct)}</b> (pulih bertahap +${formatRp(totalMonthly)} tiap bulan dibayar).`;
+      }
+    } else {
+      html += `<br/>Limit saat ini <b>tidak dipotong</b> (mode kontrak lama yang sudah berjalan).`;
     }
 
     if (activeLoanOwnership === 'personal') {
@@ -2752,12 +2841,12 @@
     } else if (activeLoanOwnership === 'friend') {
       const remFMonths = fTenor - fPaid;
       const remFAmt = round2(remFMonths * friendMonthly);
-      html += `<br/>Status: <b>100% Tanggungan ${esc(friendName)}</b> • Beban Pribadimu: <b>Rp 0</b> • Sisa Piutang ${esc(friendName)}: <b>${formatRp(remFAmt)}</b> (${remFMonths} bln).`;
+      html += `<br/>Status: <b>100% Tanggungan ${esc(friendName)}</b> • Beban Pribadi: <b>Rp 0</b> • Piutang ${esc(friendName)}: <b>${formatRp(remFAmt)}</b> (${remFMonths} bln).`;
     } else if (activeLoanOwnership === 'split') {
       const remFMonths = fTenor - fPaid;
       const remFAmt = round2(remFMonths * friendMonthly);
       const personalShare = round2(Math.max(0, totalMonthly - friendMonthly));
-      html += `<br/>Split: Beban Pribadimu <b>${formatRp(personalShare)}/bln</b> • Porsi ${esc(friendName)} <b>${formatRp(friendMonthly)}/bln</b> (Sisa ${remFMonths} bln = <b>${formatRp(remFAmt)}</b>).`;
+      html += `<br/>Split: Pribadi <b>${formatRp(personalShare)}/bln</b> • ${esc(friendName)} <b>${formatRp(friendMonthly)}/bln</b> (Sisa ${remFMonths} bln = <b>${formatRp(remFAmt)}</b>).`;
     }
     document.getElementById('loanSetupPreview').innerHTML = html;
   }
@@ -2767,16 +2856,15 @@
     const bucket = provider === 'GoPayLater' ? (document.getElementById('loanGplBucket').value || 'QRIS') : null;
     const title = document.getElementById('loanTitle').value.trim() || provider;
     const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
-    const principalMonthly = parseMoneyInput(document.getElementById('loanPrincipalMonthly').value);
     if (totalMonthly <= 0) return showToast('Isi cicilan total per bulan');
 
-    const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
+    const tenor = provider === 'GoPayLater' ? 1 : Math.max(1, Number(document.getElementById('loanTenor').value || 1));
     let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
     if (paidCount >= tenor) paidCount = tenor - 1;
 
-    const dueDay = Math.min(31, Math.max(1, Number(document.getElementById('loanDueDay').value || 25)));
-    const monthVal = document.getElementById('loanNextBillMonth').value || getLocalCurrentMonthStr();
-    const [startYear, startMonth] = monthVal.split('-').map(Number);
+    const contractDate = document.getElementById('loanContractDate').value || getLocalTodayStr();
+    const deductLimitNow = document.getElementById('loanDeductLimitNow').checked;
+    const meta = getScheduleMetaFromContractDate(provider, contractDate, tenor, paidCount);
 
     let friendName = '';
     let friendMonthly = 0;
@@ -2800,12 +2888,10 @@
       }
     }
 
-    const firstActiveIdx = paidCount + 1;
     const installments = [];
     for (let m = 1; m <= tenor; m++) {
       const isPaid = m <= paidCount;
-      const relOffset = m - firstActiveIdx;
-      const d = new Date(startYear, (startMonth - 1) + relOffset, 1);
+      const d = new Date(meta.cYear, (meta.cMonth - 1) + meta.baseOffset + (m - 1), 1);
       installments.push({
         monthIndex: m,
         billingMonthLabel: `${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`,
@@ -2814,25 +2900,26 @@
       });
     }
 
-    const effPrincipalMonthly = principalMonthly > 0 ? principalMonthly : totalMonthly;
     const remBankMonths = tenor - paidCount;
     const limitToDeduct = provider === 'SeaBank Pinjam'
-      ? round2(tenor * effPrincipalMonthly)
-      : round2(remBankMonths * effPrincipalMonthly);
+      ? round2(tenor * totalMonthly)
+      : round2(remBankMonths * totalMonthly);
 
-    await adjustCreditLimit(provider, bucket, -limitToDeduct);
+    if (deductLimitNow) {
+      await adjustCreditLimit(provider, bucket, -limitToDeduct);
+    }
 
     await idbPut('loans', {
       id: uuid(),
       provider,
       paylaterBucket: bucket,
-      limitDeducted: true,
+      limitDeducted: deductLimitNow,
       ownershipType: activeLoanOwnership,
       title,
+      contractDate,
       billingKey: null,
       tenor,
-      dueDay,
-      principalMonthly: principalMonthly > 0 ? principalMonthly : 0,
+      dueDay: meta.dueDay,
       friendName,
       friendMonthly,
       friendTotalAmount: round2(friendMonthly * friendTenor),
@@ -2843,7 +2930,7 @@
     localStorage.removeItem('cashflow_draft_loan');
     expandedLoanId = null;
     closeModal('loanModal');
-    showToast('Kontrak cicilan disimpan & limit disesuaikan');
+    showToast(deductLimitNow ? 'Kontrak cicilan disimpan & limit disesuaikan' : 'Kontrak cicilan disimpan');
     await refreshAll();
   }
 
@@ -2856,7 +2943,6 @@
 
     const firstUnpaid = loan.installments.find((i) => !i.paidToProvider) || loan.installments[0];
     setMoneyInputValue('editLoanMonthly', firstUnpaid ? firstUnpaid.amount : 0, true);
-    setMoneyInputValue('editLoanPrincipal', loan.principalMonthly || 0, false);
 
     document.getElementById('editLoanFriendName').value = loan.friendName || '';
     setMoneyInputValue('editLoanFriendMonthly', loan.friendMonthly || 0, true);
@@ -2907,7 +2993,6 @@
     loan.ownershipType = editLoanOwnership;
     loan.title = document.getElementById('editLoanTitle').value.trim() || loan.title;
     loan.dueDay = Math.min(31, Math.max(1, Number(document.getElementById('editLoanDueDay').value || loan.dueDay)));
-    loan.principalMonthly = parseMoneyInput(document.getElementById('editLoanPrincipal').value);
 
     const newMonthly = parseMoneyInput(document.getElementById('editLoanMonthly').value);
     if (newMonthly > 0) {
@@ -2988,10 +3073,7 @@
     const loan = state.loans.find((l) => l.id === loanId);
     const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
     const instAmt = round2(Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
-    const perMonthPrincipal = (loan.principalMonthly && Number(loan.principalMonthly) > 0)
-      ? Number(loan.principalMonthly)
-      : instAmt;
-    const totalContractPrincipal = getLoanTotalPrincipal(loan);
+    const totalContractAmt = getLoanTotalAmount(loan);
     const unpaidCount = loan.installments.filter((i) => !i.paidToProvider).length;
     const isFinalSeaBankPayment = loan.provider === 'SeaBank Pinjam' && !inst.paidToProvider && unpaidCount === 1;
 
@@ -2999,12 +3081,12 @@
 
     if (loan.provider === 'SeaBank Pinjam') {
       if (isFinalSeaBankPayment) {
-        document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Pelunasan terakhir (FULL PAYMENT) — saldo terpotong dan seluruh limit pokok SeaBank Pinjam sebesar +${formatRp(totalContractPrincipal)} akan langsung pulih!`;
+        document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Pelunasan terakhir (FULL PAYMENT) — saldo terpotong dan seluruh limit SeaBank Pinjam sebesar +${formatRp(totalContractAmt)} akan langsung pulih!`;
       } else {
         document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong. Aturan SeaBank Pinjam: limit belum pulih (+Rp 0) sampai seluruh ${loan.tenor} tenor dibayar lunas (sisa ${unpaidCount - 1} bln lagi).`;
       }
     } else {
-      document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} pulih +${formatRp(perMonthPrincipal)}.`;
+      document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} pulih +${formatRp(instAmt)}.`;
     }
 
     const walletSel = document.getElementById('payBillWallet');
@@ -3033,11 +3115,11 @@
       if (loan.provider === 'SeaBank Pinjam') {
         const allPaid = loan.installments.every((i) => i.paidToProvider);
         if (allPaid) {
-          restoredAmt = totalContractPrincipal;
+          restoredAmt = totalContractAmt;
           await adjustCreditLimit(loan.provider, null, restoredAmt);
         }
       } else {
-        restoredAmt = perMonthPrincipal;
+        restoredAmt = instAmt;
         await adjustCreditLimit(loan.provider, bucket, restoredAmt);
       }
 
@@ -3082,20 +3164,19 @@
     if (loan.limitDeducted) {
       const unpaidInsts = loan.installments.filter((i) => !i.paidToProvider);
       if (unpaidInsts.length > 0) {
-        let lockedPrincipal = 0;
+        let lockedAmount = 0;
         if (loan.provider === 'SeaBank Pinjam') {
-          lockedPrincipal = getLoanTotalPrincipal(loan);
+          lockedAmount = getLoanTotalAmount(loan);
         } else {
-          lockedPrincipal = round2(
+          lockedAmount = round2(
             unpaidInsts.reduce((sum, item) => {
               const itemAmt = round2(Number(item.amount ?? ((item.personalAmount || 0) + (item.friendAmount || 0))));
-              const p = (loan.principalMonthly && Number(loan.principalMonthly) > 0) ? Number(loan.principalMonthly) : itemAmt;
-              return round2(sum + p);
+              return round2(sum + itemAmt);
             }, 0)
           );
         }
-        if (lockedPrincipal > 0) {
-          await adjustCreditLimit(loan.provider, loan.paylaterBucket || null, lockedPrincipal);
+        if (lockedAmount > 0) {
+          await adjustCreditLimit(loan.provider, loan.paylaterBucket || null, lockedAmount);
         }
       }
     }
@@ -3217,7 +3298,7 @@
       limitDeducted: true,
       ownershipType: 'split',
       title: 'Pinjaman 3jt (Split Adi 1jt)', billingKey: null,
-      tenor: 12, dueDay: 25, principalMonthly: 250000,
+      tenor: 12, dueDay: 25,
       friendName: 'Adi', friendMonthly: 105000,
       friendTotalAmount: 105000 * 12,
       friendPaidAmount: 105000 * 7,
@@ -3239,7 +3320,7 @@
       limitDeducted: true,
       ownershipType: 'friend',
       title: 'Titipan Helm & Jaket Budi', billingKey: null,
-      tenor: 6, dueDay: 22, principalMonthly: 200000,
+      tenor: 6, dueDay: 1,
       friendName: 'Budi', friendMonthly: 220000,
       friendTotalAmount: 220000 * 6,
       friendPaidAmount: 220000 * 1,
