@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -27,7 +27,7 @@
       --purple: #c084fc;
       --radius: 14px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
@@ -799,13 +799,22 @@
 
       <div class="form-group">
         <label for="loanProvider">Penyedia Pinjaman / PayLater</label>
-        <select id="loanProvider" onchange="updateLoanModalPreview(); saveLoanDraft();">
+        <select id="loanProvider" onchange="onLoanProviderChange(); saveLoanDraft();">
           <option value="SPinjam">SPinjam</option>
           <option value="SeaBank Pinjam">SeaBank Pinjam</option>
           <option value="SPayLater">SPayLater</option>
           <option value="GoPayLater">GoPayLater</option>
         </select>
       </div>
+
+      <div class="form-group" id="loanGplBucketBox" style="display:none;">
+        <label for="loanGplBucket">Bucket Limit GoPayLater</label>
+        <select id="loanGplBucket" onchange="updateLoanModalPreview(); saveLoanDraft();">
+          <option value="QRIS">GoPayLater • Limit QRIS</option>
+          <option value="Utama">GoPayLater • Limit Utama</option>
+        </select>
+      </div>
+
       <div class="form-group">
         <label for="loanTitle">Judul / Keperluan</label>
         <input type="text" id="loanTitle" placeholder="Contoh: HP Budi / Pinjaman 3jt" oninput="saveLoanDraft()" />
@@ -817,7 +826,7 @@
           <input type="text" class="money-input" id="loanTotalMonthly" inputmode="decimal" placeholder="311.511" oninput="syncFriendModeValues(); updateLoanModalPreview(); saveLoanDraft();" />
         </div>
         <div class="form-group" style="margin:0;">
-          <label for="loanPrincipalMonthly">Pokok / Bln (Opsional)</label>
+          <label id="loanPrincipalLabel" for="loanPrincipalMonthly">Pokok / Bln (Opsional)</label>
           <input type="text" class="money-input" id="loanPrincipalMonthly" inputmode="decimal" placeholder="Sama dgn cicilan" oninput="updateLoanModalPreview(); saveLoanDraft();" />
         </div>
       </div>
@@ -978,7 +987,7 @@
           <option value="Utama">GoPayLater • Limit Utama</option>
         </select>
       </div>
-      <button class="btn btn-primary btn-block" id="payBillConfirmBtn">Konfirmasi Bayar & Pulihkan Limit</button>
+      <button class="btn btn-primary btn-block" id="payBillConfirmBtn">Konfirmasi Bayar Tagihan</button>
     </div>
   </div>
 
@@ -1004,13 +1013,18 @@
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
         .then((reg) => {
-          document.getElementById('swBadge').textContent = 'PWA Offline Aktif';
+          const swBadge = document.getElementById('swBadge');
+          swBadge.textContent = 'PWA Offline Aktif';
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showToast('Versi baru siap! Muat ulang halaman.');
+                swBadge.textContent = '↻ Update Tersedia';
+                swBadge.className = 'badge warn';
+                swBadge.title = 'Ketuk untuk memuat ulang ke versi terbaru';
+                swBadge.onclick = () => window.location.reload();
+                showToast('Versi baru siap! Ketuk badge "Update Tersedia".');
               }
             });
           });
@@ -1335,6 +1349,16 @@
     await idbPut('limits', lim);
   }
 
+  function getLoanTotalPrincipal(loan) {
+    return round2(
+      loan.installments.reduce((sum, item) => {
+        const itemAmt = round2(Number(item.amount ?? ((item.personalAmount || 0) + (item.friendAmount || 0))));
+        const p = (loan.principalMonthly && Number(loan.principalMonthly) > 0) ? Number(loan.principalMonthly) : itemAmt;
+        return round2(sum + p);
+      }, 0)
+    );
+  }
+
   function getLoanOwnershipType(loan) {
     if (loan.ownershipType) return loan.ownershipType;
     if (loan.friendName && Number(loan.friendTotalAmount) > 0) {
@@ -1618,6 +1642,10 @@
         ownerBadgeHtml = `<span class="pill pill-friend" style="margin-left:3px;">100% Teman • ${esc(loan.friendName)}</span>`;
       }
 
+      const fullPaymentBadge = loan.provider === 'SeaBank Pinjam'
+        ? `<span class="pill pill-pl" style="margin-left:3px;">Limit Pulih Full Lunas</span>`
+        : '';
+
       let statBoxesHtml = '';
       if (mode === 'friend') {
         statBoxesHtml = `
@@ -1739,6 +1767,7 @@
             <div onclick="toggleLoanAccordion('${loan.id}')" style="cursor:pointer;flex:1;">
               <span class="pill pill-info">${esc(loan.provider)}${loan.paylaterBucket ? ' • ' + esc(loan.paylaterBucket) : ''}</span>
               ${ownerBadgeHtml}
+              ${fullPaymentBadge}
               <span class="pill" style="background:var(--bg);color:var(--muted);margin-left:3px;">Sisa ${unpaidInsts.length}/${loan.tenor} bln</span>
               <div style="font-weight:700;font-size:0.93rem;margin-top:5px;">${esc(loan.title)}</div>
             </div>
@@ -1917,11 +1946,16 @@
     }
   }
 
-  function copyJoplinTextarea() {
+  async function copyJoplinTextarea() {
     const ta = document.getElementById('joplinMarkdownText');
-    ta.select();
-    document.execCommand('copy');
-    showToast('Teks berhasil disalin');
+    try {
+      await navigator.clipboard.writeText(ta.value);
+      showToast('Teks berhasil disalin');
+    } catch (e) {
+      ta.select();
+      document.execCommand('copy');
+      showToast('Teks berhasil disalin');
+    }
   }
 
   // --- 9. QUICK-ADD TIP ---
@@ -1980,7 +2014,7 @@
     await refreshAll();
   }
 
-  // --- 10. CATAT & EDIT TRANSAKSI ---
+  // --- 10. CATAT & EDIT TRANSAKSI (SINKRON DENGAN TAGIHAN PAYLATER) ---
   function openTxModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_tx') || '{}');
     document.getElementById('txDate').value = draft.date || getLocalTodayStr();
@@ -2131,26 +2165,31 @@
 
       const friendSlug = isFriendOrder ? friendName.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
       const target0 = calculatePaylaterTarget(provider, dateStr, 0, bucket, friendSlug);
+      const itemId = uuid();
+      let linkedLoanId = null;
 
       await adjustCreditLimit(provider, bucket, -amount);
 
       if (tenor === 1) {
         let existingBill = state.loans.find((l) => l.billingKey === target0.key);
         if (existingBill && !existingBill.installments[0].paidToProvider) {
+          linkedLoanId = existingBill.id;
           const inst = existingBill.installments[0];
           inst.amount = round2(Number(inst.amount ?? (inst.personalAmount || 0)) + amount);
           inst.items = inst.items || [];
-          inst.items.push({ date: dateStr, note, amount });
+          inst.items.push({ id: itemId, date: dateStr, note, amount });
           if (isFriendOrder) {
             existingBill.friendMonthly = inst.amount;
             existingBill.friendTotalAmount = inst.amount;
           }
           await idbPut('loans', existingBill);
         } else {
+          linkedLoanId = uuid();
           await idbPut('loans', {
-            id: uuid(),
+            id: linkedLoanId,
             provider,
             paylaterBucket: bucket,
+            limitDeducted: true,
             ownershipType: isFriendOrder ? 'friend' : 'personal',
             title: isFriendOrder
               ? `Titipan ${friendName} • ${provider}${bucket ? ' (' + bucket + ')' : ''} • ${target0.label}`
@@ -2167,11 +2206,12 @@
               billingMonthLabel: target0.label,
               amount,
               paidToProvider: false,
-              items: [{ date: dateStr, note, amount }]
+              items: [{ id: itemId, date: dateStr, note, amount }]
             }]
           });
         }
       } else {
+        linkedLoanId = uuid();
         const perMonth = round2(amount / tenor);
         const installments = [];
         for (let m = 0; m < tenor; m++) {
@@ -2181,13 +2221,14 @@
             billingMonthLabel: tInfo.label,
             amount: perMonth,
             paidToProvider: false,
-            items: m === 0 ? [{ date: dateStr, note: `${note} (${tenor}x)`, amount }] : []
+            items: m === 0 ? [{ id: itemId, date: dateStr, note: `${note} (${tenor}x)`, amount }] : []
           });
         }
         await idbPut('loans', {
-          id: uuid(),
+          id: linkedLoanId,
           provider,
           paylaterBucket: bucket,
+          limitDeducted: true,
           ownershipType: isFriendOrder ? 'friend' : 'personal',
           title: isFriendOrder ? `Titipan ${friendName}: ${note} (${tenor}x)` : `${note} (${tenor}x)`,
           billingKey: null,
@@ -2205,6 +2246,10 @@
         id: uuid(),
         type: 'paylater_expense',
         isFriendOrder,
+        loanId: linkedLoanId,
+        paylaterItemId: itemId,
+        paylaterTenor: tenor,
+        paylaterBucket: bucket,
         category,
         amount,
         walletId: walletVal,
@@ -2279,12 +2324,58 @@
     const newCat = document.getElementById('editTxCategory').value.trim() || tx.category;
     const newNote = document.getElementById('editTxNote').value.trim() || newCat;
     const oldAbsAmt = Math.abs(Number(tx.amount));
+    const oldNote = tx.note;
 
     if (tx.type === 'paylater_expense') {
       const provider = tx.walletId.replace('paylater-', '');
-      const bucket = tx.paymentMethod && tx.paymentMethod.includes('Utama') ? 'Utama' : (provider === 'GoPayLater' ? 'QRIS' : null);
+      const bucket = tx.paylaterBucket || (tx.paymentMethod && tx.paymentMethod.includes('Utama') ? 'Utama' : (provider === 'GoPayLater' ? 'QRIS' : null));
       const diff = round2(oldAbsAmt - newAmt);
       if (diff !== 0) await adjustCreditLimit(provider, bucket, diff);
+
+      if (tx.loanId) {
+        const loan = state.loans.find((l) => l.id === tx.loanId);
+        if (loan) {
+          if (loan.tenor === 1 || (tx.paylaterTenor || 1) === 1) {
+            const inst = loan.installments[0];
+            inst.items = inst.items || [];
+            let targetItem = tx.paylaterItemId ? inst.items.find((it) => it.id === tx.paylaterItemId) : null;
+            if (!targetItem) {
+              targetItem = inst.items.find((it) => it.note === oldNote && Math.abs(Number(it.amount) - oldAbsAmt) < 1);
+            }
+            if (targetItem) {
+              targetItem.amount = newAmt;
+              targetItem.note = newNote;
+              targetItem.date = newDateStr;
+              inst.amount = round2(inst.items.reduce((s, it) => s + Number(it.amount || 0), 0));
+            } else {
+              inst.amount = Math.max(0, round2(Number(inst.amount || 0) - oldAbsAmt + newAmt));
+            }
+            if (getLoanOwnershipType(loan) === 'friend') {
+              loan.friendMonthly = inst.amount;
+              loan.friendTotalAmount = inst.amount;
+            }
+          } else {
+            const newPerMonth = round2(newAmt / loan.tenor);
+            loan.installments.forEach((inst, idx) => {
+              if (!inst.paidToProvider) inst.amount = newPerMonth;
+              if (idx === 0 && inst.items && inst.items.length > 0) {
+                inst.items[0].note = `${newNote} (${loan.tenor}x)`;
+                inst.items[0].amount = newAmt;
+                inst.items[0].date = newDateStr;
+              }
+            });
+            loan.title = tx.isFriendOrder
+              ? `Titipan ${loan.friendName}: ${newNote} (${loan.tenor}x)`
+              : `${newNote} (${loan.tenor}x)`;
+            if (getLoanOwnershipType(loan) === 'friend') {
+              loan.friendMonthly = newPerMonth;
+              loan.friendTotalAmount = round2(newPerMonth * loan.tenor);
+            }
+          }
+          await idbPut('loans', loan);
+        }
+      }
+
       tx.amount = newAmt;
     } else if (tx.type === 'transfer') {
       const src = state.wallets.find((w) => w.id === tx.walletId);
@@ -2316,7 +2407,7 @@
     await idbPut('transactions', tx);
 
     closeModal('editTxModal');
-    showToast('Transaksi diperbarui');
+    showToast('Transaksi & tagihan diperbarui');
     await refreshAll();
   }
 
@@ -2326,8 +2417,37 @@
     const absAmt = Math.abs(Number(tx.amount));
     if (tx.type === 'paylater_expense') {
       const provider = tx.walletId.replace('paylater-', '');
-      const bucket = tx.paymentMethod && tx.paymentMethod.includes('Utama') ? 'Utama' : (provider === 'GoPayLater' ? 'QRIS' : null);
+      const bucket = tx.paylaterBucket || (tx.paymentMethod && tx.paymentMethod.includes('Utama') ? 'Utama' : (provider === 'GoPayLater' ? 'QRIS' : null));
       await adjustCreditLimit(provider, bucket, absAmt);
+
+      if (tx.loanId) {
+        const loan = state.loans.find((l) => l.id === tx.loanId);
+        if (loan) {
+          if (loan.tenor === 1 || (tx.paylaterTenor || 1) === 1) {
+            const inst = loan.installments[0];
+            inst.items = inst.items || [];
+            let itemIdx = tx.paylaterItemId ? inst.items.findIndex((it) => it.id === tx.paylaterItemId) : -1;
+            if (itemIdx === -1) {
+              itemIdx = inst.items.findIndex((it) => it.note === tx.note && Math.abs(Number(it.amount) - absAmt) < 1);
+            }
+            if (itemIdx !== -1) {
+              inst.items.splice(itemIdx, 1);
+            }
+            if (inst.items.length === 0) {
+              loan.deleted = true;
+            } else {
+              inst.amount = round2(inst.items.reduce((s, it) => s + Number(it.amount || 0), 0));
+              if (getLoanOwnershipType(loan) === 'friend') {
+                loan.friendMonthly = inst.amount;
+                loan.friendTotalAmount = inst.amount;
+              }
+            }
+          } else {
+            loan.deleted = true;
+          }
+          await idbPut('loans', loan);
+        }
+      }
     } else if (tx.type === 'transfer') {
       const src = state.wallets.find((w) => w.id === tx.walletId);
       const dst = state.wallets.find((w) => w.id === tx.targetWalletId);
@@ -2343,7 +2463,7 @@
     }
     tx.deleted = true;
     await idbPut('transactions', tx);
-    showToast('Catatan dihapus & saldo dipulihkan');
+    showToast('Catatan dihapus & saldo/tagihan dipulihkan');
     await refreshAll();
   }
 
@@ -2502,6 +2622,7 @@
     localStorage.setItem('cashflow_draft_loan', JSON.stringify({
       ownership: activeLoanOwnership,
       provider: document.getElementById('loanProvider').value,
+      gplBucket: document.getElementById('loanGplBucket').value,
       title: document.getElementById('loanTitle').value,
       totalMonthly: document.getElementById('loanTotalMonthly').value,
       principalMonthly: document.getElementById('loanPrincipalMonthly').value,
@@ -2516,9 +2637,22 @@
     }));
   }
 
+  function onLoanProviderChange() {
+    const provider = document.getElementById('loanProvider').value;
+    document.getElementById('loanGplBucketBox').style.display = provider === 'GoPayLater' ? 'block' : 'none';
+    const pLabel = document.getElementById('loanPrincipalLabel');
+    if (provider === 'SeaBank Pinjam') {
+      pLabel.textContent = 'Pokok / Bln (Penting u/ Limit)';
+    } else {
+      pLabel.textContent = 'Pokok / Bln (Opsional)';
+    }
+    updateLoanModalPreview();
+  }
+
   function openNewLoanModal() {
     const draft = JSON.parse(localStorage.getItem('cashflow_draft_loan') || '{}');
     document.getElementById('loanProvider').value = draft.provider || 'SPinjam';
+    document.getElementById('loanGplBucket').value = draft.gplBucket || 'QRIS';
     document.getElementById('loanTitle').value = draft.title || '';
     setMoneyInputValue('loanTotalMonthly', draft.totalMonthly ? parseMoneyInput(draft.totalMonthly) : 0, false);
     setMoneyInputValue('loanPrincipalMonthly', draft.principalMonthly ? parseMoneyInput(draft.principalMonthly) : 0, false);
@@ -2531,6 +2665,7 @@
     document.getElementById('loanFriendTenor').value = draft.friendTenor || 12;
     document.getElementById('loanFriendPaidCount').value = draft.friendPaidCount || 0;
     setLoanOwnership(draft.ownership || 'personal', true);
+    onLoanProviderChange();
     document.getElementById('loanModal').classList.add('open');
   }
 
@@ -2575,6 +2710,8 @@
 
   function updateLoanModalPreview() {
     const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
+    const principalMonthly = parseMoneyInput(document.getElementById('loanPrincipalMonthly').value);
+    const effPrincipalMonthly = principalMonthly > 0 ? principalMonthly : totalMonthly;
     const tenor = Math.max(1, Number(document.getElementById('loanTenor').value || 1));
     let paidCount = Math.max(0, Number(document.getElementById('loanPaidCount').value || 0));
     if (paidCount >= tenor) paidCount = tenor - 1;
@@ -2585,8 +2722,10 @@
     const firstLabel = `${MONTHS_ID[startMonth - 1]} ${startYear}`;
     const remBankMonths = tenor - paidCount;
     const remBankTotal = round2(remBankMonths * totalMonthly);
+    const totalContractPrincipal = round2(tenor * effPrincipalMonthly);
 
     const provider = document.getElementById('loanProvider').value;
+    const gplBucket = provider === 'GoPayLater' ? ` (${document.getElementById('loanGplBucket').value})` : '';
     const friendName = document.getElementById('loanFriendName').value.trim() || 'Teman';
     const friendMonthly = activeLoanOwnership === 'friend'
       ? totalMonthly
@@ -2596,7 +2735,17 @@
       : Math.max(1, Number(document.getElementById('loanFriendTenor').value || 1));
     const fPaid = Math.min(fTenor, Math.max(0, Number(document.getElementById('loanFriendPaidCount').value || 0)));
 
-    let html = `Tagihan ke <b>${esc(provider)}</b>: Bulan 1–${paidCount || 0} <b>LUNAS</b>, sisa <b>${remBankMonths} bulan aktif</b> (${formatRp(remBankTotal)}) mulai Bln ${firstActiveIdx} (${firstLabel}).`;
+    const limitDeductedNow = provider === 'SeaBank Pinjam'
+      ? totalContractPrincipal
+      : round2(remBankMonths * effPrincipalMonthly);
+
+    let html = `Tagihan ke <b>${esc(provider)}${esc(gplBucket)}</b>: Bulan 1–${paidCount || 0} <b>LUNAS</b>, sisa <b>${remBankMonths} bulan aktif</b> (${formatRp(remBankTotal)}) mulai Bln ${firstActiveIdx} (${firstLabel}).`;
+
+    if (provider === 'SeaBank Pinjam') {
+      html += `<br/>Limit terpotong: <b>-${formatRp(limitDeductedNow)}</b>. Khusus <b>SeaBank Pinjam</b>, seluruh limit pokok (+${formatRp(totalContractPrincipal)}) baru pulih setelah <b>semua ${tenor} bulan lunas penuh</b>.`;
+    } else {
+      html += `<br/>Limit terpotong: <b>-${formatRp(limitDeductedNow)}</b> (pulih bertahap +${formatRp(effPrincipalMonthly)} setiap bulan dibayar).`;
+    }
 
     if (activeLoanOwnership === 'personal') {
       html += `<br/>Status: <b>100% Beban Pribadi</b>.`;
@@ -2615,6 +2764,7 @@
 
   async function createLoanContract() {
     const provider = document.getElementById('loanProvider').value;
+    const bucket = provider === 'GoPayLater' ? (document.getElementById('loanGplBucket').value || 'QRIS') : null;
     const title = document.getElementById('loanTitle').value.trim() || provider;
     const totalMonthly = parseMoneyInput(document.getElementById('loanTotalMonthly').value);
     const principalMonthly = parseMoneyInput(document.getElementById('loanPrincipalMonthly').value);
@@ -2664,10 +2814,19 @@
       });
     }
 
+    const effPrincipalMonthly = principalMonthly > 0 ? principalMonthly : totalMonthly;
+    const remBankMonths = tenor - paidCount;
+    const limitToDeduct = provider === 'SeaBank Pinjam'
+      ? round2(tenor * effPrincipalMonthly)
+      : round2(remBankMonths * effPrincipalMonthly);
+
+    await adjustCreditLimit(provider, bucket, -limitToDeduct);
+
     await idbPut('loans', {
       id: uuid(),
       provider,
-      paylaterBucket: provider === 'GoPayLater' ? 'QRIS' : null,
+      paylaterBucket: bucket,
+      limitDeducted: true,
       ownershipType: activeLoanOwnership,
       title,
       billingKey: null,
@@ -2684,7 +2843,7 @@
     localStorage.removeItem('cashflow_draft_loan');
     expandedLoanId = null;
     closeModal('loanModal');
-    showToast('Kontrak cicilan disimpan');
+    showToast('Kontrak cicilan disimpan & limit disesuaikan');
     await refreshAll();
   }
 
@@ -2829,10 +2988,24 @@
     const loan = state.loans.find((l) => l.id === loanId);
     const inst = loan.installments.find((i) => i.monthIndex === monthIndex);
     const instAmt = round2(Number(inst.amount ?? ((inst.personalAmount || 0) + (inst.friendAmount || 0))));
-    const restoreAmt = (loan.principalMonthly && Number(loan.principalMonthly) > 0) ? Number(loan.principalMonthly) : instAmt;
+    const perMonthPrincipal = (loan.principalMonthly && Number(loan.principalMonthly) > 0)
+      ? Number(loan.principalMonthly)
+      : instAmt;
+    const totalContractPrincipal = getLoanTotalPrincipal(loan);
+    const unpaidCount = loan.installments.filter((i) => !i.paidToProvider).length;
+    const isFinalSeaBankPayment = loan.provider === 'SeaBank Pinjam' && !inst.paidToProvider && unpaidCount === 1;
 
     document.getElementById('payBillTitle').textContent = `Bayar ${loan.provider} (Bln ${monthIndex})`;
-    document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} pulih +${formatRp(restoreAmt)}.`;
+
+    if (loan.provider === 'SeaBank Pinjam') {
+      if (isFinalSeaBankPayment) {
+        document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Pelunasan terakhir (FULL PAYMENT) — saldo terpotong dan seluruh limit pokok SeaBank Pinjam sebesar +${formatRp(totalContractPrincipal)} akan langsung pulih!`;
+      } else {
+        document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong. Aturan SeaBank Pinjam: limit belum pulih (+Rp 0) sampai seluruh ${loan.tenor} tenor dibayar lunas (sisa ${unpaidCount - 1} bln lagi).`;
+      }
+    } else {
+      document.getElementById('payBillDesc').textContent = `Nominal tagihan: ${formatRp(instAmt)}. Saldo rekening terpotong dan sisa limit ${loan.provider} pulih +${formatRp(perMonthPrincipal)}.`;
+    }
 
     const walletSel = document.getElementById('payBillWallet');
     walletSel.innerHTML = state.wallets.map((w) => `<option value="${w.id}">${w.icon} ${esc(w.name)} (${formatRp(w.balance)})</option>`).join('');
@@ -2855,7 +3028,19 @@
 
       await idbPut('wallets', w);
       await idbPut('loans', loan);
-      await adjustCreditLimit(loan.provider, bucket, restoreAmt);
+
+      let restoredAmt = 0;
+      if (loan.provider === 'SeaBank Pinjam') {
+        const allPaid = loan.installments.every((i) => i.paidToProvider);
+        if (allPaid) {
+          restoredAmt = totalContractPrincipal;
+          await adjustCreditLimit(loan.provider, null, restoredAmt);
+        }
+      } else {
+        restoredAmt = perMonthPrincipal;
+        await adjustCreditLimit(loan.provider, bucket, restoredAmt);
+      }
+
       await idbPut('transactions', {
         id: uuid(),
         type: 'debt_payment',
@@ -2868,7 +3053,11 @@
       });
 
       closeModal('payBillModal');
-      showToast(`Tagihan ${loan.provider} LUNAS & limit pulih!`);
+      if (loan.provider === 'SeaBank Pinjam' && restoredAmt === 0) {
+        showToast('Tagihan SeaBank Pinjam LUNAS (limit pulih setelah lunas penuh)');
+      } else {
+        showToast(`Tagihan ${loan.provider} LUNAS & limit +${formatRp(restoredAmt)} pulih!`);
+      }
       await refreshAll();
     };
 
@@ -2889,6 +3078,28 @@
     const loan = state.loans.find((l) => l.id === id);
     if (!loan) return;
     if (expandedLoanId === id) expandedLoanId = null;
+
+    if (loan.limitDeducted) {
+      const unpaidInsts = loan.installments.filter((i) => !i.paidToProvider);
+      if (unpaidInsts.length > 0) {
+        let lockedPrincipal = 0;
+        if (loan.provider === 'SeaBank Pinjam') {
+          lockedPrincipal = getLoanTotalPrincipal(loan);
+        } else {
+          lockedPrincipal = round2(
+            unpaidInsts.reduce((sum, item) => {
+              const itemAmt = round2(Number(item.amount ?? ((item.personalAmount || 0) + (item.friendAmount || 0))));
+              const p = (loan.principalMonthly && Number(loan.principalMonthly) > 0) ? Number(loan.principalMonthly) : itemAmt;
+              return round2(sum + p);
+            }, 0)
+          );
+        }
+        if (lockedPrincipal > 0) {
+          await adjustCreditLimit(loan.provider, loan.paylaterBucket || null, lockedPrincipal);
+        }
+      }
+    }
+
     loan.deleted = true;
     await idbPut('loans', loan);
     showToast('Kontrak cicilan dihapus');
@@ -2974,9 +3185,9 @@
     for (const w of demoWallets) await idbPut('wallets', w);
 
     const demoLimits = [
-      { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam', permanentLimit: 4000000, temporaryLimit: 0, remainingLimit: 1000000 },
+      { id: 'limit-spinjam', provider: 'SPinjam', bucket: null, label: 'SPinjam', permanentLimit: 4000000, temporaryLimit: 0, remainingLimit: 1500000 },
       { id: 'limit-seabank', provider: 'SeaBank Pinjam', bucket: null, label: 'SeaBank Pinjam', permanentLimit: 3000000, temporaryLimit: 0, remainingLimit: 1200000 },
-      { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', permanentLimit: 17250000, temporaryLimit: 3000000, remainingLimit: 20131192 },
+      { id: 'limit-spaylater', provider: 'SPayLater', bucket: null, label: 'SPayLater', permanentLimit: 17250000, temporaryLimit: 3000000, remainingLimit: 19250000 },
       { id: 'limit-gopaylater-qris', provider: 'GoPayLater', bucket: 'QRIS', label: 'GoPayLater • QRIS', permanentLimit: 1500000, temporaryLimit: 0, remainingLimit: 1500000 },
       { id: 'limit-gopaylater-utama', provider: 'GoPayLater', bucket: 'Utama', label: 'GoPayLater • Utama', permanentLimit: 2000000, temporaryLimit: 0, remainingLimit: 2000000 }
     ];
@@ -3003,6 +3214,7 @@
     }
     await idbPut('loans', {
       id: uuid(), provider: 'SPinjam', paylaterBucket: null,
+      limitDeducted: true,
       ownershipType: 'split',
       title: 'Pinjaman 3jt (Split Adi 1jt)', billingKey: null,
       tenor: 12, dueDay: 25, principalMonthly: 250000,
@@ -3024,6 +3236,7 @@
     }
     await idbPut('loans', {
       id: uuid(), provider: 'SPayLater', paylaterBucket: null,
+      limitDeducted: true,
       ownershipType: 'friend',
       title: 'Titipan Helm & Jaket Budi', billingKey: null,
       tenor: 6, dueDay: 22, principalMonthly: 200000,
